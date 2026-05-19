@@ -10,4 +10,5 @@ if(NOT COMBINED_BUILD)
     add_executable(gpu-latency-cuda $<TARGET_OBJECTS:gpu-latency-cuda-obj>)
     target_link_libraries(gpu-latency-cuda PRIVATE baseliner::baseliner gpu-benches-baseliner)
     set_target_properties(gpu-latency-cuda PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 endif()

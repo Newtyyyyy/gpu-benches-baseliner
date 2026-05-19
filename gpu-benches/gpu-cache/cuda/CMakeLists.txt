@@ -10,4 +10,5 @@ if(NOT COMBINED_BUILD)
     add_executable(gpu-cache-cuda $<TARGET_OBJECTS:gpu-cache-cuda-obj>)
     target_link_libraries(gpu-cache-cuda PRIVATE baseliner::baseliner gpu-benches-baseliner)
     set_target_properties(gpu-cache-cuda PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 endif()

@@ -10,4 +10,5 @@ if(NOT COMBINED_BUILD)
     add_executable(gpu-umstream-cuda $<TARGET_OBJECTS:gpu-umstream-cuda-obj>)
     target_link_libraries(gpu-umstream-cuda PRIVATE baseliner::baseliner gpu-benches-baseliner)
     set_target_properties(gpu-umstream-cuda PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 endif()

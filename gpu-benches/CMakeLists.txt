@@ -1,5 +1,0 @@
-add_subdirectory(gpu-cache)
-add_subdirectory(gpu-incore)
-add_subdirectory(gpu-latency)
-add_subdirectory(gpu-memcpy)
-add_subdirectory(gpu-umstream)
