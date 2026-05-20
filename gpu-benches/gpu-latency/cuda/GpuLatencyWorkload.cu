@@ -1,5 +1,4 @@
 #include "../GpuLatencyWorkload.hpp"
-#include <adapters/NVBenchRegister.hpp>
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/cuda/CudaBackend.hpp>
 #include <algorithm>
@@ -100,4 +99,4 @@ void CudaLatency::free() {
 // Registration
 // ---------------------------------------------------------------------------
 
-NVBENCH_REGISTER_WORKLOAD_AXES(CudaLatency);
+BASELINER_REGISTER_WORKLOAD(CudaLatency);

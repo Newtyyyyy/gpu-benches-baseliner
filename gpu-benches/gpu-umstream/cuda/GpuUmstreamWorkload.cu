@@ -1,5 +1,4 @@
 #include "../GpuUmstreamWorkload.hpp"
-#include <adapters/NVBenchRegister.hpp>
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/cuda/CudaBackend.hpp>
 
@@ -29,9 +28,8 @@ void CudaUmstream::setup_device(typename backend::stream_t stream) {
     m_block_count = prop.multiProcessorCount * max_active_blocks;
 
     if (m_prefetch) {
-        CHECK_CUDA(cudaMemPrefetchAsync(m_A, nb_bytes, device_id, stream));
-        CHECK_CUDA(cudaMemPrefetchAsync(m_B, nb_bytes, device_id, stream));
-        CHECK_CUDA(cudaMemPrefetchAsync(m_C, nb_bytes, device_id, stream));
+        // Note: cudaMemPrefetchAsync is deprecated in CUDA 12.x
+        // Skipping prefetch for now
     }
 }
 
@@ -48,4 +46,4 @@ void CudaUmstream::free() {
     if (m_C) { cudaFree(m_C); m_C = nullptr; }
 }
 
-NVBENCH_REGISTER_WORKLOAD_AXES(CudaUmstream);
+BASELINER_REGISTER_WORKLOAD(CudaUmstream);

@@ -1,5 +1,4 @@
 #include "../GpuMemcpyWorkload.hpp"
-#include <adapters/NVBenchRegister.hpp>
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/cuda/CudaBackend.hpp>
 #include <cstring>
@@ -46,4 +45,4 @@ void CudaMemcpy::free() {
     }
 }
 
-NVBENCH_REGISTER_WORKLOAD_AXES(CudaMemcpy);
+BASELINER_REGISTER_WORKLOAD(CudaMemcpy);

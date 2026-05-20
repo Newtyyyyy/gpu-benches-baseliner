@@ -28,7 +28,7 @@ include(FetchContent)
 FetchContent_Declare(
   baseliner
   GIT_REPOSITORY https://github.com/comeyrd/gpu-kernel-baseliner.git
-  GIT_TAG        develop
+  GIT_TAG        v1.0
 )
 
 FetchContent_MakeAvailable(baseliner)
@@ -63,4 +63,3 @@ if(COMBINED_BUILD)
 
     target_link_libraries(gpu-benches_exec PRIVATE baseliner::baseliner gpu-benches-baseliner)
 endif()
-

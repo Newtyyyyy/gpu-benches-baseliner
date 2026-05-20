@@ -1,0 +1,44 @@
+{
+  "baseliner_version": "1.0.0",
+  "id": "06lgw4lnovseg",
+  "git_version": "not-provided",
+  "datetime": "2026-05-19 16:33:54.852",
+  "campaign_runs": [
+    {
+      "id": "06lgw4lnpr5c7",
+      "name": "default",
+      "recipe_name": "default",
+      "recipe": {
+        "description": "Default Recipe",
+        "benchmark": {
+          "impl": "Benchmark",
+          "preset": "default"
+        },
+        "stopping": {
+          "impl": "StoppingCriterion",
+          "preset": "default"
+        },
+        "stats": {
+          "preset": "default"
+        },
+        "sweep": {
+          "strategy": "FullGrid",
+          "axes": [
+            {
+              "interface": "Workload",
+              "option": "work_size",
+              "hint": {
+                "policy": "PowersOfTwo",
+                "min": "1",
+                "max": "256",
+                "step": "1",
+                "enumerated": []
+              }
+            }
+          ]
+        }
+      },
+      "benchmark_runs": {}
+    }
+  ]
+}

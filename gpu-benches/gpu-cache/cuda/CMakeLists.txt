@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-add_library(gpu-cache-cuda-obj OBJECT gpu-cache.cu)
+add_library(gpu-cache-cuda-obj OBJECT GpuCacheWorkload.cu)
 
 target_include_directories(gpu-cache-cuda-obj PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set_property(GLOBAL APPEND PROPERTY APP_OBJECT_TARGETS gpu-cache-cuda-obj)

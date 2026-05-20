@@ -1,5 +1,4 @@
 #include "../GpuIncoreWorkload.hpp"
-#include <adapters/NVBenchRegister.hpp>
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/cuda/CudaBackend.hpp>
 
@@ -140,4 +139,4 @@ void CudaIncore::fetch_results(typename backend::stream_t stream) {
 // Registration
 // ---------------------------------------------------------------------------
 
-NVBENCH_REGISTER_WORKLOAD_AXES(CudaIncore);
+BASELINER_REGISTER_WORKLOAD(CudaIncore);

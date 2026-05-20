@@ -1,5 +1,4 @@
-#include "../CacheWorkload.hpp"
-#include <adapters/NVBenchRegister.hpp>
+#include "../GpuCacheWorkload.hpp"
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/cuda/CudaBackend.hpp>
 #include <stdexcept>
@@ -104,7 +103,7 @@ static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB,
 // IWorkload specializations
 // ---------------------------------------------------------------------------
 
-using CudaCache = CacheWorkload<Baseliner::Hardware::CudaBackend>;
+using CudaCache = GpuCacheWorkload<Baseliner::Hardware::CudaBackend>;
 
 template <>
 void CudaCache::setup_device(typename backend::stream_t stream) {
@@ -149,4 +148,4 @@ void CudaCache::fetch_results(typename backend::stream_t stream) {
 // Registration
 // ---------------------------------------------------------------------------
 
-NVBENCH_REGISTER_WORKLOAD_AXES(CudaCache);
+BASELINER_REGISTER_WORKLOAD(CudaCache);
