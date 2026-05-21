@@ -1,6 +1,115 @@
 {
   "baseliner_version": "1.0.0",
   "presets": {
+    "gpu-umstream": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuUmstream": {
+            "prefetch": {
+              "description": "Prefetch unified memory to GPU before run",
+              "value": "1"
+            },
+            "blocksize": {
+              "description": "CUDA thread block size",
+              "value": "256"
+            },
+            "transfer_mb": {
+              "description": "Transfer size in megabytes (per array)",
+              "value": "1"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
+            }
+          }
+        }
+      }
+    },
+    "gpu-latency": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuLatency": {
+            "iterations": {
+              "description": "Number of pointer-chase iterations per measurement",
+              "value": "100000"
+            },
+            "buffer_size_kb": {
+              "description": "Size of the pointer-chasing buffer in KB",
+              "value": "64"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
+            }
+          }
+        }
+      }
+    },
+    "gpu-memcpy": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuMemcpy": {
+            "pin_memory": {
+              "description": "Use pinned (page-locked) host memory",
+              "value": "1"
+            },
+            "transfer_mb": {
+              "description": "Transfer size in megabytes",
+              "value": "1"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
+            }
+          }
+        }
+      }
+    },
     "cuda": {
       "default": {
         "description": "Default preset",
@@ -21,6 +130,37 @@
             "device": {
               "description": "The device number to run on",
               "value": "0"
+            }
+          }
+        }
+      }
+    },
+    "gpu-cache": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuCache": {
+            "working_set_elements": {
+              "description": "Number of float elements in working set",
+              "value": "4096"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
             }
           }
         }
@@ -83,6 +223,49 @@
             "max_nb_repetition": {
               "description": "Maximum number of repetitions",
               "value": "2000"
+            }
+          }
+        }
+      }
+    },
+    "gpu-incore": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuIncore": {
+            "warp_count": {
+              "description": "Number of warps per block (block_size = 32 * warp_count)",
+              "value": "4"
+            },
+            "precision": {
+              "description": "Floating-point precision: float or double",
+              "value": "float"
+            },
+            "ilp": {
+              "description": "Instruction-level parallelism (1, 2, 4 or 8)",
+              "value": "4"
+            },
+            "kernel_type": {
+              "description": "Kernel type: fma-mixed, fma-separated, div, sqrt",
+              "value": "fma-mixed"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
             }
           }
         }
@@ -257,10 +440,26 @@
       "name": "default",
       "recipe": "default",
       "workloads": [
-        { "impl": "GpuMemcpyWorkload" },
-        { "impl": "GpuLatencyWorkload" },
-        { "impl": "GpuIncoreWorkload" },
-        { "impl": "GpuUmstreamWorkload" }
+        {
+          "impl": "gpu-umstream",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-latency",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-memcpy",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-cache",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-incore",
+          "preset": "default"
+        }
       ],
       "backends": [
         {
