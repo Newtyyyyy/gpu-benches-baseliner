@@ -1,8 +1,38 @@
 #pragma once
 #include <baseliner/core/Workload.hpp>
+#include <baseliner/core/hardware/BackendStats.hpp>
+#include <baseliner/core/stats/Stats.hpp>
 #include <cstddef>
 #include <optional>
 #include <string>
+
+class InCoreOps : public Baseliner::Stats::IStat<InCoreOps, size_t> {
+public:
+    void calculate(size_t & /*val*/) override {}
+    auto name() const -> std::string override { return "ops_per_run"; }
+    auto unit() const -> std::string override { return "ops"; }
+    auto granularity() const -> Baseliner::MetricGranularity override {
+        return Baseliner::MetricGranularity::ON_DEMAND;
+    }
+};
+
+template <typename BackendT>
+class RcpThruStat : public Baseliner::Stats::IStat<RcpThruStat<BackendT>, float,
+    Baseliner::Stats::Median, InCoreOps, Baseliner::Stats::ClockFrequency<BackendT>> {
+public:
+    void calculate(float &val, const float &median_ms, const size_t &ops, const float &clock_ghz) override {
+        if (ops > 0 && median_ms > 0.0f && clock_ghz > 0.0f) {
+            val = static_cast<float>(
+                (static_cast<double>(median_ms) * 1e-3) * clock_ghz * 1e9 /
+                static_cast<double>(ops));
+        }
+    }
+    auto name() const -> std::string override { return "rcp_throughput"; }
+    auto unit() const -> std::string override { return "cycles/op"; }
+    auto granularity() const -> Baseliner::MetricGranularity override {
+        return Baseliner::MetricGranularity::ON_DEMAND;
+    }
+};
 
 template <typename BackendT>
 class GpuIncoreWorkload : public Baseliner::IWorkload<BackendT> {
@@ -40,6 +70,19 @@ protected:
                          "Number of warps per block (block_size = 32 * warp_count)",
                          m_warp_count)
             .sweep({"1", "2", "4", "8", "16", "32"});
+    }
+
+    void inner_setup_metrics(std::shared_ptr<Baseliner::Stats::StatsEngine> engine) override {
+        engine->register_stat<InCoreOps>();
+        engine->register_stat<Baseliner::Stats::ClockFrequency<BackendT>>();
+        engine->register_stat<RcpThruStat<BackendT>>();
+    }
+
+    void inner_update_metrics(std::shared_ptr<Baseliner::Stats::StatsEngine> engine) override {
+        size_t N_type = (m_kernel_type == "div" || m_kernel_type == "sqrt")
+                            ? static_cast<size_t>(N_OTHER)
+                            : static_cast<size_t>(N_FMA);
+        engine->update_values<InCoreOps>(N_type * static_cast<size_t>(ITERS) * m_warp_count);
     }
 
 protected:
