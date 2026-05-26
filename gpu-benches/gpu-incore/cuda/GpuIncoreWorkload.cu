@@ -1,6 +1,7 @@
 #include "../GpuIncoreWorkload.hpp"
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/cuda/CudaBackend.hpp>
+#include <baseliner/core/stats/Stats.hpp>
 
 // ---------------------------------------------------------------------------
 // Kernels
@@ -60,6 +61,38 @@ __global__ void incore_SQRT_separated(T p, T* A, int iters) {
 }
 
 // ---------------------------------------------------------------------------
+// Kernel dispatch helpers
+// ---------------------------------------------------------------------------
+
+namespace {
+    template <typename T, int N>
+    void dispatch_ilp(const std::string& kernel_type, int ilp, int block_count, int block_size,
+                      T* d_output, int iters, typename Baseliner::Hardware::CudaBackend::stream_t stream) {
+        if (kernel_type == "fma-mixed") {
+            if      (ilp == 1) incore_FMA_mixed<T, N, 1><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 2) incore_FMA_mixed<T, N, 2><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 4) incore_FMA_mixed<T, N, 4><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else               incore_FMA_mixed<T, N, 8><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+        } else if (kernel_type == "fma-separated") {
+            if      (ilp == 1) incore_FMA_separated<T, N, 1><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 2) incore_FMA_separated<T, N, 2><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 4) incore_FMA_separated<T, N, 4><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else               incore_FMA_separated<T, N, 8><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+        } else if (kernel_type == "div") {
+            if      (ilp == 1) incore_DIV_separated<T, N, 1><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 2) incore_DIV_separated<T, N, 2><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 4) incore_DIV_separated<T, N, 4><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else               incore_DIV_separated<T, N, 8><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+        } else {
+            if      (ilp == 1) incore_SQRT_separated<T, N, 1><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 2) incore_SQRT_separated<T, N, 2><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else if (ilp == 4) incore_SQRT_separated<T, N, 4><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+            else               incore_SQRT_separated<T, N, 8><<<block_count, block_size, 0, stream>>>((T)0.32, d_output, iters);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // IWorkload specializations
 // ---------------------------------------------------------------------------
 
@@ -76,53 +109,18 @@ void CudaIncore::setup_device(typename backend::stream_t stream) {
 
 template <>
 auto CudaIncore::run(typename backend::stream_t stream) -> std::monostate {
-    int block_size = 32 * m_warp_count;
+    int block_size  = 32 * m_warp_count;
     constexpr int block_count = 1;
+    bool is_special = (m_kernel_type == "div" || m_kernel_type == "sqrt");
 
     if (m_precision == "double") {
-        if (m_kernel_type == "fma-mixed") {
-            if      (m_ilp == 1) incore_FMA_mixed<double, N_FMA, 1><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_FMA_mixed<double, N_FMA, 2><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_FMA_mixed<double, N_FMA, 4><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else                 incore_FMA_mixed<double, N_FMA, 8><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-        } else if (m_kernel_type == "fma-separated") {
-            if      (m_ilp == 1) incore_FMA_separated<double, N_FMA, 1><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_FMA_separated<double, N_FMA, 2><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_FMA_separated<double, N_FMA, 4><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else                 incore_FMA_separated<double, N_FMA, 8><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-        } else if (m_kernel_type == "div") {
-            if      (m_ilp == 1) incore_DIV_separated<double, N_OTHER, 1><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_DIV_separated<double, N_OTHER, 2><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_DIV_separated<double, N_OTHER, 4><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else                 incore_DIV_separated<double, N_OTHER, 8><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-        } else {
-            if      (m_ilp == 1) incore_SQRT_separated<double, N_OTHER, 1><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_SQRT_separated<double, N_OTHER, 2><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_SQRT_separated<double, N_OTHER, 4><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-            else                 incore_SQRT_separated<double, N_OTHER, 8><<<block_count, block_size, 0, stream>>>((double)0.32, (double*)m_d_output, ITERS);
-        }
+        is_special
+            ? dispatch_ilp<double, N_OTHER>(m_kernel_type, m_ilp, block_count, block_size, (double*)m_d_output, ITERS, stream)
+            : dispatch_ilp<double, N_FMA>  (m_kernel_type, m_ilp, block_count, block_size, (double*)m_d_output, ITERS, stream);
     } else {
-        if (m_kernel_type == "fma-mixed") {
-            if      (m_ilp == 1) incore_FMA_mixed<float, N_FMA, 1><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_FMA_mixed<float, N_FMA, 2><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_FMA_mixed<float, N_FMA, 4><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else                 incore_FMA_mixed<float, N_FMA, 8><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-        } else if (m_kernel_type == "fma-separated") {
-            if      (m_ilp == 1) incore_FMA_separated<float, N_FMA, 1><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_FMA_separated<float, N_FMA, 2><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_FMA_separated<float, N_FMA, 4><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else                 incore_FMA_separated<float, N_FMA, 8><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-        } else if (m_kernel_type == "div") {
-            if      (m_ilp == 1) incore_DIV_separated<float, N_OTHER, 1><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_DIV_separated<float, N_OTHER, 2><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_DIV_separated<float, N_OTHER, 4><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else                 incore_DIV_separated<float, N_OTHER, 8><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-        } else {
-            if      (m_ilp == 1) incore_SQRT_separated<float, N_OTHER, 1><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 2) incore_SQRT_separated<float, N_OTHER, 2><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else if (m_ilp == 4) incore_SQRT_separated<float, N_OTHER, 4><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-            else                 incore_SQRT_separated<float, N_OTHER, 8><<<block_count, block_size, 0, stream>>>((float)0.32, (float*)m_d_output, ITERS);
-        }
+        is_special
+            ? dispatch_ilp<float, N_OTHER>(m_kernel_type, m_ilp, block_count, block_size, (float*)m_d_output, ITERS, stream)
+            : dispatch_ilp<float, N_FMA>  (m_kernel_type, m_ilp, block_count, block_size, (float*)m_d_output, ITERS, stream);
     }
     return {};
 }
