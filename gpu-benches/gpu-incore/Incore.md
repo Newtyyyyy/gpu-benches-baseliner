@@ -137,7 +137,7 @@ Les SFUs n'existent qu'en FP32. Pour FP64, le compilateur CUDA génère une séq
 
 ```
 DDIV  :  502.8 cycles / 48.2 cycles (latence DFMA) ≈ 10 DFMAs en série
-DSQRT :  433.2 cycles / 48.2 cycles                ≈  9 DFMAs en série
+DSQRT :  433.2 cycles / 48.2 cycles                ≈  10 DFMAs en série
 ```
 
 Vérification via le throughput floor (TLP ≥ 8) :
@@ -162,8 +162,4 @@ Ce nombre d'étapes n'est pas documenté par NVIDIA pour les GPUs consumer.
 | Trafic mémoire ≈ 0 (Nsight) | Vraiment in-core, pas memory-bound |
 | 10 DFMAs pour DDIV (latence et throughput) | Mesure cohérente entre deux régimes distincts |
 
-Pour vérifier le comptage d'instructions :
-```bash
-cuobjdump --dump-sass <executable> | grep -c FFMA
-```
-Le nombre doit correspondre à `N_FMA × ITERS` dans le SASS généré.
+
