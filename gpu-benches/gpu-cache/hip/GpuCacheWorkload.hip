@@ -1,6 +1,6 @@
 #include "../GpuCacheWorkload.hpp"
 #include <baseliner/Register.hpp>
-#include <baseliner/core/hardware/cuda/CudaBackend.hpp>
+#include <baseliner/core/hardware/hip/HipBackend.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -14,9 +14,9 @@ static bool g_cache_topo_ready = false;
 static void cache_query_topology() {
     if (g_cache_topo_ready) return;
     int dev;
-    cudaGetDevice(&dev);
-    cudaDeviceProp p;
-    cudaGetDeviceProperties(&p, dev);
+    hipGetDevice(&dev);
+    hipDeviceProp_t p;
+    hipGetDeviceProperties(&p, dev);
     g_cache_sm_count   = p.multiProcessorCount;
     g_cache_topo_ready = true;
 }
@@ -60,18 +60,20 @@ __global__ void sumKernel_wl(cache_dtype* __restrict__ A,
         A[threadIdx.x] += localSum;
 }
 
+namespace {
 __global__ void initKernel_wl(cache_dtype* A, size_t N) {
     size_t tidx = blockDim.x * blockIdx.x + threadIdx.x;
     for (size_t idx = tidx; idx < N; idx += blockDim.x * gridDim.x)
         A[idx] = (cache_dtype)1.1;
 }
+} // namespace
 
 // ---------------------------------------------------------------------------
 // Dispatch
 // ---------------------------------------------------------------------------
 
 template <int N>
-static void launch_cache_kernel(cache_dtype* bufA, cache_dtype* bufB, cudaStream_t s) {
+static void launch_cache_kernel(cache_dtype* bufA, cache_dtype* bufB, hipStream_t s) {
     constexpr int ITERS     = CacheWorkloadParams<N>::ITERS;
     constexpr int BLOCKSIZE = CacheWorkloadParams<N>::BLOCKSIZE;
     sumKernel_wl<N, ITERS, BLOCKSIZE><<<g_cache_sm_count, BLOCKSIZE, 0, s>>>(bufA, bufB, 0);
@@ -79,7 +81,7 @@ static void launch_cache_kernel(cache_dtype* bufA, cache_dtype* bufB, cudaStream
 
 #define DISPATCH_CACHE(N_VAL) case N_VAL: launch_cache_kernel<N_VAL>(bufA, bufB, s); break;
 
-static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB, cudaStream_t s) {
+static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB, hipStream_t s) {
     switch (N) {
         // dense: 128, 256, then k*512 for k=1..32
         DISPATCH_CACHE(128)     DISPATCH_CACHE(256)
@@ -144,29 +146,29 @@ static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB,
 // IWorkload specializations
 // ---------------------------------------------------------------------------
 
-using CudaCache = GpuCacheWorkload<Baseliner::Hardware::CudaBackend>;
+using HipCache = GpuCacheWorkload<Baseliner::Hardware::HipBackend>;
 
 template <>
-void CudaCache::setup_device(typename backend::stream_t stream) {
+void HipCache::setup_device(typename backend::stream_t stream) {
     cache_query_topology();
     m_sm_count = g_cache_sm_count;
-    size_t N          = m_working_set_elements;
-    size_t buf_count  = 2ULL * N + 1024;
-    CHECK_CUDA(cudaMallocAsync(&m_device_buffer_a, buf_count * sizeof(cache_dtype), stream));
-    CHECK_CUDA(cudaMallocAsync(&m_device_buffer_b, buf_count * sizeof(cache_dtype), stream));
+    size_t N         = m_working_set_elements;
+    size_t buf_count = 2ULL * N + 1024;
+    CHECK_HIP(hipMallocAsync(&m_device_buffer_a, buf_count * sizeof(cache_dtype), stream));
+    CHECK_HIP(hipMallocAsync(&m_device_buffer_b, buf_count * sizeof(cache_dtype), stream));
     initKernel_wl<<<52, 256, 0, stream>>>(m_device_buffer_a, buf_count);
     initKernel_wl<<<52, 256, 0, stream>>>(m_device_buffer_b, buf_count);
-    CHECK_CUDA(cudaStreamSynchronize(stream));
+    CHECK_HIP(hipStreamSynchronize(stream));
 }
 
 template <>
-auto CudaCache::run(typename backend::stream_t stream) -> std::monostate {
+auto HipCache::run(typename backend::stream_t stream) -> std::monostate {
     launch_sum_kernel_wl(m_working_set_elements, m_device_buffer_a, m_device_buffer_b, stream);
     return {};
 }
 
 template <>
-auto CudaCache::number_of_bytes() -> std::optional<size_t> {
+auto HipCache::number_of_bytes() -> std::optional<size_t> {
     cache_query_topology();
     size_t N     = m_working_set_elements;
     int    iters = cache_get_iters(N);
@@ -174,13 +176,13 @@ auto CudaCache::number_of_bytes() -> std::optional<size_t> {
 }
 
 template <>
-void CudaCache::fetch_results(typename backend::stream_t stream) {
+void HipCache::fetch_results(typename backend::stream_t stream) {
     if (m_device_buffer_a) {
-        CHECK_CUDA(cudaFreeAsync(m_device_buffer_a, stream));
+        CHECK_HIP(hipFreeAsync(m_device_buffer_a, stream));
         m_device_buffer_a = nullptr;
     }
     if (m_device_buffer_b) {
-        CHECK_CUDA(cudaFreeAsync(m_device_buffer_b, stream));
+        CHECK_HIP(hipFreeAsync(m_device_buffer_b, stream));
         m_device_buffer_b = nullptr;
     }
 }
@@ -189,4 +191,4 @@ void CudaCache::fetch_results(typename backend::stream_t stream) {
 // Registration
 // ---------------------------------------------------------------------------
 
-BASELINER_REGISTER_WORKLOAD(CudaCache);
+BASELINER_REGISTER_WORKLOAD(HipCache);

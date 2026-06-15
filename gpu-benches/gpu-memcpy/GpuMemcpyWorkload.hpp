@@ -16,7 +16,7 @@ public:
     }
 
     void setup_host_random_generated() override {
-        m_item_count = m_transfer_mb * (1024ULL * 1024ULL);
+        m_item_count = m_transfer_kb * 1024ULL;
     }
 
     void setup_device(typename backend::stream_t stream) override;
@@ -29,9 +29,9 @@ protected:
     void register_options() override {
         using Baseliner::SweepPolicy;
         Baseliner::IWorkload<BackendT>::register_options();
-        this->add_option("GpuMemcpy", "transfer_mb",
-                         "Transfer size in megabytes", m_transfer_mb)
-            .sweep(SweepPolicy::PowersOfTwo, "1", "512");
+        this->add_option("GpuMemcpy", "transfer_kb",
+                         "Transfer size in kilobytes", m_transfer_kb)
+            .sweep(SweepPolicy::PowersOfTwo, "128", "524288");
         this->add_option("GpuMemcpy", "pin_memory",
                          "Use pinned (page-locked) host memory", m_pin_memory)
             .sweep({"false", "true"});
@@ -41,6 +41,6 @@ protected:
     char*  m_host_buffer   = nullptr;
     char*  m_device_buffer = nullptr;
     bool   m_pin_memory    = true;
-    size_t m_transfer_mb   = 1;
+    size_t m_transfer_kb   = 1024;
     size_t m_item_count    = 1024ULL * 1024ULL;
 };
