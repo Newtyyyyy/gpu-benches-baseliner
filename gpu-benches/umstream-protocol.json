@@ -326,7 +326,7 @@
             },
             "block": {
               "description": "Using a blocking kernel",
-              "value": "1"
+              "value": "0"
             }
           }
         }
@@ -385,7 +385,7 @@
           "StoppingCriterion": {
             "max_nb_repetition": {
               "description": "Maximum number of repetitions",
-              "value": "500"
+              "value": "5"
             }
           }
         }
@@ -411,7 +411,7 @@
         "preset": "default"
       },
       "stopping": {
-        "impl": "StoppingCriterion",
+        "impl": "StdRelStoppingCriterion",
         "preset": "default"
       },
       "stats": {
@@ -422,24 +422,17 @@
         "axes": [
           {
             "interface": "GpuUmstream",
-            "option": "prefetch",
+            "option": "transfer_mb",
             "hint": {
               "policy": "Enumerated",
               "min": "",
               "max": "",
               "step": "1",
-              "enumerated": ["false", "true"]
-            }
-          },
-          {
-            "interface": "GpuUmstream",
-            "option": "transfer_mb",
-            "hint": {
-              "policy": "PowersOfTwo",
-              "min": "1",
-              "max": "512",
-              "step": "1",
-              "enumerated": []
+              "enumerated": [
+                "24", "36", "48", "72", "96", "144", "192", "288", "384", "576",
+                "768", "1152", "1536", "2304", "3072", "4608", "6144", "9216",
+                "12288", "18432", "24576"
+              ]
             }
           }
         ]
