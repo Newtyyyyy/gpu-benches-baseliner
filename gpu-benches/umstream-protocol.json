@@ -8,15 +8,19 @@
           "GpuUmstream": {
             "prefetch": {
               "description": "Prefetch unified memory to GPU before run",
-              "value": "1"
+              "value": "0"
             },
             "blocksize": {
               "description": "CUDA thread block size",
               "value": "256"
             },
+            "block_count": {
+              "description": "Number of CUDA blocks (0 = auto from occupancy)",
+              "value": "640"
+            },
             "transfer_mb": {
-              "description": "Transfer size in megabytes (per array)",
-              "value": "1"
+              "description": "Total transfer size in megabytes (all 3 arrays)",
+              "value": "24"
             }
           },
           "Workload": {
@@ -173,7 +177,7 @@
           "StdRelSC": {
             "noise_stability_window": {
               "description": "Minimum noise entries before checking stability",
-              "value": "64"
+              "value": "10"
             },
             "noise_stability_threshold": {
               "description": "Rel stdev of noise below which noise is considered stable",
@@ -185,7 +189,7 @@
             },
             "min_time_ms": {
               "description": "Minimum accumulated GPU time (ms)",
-              "value": "500.000000"
+              "value": "200.000000"
             },
             "min_samples": {
               "description": "Minimum samples before checking noise",
@@ -195,7 +199,7 @@
           "StoppingCriterion": {
             "max_nb_repetition": {
               "description": "Maximum number of repetitions",
-              "value": "200000"
+              "value": "25"
             }
           }
         }
@@ -306,7 +310,7 @@
             },
             "flush": {
               "description": "Enables the flushing of the L2 cache",
-              "value": "1"
+              "value": "0"
             },
             "block_queue_size": {
               "description": "The max size of the blocking queue",
@@ -385,7 +389,7 @@
           "StoppingCriterion": {
             "max_nb_repetition": {
               "description": "Maximum number of repetitions",
-              "value": "5"
+              "value": "25"
             }
           }
         }
@@ -398,7 +402,7 @@
       "stat_names": [
         "Median",
         "Mean",
-        "CoefficientOfVariation"
+        "Spread"
       ],
       "stat_options": {}
     }
@@ -411,7 +415,7 @@
         "preset": "default"
       },
       "stopping": {
-        "impl": "StdRelStoppingCriterion",
+        "impl": "StoppingCriterion",
         "preset": "default"
       },
       "stats": {
