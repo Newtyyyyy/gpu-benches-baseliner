@@ -52,7 +52,7 @@ public:
     }
 
     void setup_device(typename backend::stream_t stream) override;
-    void reset_device(typename backend::stream_t /*stream*/) override {}
+    void reset_device(typename backend::stream_t stream) override;
     auto run(typename backend::stream_t stream) -> typename backend::launch_result_t override;
     void fetch_results(typename backend::stream_t /*stream*/) override {}
     void free() override;
@@ -83,4 +83,5 @@ protected:
     int     m_block_count        = 1;
     int     m_block_count_override = 0;
     bool    m_prefetch           = true;
+    int     m_device_id          = 0;
 };

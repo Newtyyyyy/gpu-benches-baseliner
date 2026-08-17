@@ -25,13 +25,17 @@ void CudaUmstream::setup_device(typename backend::stream_t stream) {
     int max_active_blocks = 0;
     CHECK_CUDA(cudaOccupancyMaxActiveBlocksPerMultiprocessor(
         &max_active_blocks, umstream_triad, m_block_size, 0));
-    m_block_count = prop.multiProcessorCount * max_active_blocks;
+    int dynamic_block_count = prop.multiProcessorCount * max_active_blocks;
+    m_block_count = (m_block_count_override > 0) ? m_block_count_override : dynamic_block_count;
 
     if (m_prefetch) {
         // Note: cudaMemPrefetchAsync is deprecated in CUDA 12.x
         // Skipping prefetch for now
     }
 }
+
+template <>
+void CudaUmstream::reset_device(typename backend::stream_t /*stream*/) {}
 
 template <>
 auto CudaUmstream::run(typename backend::stream_t stream) -> std::monostate {
@@ -47,3 +51,7 @@ void CudaUmstream::free() {
 }
 
 BASELINER_REGISTER_WORKLOAD(CudaUmstream);
+
+namespace Baseliner::Stats {
+    BASELINER_REGISTER_STAT(Spread);
+}
