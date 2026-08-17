@@ -87,7 +87,7 @@
       "displayName": "Release HIP-only (ROCm, no CUDA)",
       "cacheVariables": {
         "CMAKE_CUDA_COMPILER": "NOTFOUND",
-        "CMAKE_HIP_COMPILER": "/opt/rocm/bin/amdclang++",
+        "CMAKE_HIP_COMPILER": "amdclang++",
         "CMAKE_HIP_ARCHITECTURES": "native",
         "CMAKE_HIP_FLAGS_RELEASE": "-O3 -DNDEBUG"
       }
@@ -108,9 +108,9 @@
         "CMAKE_SHARED_LINKER_FLAGS": "-fuse-ld=lld"
       },
       "environment": {
-        "HIP_PATH": "/home/hmeli/local_hip/root/opt/rocm-6.4.4",
-        "ROCM_PATH": "/home/hmeli/local_hip/root/opt/rocm-6.4.4",
-        "PATH": "$env{HIP_PATH}/bin:/home/hmeli/cuda-12.4/bin:$penv{PATH}"
+        "HIP_PATH": "$penv{HIP_PATH}",
+        "ROCM_PATH": "$penv{ROCM_PATH}",
+        "PATH": "$env{HIP_PATH}/bin:$penv{PATH}"
       }
     }
   ],
