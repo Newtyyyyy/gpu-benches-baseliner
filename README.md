@@ -19,12 +19,12 @@ see [Known gotchas](#known-gotchas).
 |---|---|---|
 | `gpu-cache` | Effective bandwidth per memory level (L1/L2/DRAM) | [GPU-cache.md](gpu-benches/gpu-cache/GPU-cache.md) |
 | `gpu-incore` | Arithmetic throughput in cycles/op, no memory traffic | [GPU-incore.md](gpu-benches/gpu-incore/GPU-incore.md), [Incore.md](gpu-benches/gpu-incore/Incore.md) |
-| `gpu-l2-stream` | Streaming kernels sized to stay in L2 | — |
+| `gpu-l2-stream` | Streaming kernels sized to stay in L2 | [GPU-l2-stream.md](gpu-benches/gpu-l2-stream/GPU-l2-stream.md) |
 | `gpu-latency` | Memory access latency by pointer chasing | [GPU-latency.md](gpu-benches/gpu-latency/GPU-latency.md) |
 | `gpu-memcpy` | Host↔device transfer bandwidth over PCIe | [GPU-memcpy.md](gpu-benches/gpu-memcpy/GPU-memcpy.md) |
-| `gpu-roofline` | Arithmetic intensity sweep, roofline curve | — |
-| `gpu-small-kernels` | Launch overhead and short-kernel behaviour | — |
-| `gpu-strides` | Access-pattern efficiency, with L1/L2 counters via CUPTI | — |
+| `gpu-roofline` | Arithmetic intensity sweep, roofline curve | [GPU-roofline.md](gpu-benches/gpu-roofline/GPU-roofline.md) |
+| `gpu-small-kernels` | Launch overhead and short-kernel behaviour | [GPU-small-kernels.md](gpu-benches/gpu-small-kernels/GPU-small-kernels.md) |
+| `gpu-strides` | Access-pattern efficiency, with L1/L2 counters via CUPTI | [GPU-strides.md](gpu-benches/gpu-strides/GPU-strides.md) |
 | `gpu-umstream` | Unified Memory bandwidth, with and without prefetch | [GPU-umstream.md](gpu-benches/gpu-umstream/GPU-umstream.md) |
 
 ---
