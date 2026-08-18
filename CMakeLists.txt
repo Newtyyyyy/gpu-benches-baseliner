@@ -110,10 +110,10 @@ if(COMBINED_BUILD)
     # HIP-on-NVIDIA only: NVML-backed stats shim, since AMD-SMI isn't available there
     if(HAS_HIP AND NOT HAS_CUDA AND CMAKE_HIP_PLATFORM STREQUAL "nvidia")
         find_package(CUDAToolkit REQUIRED)
-        target_sources(gpu-benches_exec PRIVATE gpu-benches/build_hipcuda/hip_nvidia_stats_shim.cpp)
+        target_sources(gpu-benches_exec PRIVATE build_helper_Hip_on_Nvidia.cpp)
         target_link_libraries(gpu-benches_exec PRIVATE CUDA::cudart CUDA::nvml)
         if(DEFINED ENV{HIP_PATH})
-            set_source_files_properties(gpu-benches/build_hipcuda/hip_nvidia_stats_shim.cpp PROPERTIES
+            set_source_files_properties(build_helper_Hip_on_Nvidia.cpp PROPERTIES
                 COMPILE_OPTIONS "-isystem;$ENV{HIP_PATH}/include;-D__HIP_PLATFORM_NVIDIA__;-D__HIP_PLATFORM_NVCC__")
         endif()
     endif()

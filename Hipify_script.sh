@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Usage: ./hipify_benches.sh [ROOT]
+# Usage: ./Hipify_script.sh [BENCH_ROOT]
 set -euo pipefail
 
-ROOT="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+ROOT="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/gpu-benches" && pwd)}"
 
 if ! command -v hipify-perl >/dev/null 2>&1; then
     echo "Error: hipify-perl not found in PATH." >&2
