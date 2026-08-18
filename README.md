@@ -78,27 +78,13 @@ card. It pulls in [build_helper_Hip_on_Nvidia.cpp](build_helper_Hip_on_Nvidia.cp
 supplies the clock / temperature / power stats through NVML, since AMD-SMI is unavailable
 there.
 
-### Build options
-
-| Option | Default | Effect |
-|---|---|---|
-| `COMBINED_BUILD` | `ON` | One executable for all benchmarks. `OFF` produces one binary per benchmark |
-| `BASELINER_BUILD_HIPIFIABLE` | `OFF` | Build `hipifiable/` instead of `hip/` |
-| `BASELINER_FAST_MATH` | `ON` | Fast-math on `cuda/` and `hipifiable/` kernels, never on `hip/` |
-
 ## 4. First run
 
-[default-protocol.json](default-protocol.json) runs five workloads on the CUDA backend and is
-the quickest way to confirm the build works:
-
 ```bash
-./build/release-cuda/gpu-benches_exec run \
-    --protocol-files default-protocol.json \
-    --output-file result.json
+./build/release-cuda/gpu-benches_exec run --protocol-files default-protocol.json --output-file result.json
 ```
 
-A successful run prints `Report saved` and writes `result.json`. If you built a HIP preset,
-switch the backend first — see section 6.
+Prints `Report saved` and writes `result.json`. On a HIP preset, switch the backend first (section 6).
 
 ## 5. Read the results
 
@@ -109,20 +95,6 @@ campaign_runs[]
 └── benchmark_runs[<backend>][<workload>]
     └── benchmark_report.results[]
         └── measurements[]  →  { name, data, granularity }
-```
-
-Pulling one metric out with Python:
-
-```python
-import json
-doc = json.load(open("result.json"))
-for c in doc["campaign_runs"]:
-    for backend, workloads in c["benchmark_runs"].items():
-        for name, run in workloads.items():
-            for r in run["benchmark_report"]["results"]:
-                m = {x["name"]: x["data"] for x in r["measurements"]
-                     if x["granularity"] != "EVERY_ELEMENT"}
-                print(backend, name, m.get("memory_bandwidth"), m.get("median"))
 ```
 
 Metric names are per benchmark: `memory_bandwidth`, `latency_ns`, `rcp_throughput`,
