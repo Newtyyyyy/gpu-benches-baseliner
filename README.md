@@ -37,7 +37,7 @@ see [Known gotchas](#known-gotchas).
 |---|---|---|---|
 | CMake | 3.28.3 (≥ 3.15 required) | Build system, presets | `cmake --version` |
 | `clang++` | 17 | Host compiler hardcoded in the presets, with `lld` as linker | `clang++ --version` |
-| GCC toolchain | 11 | Standard library clang++ links against, set by `--gcc-install-dir` in the presets | `ls -d /usr/lib/gcc/x86_64-linux-gnu/*` |
+| GCC toolchain | 11 | Not a compiler here: clang++ takes its C++ standard library (libstdc++) from it. Forced by `--gcc-install-dir` in the presets | `clang++ -v 2>&1 \| grep 'Selected GCC'` |
 | CUDA Toolkit | 12.4 | Any CUDA build; also CUPTI for `gpu-strides` | `nvcc --version` |
 | ROCm | 7.0.1 on AMD, 6.4.4 for HIP-on-NVIDIA headers | Any HIP build, and `hipify-perl` to regenerate `hipifiable/` | `hipify-perl --version` |
 
