@@ -55,12 +55,7 @@ set_property(GLOBAL PROPERTY APP_OBJECT_TARGETS "")
 add_subdirectory(gpu-benches)
 
 if(BASELINER_FAST_MATH)
-    # Apply fast-math only to the cuda/ (.cu) and hipifiable/ (.hip) benchmark object
-    # targets, matched by their naming convention. The hand-tuned hip/ reference targets
-    # (-hip-obj) are deliberately left untouched so they stay bit-for-bit as authored.
-    #
-    # The right flag depends on what actually compiles the HIP sources: nvcc under HIP's
-    # NVIDIA platform wants --use_fast_math, an amdclang++/ROCm compiler wants -ffast-math.
+    # Fast-math for the cuda/ and hipifiable/ objects only, never the hand-tuned hip/ ones
     if(CMAKE_HIP_COMPILER MATCHES "nvcc")
         set(_hipifiable_fast_math --use_fast_math)
     else()
@@ -88,26 +83,15 @@ if(COMBINED_BUILD)
 
     target_link_libraries(gpu-benches_exec PRIVATE baseliner::baseliner gpu-benches-baseliner)
 
-    # gpu-strides measures L1/L2 hardware counters via CUPTI/Perfworks. The
-    # combined exec pulls in object files but not their usage requirements, so
-    # link the profiler libs here where the executable is created.
+    # CUPTI libs for gpu-strides: object usage requirements don't reach the combined exec
     if(HAS_CUDA)
         find_package(CUDAToolkit REQUIRED)
         target_link_libraries(gpu-benches_exec PRIVATE
             CUDA::cupti CUDA::nvperf_host CUDA::nvperf_target CUDA::cuda_driver)
     endif()
 
-    # HIP-on-NVIDIA ONLY (not a real AMD build). Both cases are "HAS_HIP AND NOT
-    # HAS_CUDA", so gate on the HIP platform: nvidia => HipBackend aliases
-    # CudaBackend and hardware stats come from NVML via this shim; amd => the
-    # real AMD-SMI path in baseliner-src is used and this shim must NOT compile
-    # (it pulls CUDA/NVML headers that don't exist on an AMD node and forces the
-    # NVIDIA HIP platform, breaking hip_runtime.h).
+    # HIP-on-NVIDIA only: NVML-backed stats shim, since AMD-SMI isn't available there
     if(HAS_HIP AND NOT HAS_CUDA AND CMAKE_HIP_PLATFORM STREQUAL "nvidia")
-        # HipBackend == CudaBackend under HIP's NVIDIA platform (hipStream_t is a cudaStream_t
-        # typedef), so baseliner-src never defines ClockFrequency/DeviceTemperature/
-        # DevicePowerUtilization<HipBackend> here (that only happens via AMD-SMI, which this
-        # node doesn't have). Provide the same specializations backed by NVML instead.
         find_package(CUDAToolkit REQUIRED)
         target_sources(gpu-benches_exec PRIVATE gpu-benches/build_hipcuda/hip_nvidia_stats_shim.cpp)
         target_link_libraries(gpu-benches_exec PRIVATE CUDA::cudart CUDA::nvml)

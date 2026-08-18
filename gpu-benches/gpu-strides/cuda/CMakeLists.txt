@@ -6,20 +6,15 @@ target_include_directories(gpu-strides-cuda-obj PUBLIC ${CMAKE_CURRENT_SOURCE_DI
 set_property(GLOBAL APPEND PROPERTY APP_OBJECT_TARGETS gpu-strides-cuda-obj)
 target_link_libraries(gpu-strides-cuda-obj PUBLIC baseliner::baseliner gpu-benches-baseliner)
 
-# CUPTI / Perfworks for the L1/L2 hardware-counter metrics (cupti/ engine,
-# ported from RRZE gpu-metrics). Imported targets carry include + lib paths.
+# CUPTI/Perfworks, for the L1/L2 hardware-counter metrics
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(gpu-strides-cuda-obj PUBLIC
     CUDA::cupti CUDA::nvperf_host CUDA::nvperf_target CUDA::cuda_driver)
 
-# CUPTI L1/L2 counters are compiled in only for the native CUDA build. The
-# mechanically-hipified variant (hipifiable/) is built without this define,
-# so it excludes the CUPTI engine and reports 0 for those counters.
+# CUPTI engine compiled into the native CUDA build only
 target_compile_definitions(gpu-strides-cuda-obj PRIVATE STRIDES_ENABLE_CUPTI)
 
-# The ported CUPTI engine (cupti/) uses SCOPE_EXIT RAII macros that trip
-# -Wunused-value; the baseliner builds with -Werror. Relax just that warning
-# for this object (our own code doesn't rely on it).
+# cupti/ SCOPE_EXIT macros trip -Wunused-value, which -Werror would reject
 target_compile_options(gpu-strides-cuda-obj PRIVATE
     "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-Xcompiler -Wno-error=unused-value>")
 
