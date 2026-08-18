@@ -30,13 +30,12 @@ void HipUmstream::setup_device(typename backend::stream_t stream) {
     m_block_count = (m_block_count_override > 0) ? m_block_count_override : dynamic_block_count;
 
     if (m_prefetch) {
-        // Note: hipMemPrefetchAsync is deprecated in HIP 12.x
-        // Skipping prefetch for now
+
     }
 }
 
 template <>
-void HipUmstream::reset_device(typename backend::stream_t /*stream*/) {}
+void HipUmstream::reset_device(typename backend::stream_t ) {}
 
 template <>
 auto HipUmstream::run(typename backend::stream_t stream) -> std::monostate {

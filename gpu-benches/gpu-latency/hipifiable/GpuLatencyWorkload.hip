@@ -9,10 +9,6 @@
 static constexpr int LAT_CACHE_LINE_INTS = 128 / sizeof(int64_t);
 static constexpr int LAT_SKIP_FACTOR     = 1;
 
-// ---------------------------------------------------------------------------
-// Kernel
-// ---------------------------------------------------------------------------
-
 template <typename T>
 __global__ void lat_pointer_chasing(T* buf, T* dummy_out, int64_t iterations) {
     T* idx = buf;
@@ -24,10 +20,6 @@ __global__ void lat_pointer_chasing(T* buf, T* dummy_out, int64_t iterations) {
     }
     if (threadIdx.x + blockIdx.x > 12000) dummy_out[0] = (T)idx;
 }
-
-// ---------------------------------------------------------------------------
-// Pointer-chain builder
-// ---------------------------------------------------------------------------
 
 static void lat_build_pointer_chain(int64_t* buf, int64_t chain_len) {
     static thread_local std::mt19937 rng(std::random_device{}());
@@ -53,14 +45,10 @@ static void lat_build_pointer_chain(int64_t* buf, int64_t chain_len) {
         buf[n] = (int64_t)(buf) + buf[n] * sizeof(int64_t);
 }
 
-// ---------------------------------------------------------------------------
-// IWorkload specializations
-// ---------------------------------------------------------------------------
-
 using HipLatency = GpuLatencyWorkload<Baseliner::Hardware::HipBackend>;
 
 template <>
-void HipLatency::setup_device(typename backend::stream_t /*stream*/) {
+void HipLatency::setup_device(typename backend::stream_t ) {
     size_t buf_bytes = m_buffer_size_kb * 1024;
     m_chain_length   = static_cast<int64_t>(
         buf_bytes / (LAT_SKIP_FACTOR * LAT_CACHE_LINE_INTS * sizeof(int64_t)));
@@ -73,7 +61,7 @@ void HipLatency::setup_device(typename backend::stream_t /*stream*/) {
 
 template <>
 void HipLatency::reset_device(typename backend::stream_t stream) {
-    // Two warm-up passes to prime the cache state before the timed run
+
     lat_pointer_chasing<int64_t>
         <<<1, 1, 0, stream>>>(m_device_buffer, m_dummy_buffer, m_iterations);
     lat_pointer_chasing<int64_t>
@@ -92,9 +80,5 @@ void HipLatency::free() {
     if (m_device_buffer) { hipFree(m_device_buffer); m_device_buffer = nullptr; }
     if (m_dummy_buffer)  { hipFree(m_dummy_buffer);  m_dummy_buffer  = nullptr; }
 }
-
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
 
 BASELINER_REGISTER_WORKLOAD(HipLatency);

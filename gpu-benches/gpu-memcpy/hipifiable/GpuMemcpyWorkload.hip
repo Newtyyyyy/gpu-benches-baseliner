@@ -15,7 +15,7 @@ void HipMemcpy::setup_device(typename backend::stream_t stream) {
 }
 
 template <>
-void HipMemcpy::reset_device(typename backend::stream_t /*stream*/) {
+void HipMemcpy::reset_device(typename backend::stream_t ) {
     std::memset(m_host_buffer, 0, m_item_count);
 }
 
@@ -27,7 +27,7 @@ auto HipMemcpy::run(typename backend::stream_t stream) -> std::monostate {
 }
 
 template <>
-void HipMemcpy::fetch_results(typename backend::stream_t /*stream*/) {
+void HipMemcpy::fetch_results(typename backend::stream_t ) {
     if (m_device_buffer) {
         hipFree(m_device_buffer);
         m_device_buffer = nullptr;

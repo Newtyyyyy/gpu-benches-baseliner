@@ -5,10 +5,6 @@
 #include <stdexcept>
 #include <string>
 
-// ---------------------------------------------------------------------------
-// Topology
-// ---------------------------------------------------------------------------
-
 static int  g_cache_sm_count   = 0;
 static bool g_cache_topo_ready = false;
 
@@ -26,10 +22,6 @@ static int cache_get_iters(size_t N) {
     return static_cast<int>(1000000000 / N) + 2;
 }
 
-// ---------------------------------------------------------------------------
-// CacheParams: compile-time BLOCKSIZE and ITERS for each N
-// ---------------------------------------------------------------------------
-
 template <int N>
 struct CacheWorkloadParams {
     static constexpr int BLOCKSIZE =
@@ -37,10 +29,6 @@ struct CacheWorkloadParams {
         (N % 256 == 0 && N >= 256) ? 256 : 128;
     static constexpr int ITERS = 1000000000 / N + 2;
 };
-
-// ---------------------------------------------------------------------------
-// Kernels
-// ---------------------------------------------------------------------------
 
 template <int N, int ITERS, int BLOCKSIZE>
 __global__ void sumKernel_wl(cache_dtype* __restrict__ A,
@@ -67,10 +55,6 @@ __global__ void initKernel_wl(cache_dtype* A, size_t N) {
         A[idx] = (cache_dtype)1.1;
 }
 
-// ---------------------------------------------------------------------------
-// Dispatch
-// ---------------------------------------------------------------------------
-
 template <int N>
 static void launch_cache_kernel(cache_dtype* bufA, cache_dtype* bufB, hipStream_t s) {
     constexpr int ITERS     = CacheWorkloadParams<N>::ITERS;
@@ -82,7 +66,7 @@ static void launch_cache_kernel(cache_dtype* bufA, cache_dtype* bufB, hipStream_
 
 static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB, hipStream_t s) {
     switch (N) {
-        // dense: 128, 256, then k*512 for k=1..32
+
         DISPATCH_CACHE(128)     DISPATCH_CACHE(256)
         DISPATCH_CACHE(512)     DISPATCH_CACHE(768)
         DISPATCH_CACHE(1024)    DISPATCH_CACHE(1536)
@@ -101,7 +85,7 @@ static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB,
         DISPATCH_CACHE(14336)   DISPATCH_CACHE(14848)
         DISPATCH_CACHE(15360)   DISPATCH_CACHE(15872)
         DISPATCH_CACHE(16384)
-        // exponential series (1.17^i * 16384, rounded to 512), skipping index 15
+
         DISPATCH_CACHE(18944)   DISPATCH_CACHE(22016)
         DISPATCH_CACHE(26112)   DISPATCH_CACHE(30208)
         DISPATCH_CACHE(35840)   DISPATCH_CACHE(41984)
@@ -126,7 +110,7 @@ static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB,
         DISPATCH_CACHE(16387072) DISPATCH_CACHE(19172864)
         DISPATCH_CACHE(22432768) DISPATCH_CACHE(26246144)
         DISPATCH_CACHE(30707712) DISPATCH_CACHE(35928576)
-        // legacy values kept for backward compatibility
+
         DISPATCH_CACHE(24576)   DISPATCH_CACHE(32768)
         DISPATCH_CACHE(65536)   DISPATCH_CACHE(131072)
         DISPATCH_CACHE(262144)  DISPATCH_CACHE(524288)
@@ -140,10 +124,6 @@ static void launch_sum_kernel_wl(size_t N, cache_dtype* bufA, cache_dtype* bufB,
 }
 
 #undef DISPATCH_CACHE
-
-// ---------------------------------------------------------------------------
-// IWorkload specializations
-// ---------------------------------------------------------------------------
 
 using HipCache = GpuCacheWorkload<Baseliner::Hardware::HipBackend>;
 
@@ -185,9 +165,5 @@ void HipCache::fetch_results(typename backend::stream_t stream) {
         m_device_buffer_b = nullptr;
     }
 }
-
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
 
 BASELINER_REGISTER_WORKLOAD(HipCache);

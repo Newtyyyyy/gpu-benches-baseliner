@@ -4,10 +4,6 @@
 #include <stdexcept>
 #include <string>
 
-// ---------------------------------------------------------------------------
-// Kernel
-// ---------------------------------------------------------------------------
-
 template <typename T, int N, int M, int BLOCKSIZE>
 __global__ void roofline_testfun(T* const __restrict__ dA, T* const __restrict__ dB, T* dC) {
     T* sA = dA + threadIdx.x + blockIdx.x * BLOCKSIZE * M;
@@ -38,10 +34,6 @@ __global__ void roofline_initKernel(T* data, size_t data_len) {
     for (int idx = tidx; idx < data_len; idx += gridDim.x * blockDim.x)
         data[idx] = (T)idx;
 }
-
-// ---------------------------------------------------------------------------
-// Kernel dispatch helpers (runtime N -> compile-time template instantiation)
-// ---------------------------------------------------------------------------
 
 using CudaRoofline = GpuRooflineWorkload<Baseliner::Hardware::CudaBackend>;
 static constexpr int ROOFLINE_M         = CudaRoofline::M;
@@ -99,11 +91,7 @@ namespace {
         }
 #undef DISPATCH_N
     }
-} // namespace
-
-// ---------------------------------------------------------------------------
-// IWorkload specializations
-// ---------------------------------------------------------------------------
+}
 
 template <>
 void CudaRoofline::setup_device(typename backend::stream_t stream) {
@@ -138,9 +126,5 @@ void CudaRoofline::fetch_results(typename backend::stream_t stream) {
     if (m_device_buffer_b) { CHECK_CUDA(cudaFreeAsync(m_device_buffer_b, stream)); m_device_buffer_b = nullptr; }
     if (m_device_buffer_c) { CHECK_CUDA(cudaFreeAsync(m_device_buffer_c, stream)); m_device_buffer_c = nullptr; }
 }
-
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
 
 BASELINER_REGISTER_WORKLOAD(CudaRoofline);

@@ -29,13 +29,12 @@ void CudaUmstream::setup_device(typename backend::stream_t stream) {
     m_block_count = (m_block_count_override > 0) ? m_block_count_override : dynamic_block_count;
 
     if (m_prefetch) {
-        // Note: cudaMemPrefetchAsync is deprecated in CUDA 12.x
-        // Skipping prefetch for now
+
     }
 }
 
 template <>
-void CudaUmstream::reset_device(typename backend::stream_t /*stream*/) {}
+void CudaUmstream::reset_device(typename backend::stream_t ) {}
 
 template <>
 auto CudaUmstream::run(typename backend::stream_t stream) -> std::monostate {

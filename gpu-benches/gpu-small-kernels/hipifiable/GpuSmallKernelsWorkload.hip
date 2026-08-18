@@ -3,10 +3,6 @@
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/hip/HipBackend.hpp>
 
-// ---------------------------------------------------------------------------
-// Kernels
-// ---------------------------------------------------------------------------
-
 __global__ void small_init_kernel(double* A, size_t N, double val) {
     size_t tidx = blockDim.x * blockIdx.x + threadIdx.x;
     for (size_t idx = tidx; idx < N; idx += blockDim.x * gridDim.x)
@@ -18,10 +14,6 @@ __global__ void small_scale(double* __restrict__ A, const double* __restrict__ B
     if (tidx >= size) return;
     A[tidx] = B[tidx] * 0.25;
 }
-
-// ---------------------------------------------------------------------------
-// IWorkload specializations
-// ---------------------------------------------------------------------------
 
 using HipSmallKernels = GpuSmallKernelsWorkload<Baseliner::Hardware::HipBackend>;
 
@@ -48,9 +40,5 @@ void HipSmallKernels::fetch_results(typename backend::stream_t stream) {
     if (m_device_buffer_a) { CHECK_HIP(hipFreeAsync(m_device_buffer_a, stream)); m_device_buffer_a = nullptr; }
     if (m_device_buffer_b) { CHECK_HIP(hipFreeAsync(m_device_buffer_b, stream)); m_device_buffer_b = nullptr; }
 }
-
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
 
 BASELINER_REGISTER_WORKLOAD(HipSmallKernels);

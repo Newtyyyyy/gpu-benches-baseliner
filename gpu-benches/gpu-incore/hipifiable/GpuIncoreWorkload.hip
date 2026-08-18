@@ -4,10 +4,6 @@
 #include <baseliner/core/hardware/hip/HipBackend.hpp>
 #include <baseliner/core/stats/Stats.hpp>
 
-// ---------------------------------------------------------------------------
-// Kernels
-// ---------------------------------------------------------------------------
-
 template <typename T, int N, int M>
 __global__ void incore_FMA_mixed(T p, T* A, int iters) {
 #pragma unroll(1)
@@ -61,10 +57,6 @@ __global__ void incore_SQRT_separated(T p, T* A, int iters) {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Kernel dispatch helpers
-// ---------------------------------------------------------------------------
-
 namespace {
     template <typename T, int N>
     void dispatch_ilp(const std::string& kernel_type, int ilp, int block_count, int block_size,
@@ -92,10 +84,6 @@ namespace {
         }
     }
 }
-
-// ---------------------------------------------------------------------------
-// IWorkload specializations
-// ---------------------------------------------------------------------------
 
 using HipIncore = GpuIncoreWorkload<Baseliner::Hardware::HipBackend>;
 
@@ -133,9 +121,5 @@ void HipIncore::fetch_results(typename backend::stream_t stream) {
         m_d_output = nullptr;
     }
 }
-
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
 
 BASELINER_REGISTER_WORKLOAD(HipIncore);

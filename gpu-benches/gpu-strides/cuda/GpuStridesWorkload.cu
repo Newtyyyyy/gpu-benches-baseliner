@@ -4,20 +4,9 @@
 #include <array>
 #include <string>
 
-// CUPTI/Perfworks is NVIDIA-only; there is no ROCm equivalent here. It is
-// enabled only when the CUDA build defines STRIDES_ENABLE_CUPTI (see
-// cuda/CMakeLists.txt). The mechanically-hipified variant is compiled WITHOUT
-// that define — even under HIP-on-NVIDIA, where __HIP__ is not defined — so it
-// simply reports 0 for the three L1/L2 counters (the hand-tuned hip/ port can
-// add rocprofiler). An explicit build flag is used rather than a compiler
-// macro because none reliably distinguishes native-CUDA from HIP-on-NVIDIA.
 #ifdef STRIDES_ENABLE_CUPTI
-#include "cupti/measureMetricPW.hpp"   // L1/L2 hardware counters (ported from RRZE gpu-metrics)
+#include "cupti/measureMetricPW.hpp"
 #endif
-
-// ---------------------------------------------------------------------------
-// Kernels
-// ---------------------------------------------------------------------------
 
 template <typename T>
 __global__ void strides_initKernel(T* A, size_t N) {
@@ -66,10 +55,6 @@ __global__ void strides_strideKernel(T* A, T* B, int zero, int stride) {
         B[tidx] = sum;
 }
 
-// ---------------------------------------------------------------------------
-// IWorkload specializations
-// ---------------------------------------------------------------------------
-
 using CudaStrides = GpuStridesWorkload<Baseliner::Hardware::CudaBackend>;
 
 namespace {
@@ -82,8 +67,6 @@ namespace {
 
     constexpr int STRIDES_PITCH = 4098;
 
-    // Single kernel launch, shared by run() and the CUPTI-profiled launches so
-    // both measure the exact same work. Async on the given stream.
     void strides_dispatch(const std::string& kernel_type, const std::string& precision, int arg,
                           void* bufA, void* bufB, cudaStream_t stream) {
         constexpr int N = CudaStrides::N;
@@ -102,7 +85,7 @@ namespace {
                 strides_strideKernel<float, N><<<1, block, 0, stream>>>((float*)bufA, (float*)bufB, 0, arg);
         }
     }
-} // namespace
+}
 
 template <>
 void CudaStrides::setup_device(typename backend::stream_t stream) {
@@ -119,10 +102,6 @@ void CudaStrides::setup_device(typename backend::stream_t stream) {
     }
     CHECK_CUDA(cudaStreamSynchronize(stream));
 
-    // --- CUPTI L1/L2 hardware counters (matches the original gpu-strides) ---
-    // Each counter needs its own profiled kernel launch (CUPTI replay), so this
-    // is slow — the same cost the original pays. Values are normalized per
-    // warp-instruction, exactly as upstream does. Skipped on non-CUPTI backends.
 #ifdef STRIDES_ENABLE_CUPTI
     static bool s_metric_inited = false;
     if (!s_metric_inited) { initMeasureMetric(); s_metric_inited = true; }
@@ -155,9 +134,5 @@ void CudaStrides::fetch_results(typename backend::stream_t stream) {
     if (m_device_buffer_a) { CHECK_CUDA(cudaFreeAsync(m_device_buffer_a, stream)); m_device_buffer_a = nullptr; }
     if (m_device_buffer_b) { CHECK_CUDA(cudaFreeAsync(m_device_buffer_b, stream)); m_device_buffer_b = nullptr; }
 }
-
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
 
 BASELINER_REGISTER_WORKLOAD(CudaStrides);

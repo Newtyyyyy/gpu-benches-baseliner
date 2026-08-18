@@ -2,10 +2,6 @@
 #include <baseliner/Register.hpp>
 #include <baseliner/core/hardware/cuda/CudaBackend.hpp>
 
-// ---------------------------------------------------------------------------
-// Kernels
-// ---------------------------------------------------------------------------
-
 __global__ void l2s_initKernel(double* A, size_t N) {
     size_t tidx = blockDim.x * blockIdx.x + threadIdx.x;
     for (size_t idx = tidx; idx < N; idx += blockDim.x * gridDim.x)
@@ -15,7 +11,7 @@ __global__ void l2s_initKernel(double* A, size_t N) {
 __global__ void l2s_read(double* A, const double* __restrict__ B, size_t length) {
     size_t tidx = (threadIdx.x + (size_t)blockIdx.x * blockDim.x) % length;
     double temp = B[tidx];
-    if (temp == -1.0) // never true; keeps the load from being optimized away
+    if (temp == -1.0)
         A[tidx] = temp;
 }
 
@@ -35,10 +31,6 @@ __global__ void l2s_triad(double* A, const double* __restrict__ B,
     size_t tidx = (threadIdx.x + (size_t)blockIdx.x * blockDim.x) % length;
     A[tidx] = B[tidx] * D[tidx] + C[tidx];
 }
-
-// ---------------------------------------------------------------------------
-// IWorkload specializations
-// ---------------------------------------------------------------------------
 
 using CudaL2Stream = GpuL2StreamWorkload<Baseliner::Hardware::CudaBackend>;
 
@@ -80,9 +72,5 @@ void CudaL2Stream::fetch_results(typename backend::stream_t stream) {
     if (m_device_buffer_c) { CHECK_CUDA(cudaFreeAsync(m_device_buffer_c, stream)); m_device_buffer_c = nullptr; }
     if (m_device_buffer_d) { CHECK_CUDA(cudaFreeAsync(m_device_buffer_d, stream)); m_device_buffer_d = nullptr; }
 }
-
-// ---------------------------------------------------------------------------
-// Registration
-// ---------------------------------------------------------------------------
 
 BASELINER_REGISTER_WORKLOAD(CudaL2Stream);
