@@ -52,10 +52,6 @@ Then, for any of them:
 cmake --build build/<preset-name> --target gpu-benches_exec -j"$(nproc)"
 ```
 
-> `-DBASELINER_BUILD_HIPIFIABLE=ON` is **required** for `release-hip` and `release-hip-only`.
-> Without it CMake falls back to `add_subdirectory(hip)`, and `hip/` is not in this
-> repository, so the configure step fails. `release-hip-nvidia` already sets it.
-
 `release-hip-nvidia` is the one that lets you exercise the HIP path without owning an AMD
 card. It pulls in [build_helper_Hip_on_Nvidia.cpp](build_helper_Hip_on_Nvidia.cpp), which
 supplies the clock / temperature / power stats through NVML, since AMD-SMI is unavailable
