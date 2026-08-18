@@ -33,13 +33,13 @@ see [Known gotchas](#known-gotchas).
 
 ## 1. Requirements
 
-| Need | Why | Check with |
-|---|---|---|
-| CMake ≥ 3.15 | Build system, presets | `cmake --version` |
-| `clang++` and `lld` | Host compiler and linker hardcoded in the presets | `clang++ --version` |
-| CUDA Toolkit | Any CUDA build; also CUPTI for `gpu-strides` | `nvcc --version` |
-| ROCm (incl. `hipify-perl`) | Any HIP build, and regenerating `hipifiable/` | `hipify-perl --version` |
-| Python 3 | Optional, only for post-processing result JSON | `python3 --version` |
+| Need | Version used | Why | Check with |
+|---|---|---|---|
+| CMake | 3.28.3 (≥ 3.15 required) | Build system, presets | `cmake --version` |
+| `clang++` | 17 | Host compiler hardcoded in the presets, with `lld` as linker | `clang++ --version` |
+| GCC toolchain | 11 | Standard library clang++ links against, set by `--gcc-install-dir` in the presets | `ls -d /usr/lib/gcc/x86_64-linux-gnu/*` |
+| CUDA Toolkit | 12.4 | Any CUDA build; also CUPTI for `gpu-strides` | `nvcc --version` |
+| ROCm | 7.0.1 on AMD, 6.4.4 for HIP-on-NVIDIA headers | Any HIP build, and `hipify-perl` to regenerate `hipifiable/` | `hipify-perl --version` |
 
 The baseliner itself is **not** a prerequisite: CMake fetches it automatically
 (`FetchContent`, pinned to tag `v1.0`).
@@ -47,72 +47,36 @@ The baseliner itself is **not** a prerequisite: CMake fetches it automatically
 ## 2. Get the code
 
 ```bash
-git clone -b helio https://github.com/Newtyyyyy/gpu-benches-baseliner.git
+git clone -b helio https://github.com/comeyrd/gpu-benches-baseliner.git
 cd gpu-benches-baseliner
 ```
 
-## 3. Adapt the presets to your machine
-
-**Do not skip this.** [CMakePresets.json](CMakePresets.json) hardcodes a GCC toolchain path
-that only exists on the machine it was written for:
-
-```
---gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11
-```
-
-Find yours and replace every occurrence (it appears in the linker flags, in
-`CMAKE_CXX_FLAGS` for both debug and release, and in `CMAKE_CUDA_FLAGS`):
-
-```bash
-ls -d /usr/lib/gcc/x86_64-linux-gnu/*
-```
-
-If your `clang++` already picks the right GCC on its own, simply delete the flag.
-
-## 4. Pick a preset
-
-| Preset | Compiler | Needs | Builds |
-|---|---|---|---|
-| `release-cuda` | nvcc + clang++ | CUDA Toolkit | `cuda/` sources |
-| `debug-cuda` | nvcc + clang++ | CUDA Toolkit | same, `-O0 -g -G`, all warnings |
-| `release-hip` | ROCm | ROCm **and** CUDA present | `hipifiable/` |
-| `release-hip-only` | `amdclang++` | ROCm only, no CUDA | `hipifiable/` on a real AMD GPU |
-| `release-hip-nvidia` | nvcc under HIP's NVIDIA platform | ROCm headers + CUDA Toolkit | `hipifiable/` on an NVIDIA GPU |
-
-`release-hip-nvidia` is the one that lets you exercise the HIP path without owning an AMD
-card. It needs `HIP_PATH` pointing at a ROCm install, and pulls in
-[build_helper_Hip_on_Nvidia.cpp](build_helper_Hip_on_Nvidia.cpp), which supplies the clock /
-temperature / power stats through NVML (AMD-SMI is unavailable there).
-
-## 5. Configure and build
+## 3. Build
 
 Build directories follow `build/<preset-name>/`, and the target is always `gpu-benches_exec`.
 
-**CUDA:**
+| Preset | Configure command | Needs | Builds |
+|---|---|---|---|
+| `release-cuda` | `cmake --preset release-cuda` | CUDA Toolkit | `cuda/` |
+| `debug-cuda` | `cmake --preset debug-cuda` | CUDA Toolkit | `cuda/`, `-O0 -g -G`, all warnings |
+| `release-hip` | `cmake --preset release-hip -DBASELINER_BUILD_HIPIFIABLE=ON` | ROCm **and** CUDA present | `hipifiable/` |
+| `release-hip-only` | `cmake --preset release-hip-only -DBASELINER_BUILD_HIPIFIABLE=ON` | ROCm only, no CUDA, real AMD GPU | `hipifiable/` |
+| `release-hip-nvidia` | `export HIP_PATH=/opt/rocm` then `cmake --preset release-hip-nvidia` | ROCm headers + CUDA Toolkit, NVIDIA GPU | `hipifiable/` |
+
+Then, for any of them:
 
 ```bash
-cmake --preset release-cuda
-cmake --build build/release-cuda --target gpu-benches_exec -j"$(nproc)"
-```
-
-**HIP on a real AMD GPU:**
-
-```bash
-cmake --preset release-hip-only -DBASELINER_BUILD_HIPIFIABLE=ON
-cmake --build build/release-hip-only --target gpu-benches_exec -j"$(nproc)"
-```
-
-**HIP on an NVIDIA GPU:**
-
-```bash
-export HIP_PATH=/opt/rocm
-cmake --preset release-hip-nvidia
-cmake --build build/release-hip-nvidia --target gpu-benches_exec -j"$(nproc)"
+cmake --build build/<preset-name> --target gpu-benches_exec -j"$(nproc)"
 ```
 
 > `-DBASELINER_BUILD_HIPIFIABLE=ON` is **required** for `release-hip` and `release-hip-only`.
 > Without it CMake falls back to `add_subdirectory(hip)`, and `hip/` is not in this
 > repository, so the configure step fails. `release-hip-nvidia` already sets it.
+
+`release-hip-nvidia` is the one that lets you exercise the HIP path without owning an AMD
+card. It pulls in [build_helper_Hip_on_Nvidia.cpp](build_helper_Hip_on_Nvidia.cpp), which
+supplies the clock / temperature / power stats through NVML, since AMD-SMI is unavailable
+there.
 
 ### Build options
 
@@ -122,7 +86,7 @@ cmake --build build/release-hip-nvidia --target gpu-benches_exec -j"$(nproc)"
 | `BASELINER_BUILD_HIPIFIABLE` | `OFF` | Build `hipifiable/` instead of `hip/` |
 | `BASELINER_FAST_MATH` | `ON` | Fast-math on `cuda/` and `hipifiable/` kernels, never on `hip/` |
 
-## 6. First run
+## 4. First run
 
 [default-protocol.json](default-protocol.json) runs five workloads on the CUDA backend and is
 the quickest way to confirm the build works:
@@ -134,9 +98,9 @@ the quickest way to confirm the build works:
 ```
 
 A successful run prints `Report saved` and writes `result.json`. If you built a HIP preset,
-switch the backend first — see the next section.
+switch the backend first — see section 6.
 
-## 7. Read the results
+## 5. Read the results
 
 The output JSON nests as follows:
 
@@ -165,7 +129,7 @@ Metric names are per benchmark: `memory_bandwidth`, `latency_ns`, `rcp_throughpu
 `arithmetic_bandwidth`, plus `median` / `mean` / `CoV` everywhere. Each benchmark's doc lists
 the ones it reports.
 
-## 8. Write your own protocol
+## 6. Write your own protocol
 
 A protocol file has four parts:
 
@@ -186,7 +150,7 @@ backend in the campaign and rename the matching preset:
 The knobs each benchmark understands, their valid ranges, and which ones actually matter for
 measurement quality are documented in the per-benchmark files linked in the table above.
 
-## 9. Adding a new benchmark
+## 7. Adding a new benchmark
 
 1. Write `gpu-foo/GpuFooWorkload.hpp` and `gpu-foo/cuda/GpuFooWorkload.cu`
 2. Add `gpu-foo/cuda/CMakeLists.txt` (copy one from an existing benchmark)
@@ -201,7 +165,7 @@ script and commit the regenerated `.hip` whenever you touch a `.cu`.
 
 ```
 CMakeLists.txt                  root build, options, combined executable
-CMakePresets.json               build presets (machine-specific, see step 3)
+CMakePresets.json               build presets (machine-specific paths, see step 1)
 Hipify_script.sh                regenerates every hipifiable/*.hip from cuda/*.cu
 build_helper_Hip_on_Nvidia.cpp  NVML-backed stats, HIP-on-NVIDIA builds only
 default-protocol.json           ready-to-run protocol, CUDA backend
@@ -216,7 +180,7 @@ gpu-benches/<bench>/
 | Symptom | Cause and fix |
 |---|---|
 | Configure fails on `add_subdirectory(hip)` | `hip/` is gitignored and absent. Pass `-DBASELINER_BUILD_HIPIFIABLE=ON` |
-| clang++ cannot find the C++ standard library | The `--gcc-install-dir` path in the presets is not yours. See step 3 |
+| clang++ cannot find the C++ standard library | The `--gcc-install-dir` path in the presets is not yours. Replace every occurrence with one from `ls -d /usr/lib/gcc/x86_64-linux-gnu/*`, or drop the flag if your clang++ finds GCC on its own |
 | `hipify-perl: command not found` | ROCm not in `PATH`. `export PATH=/opt/rocm/bin:$PATH` |
 | HIP-on-NVIDIA build cannot find `hip_runtime.h` | `HIP_PATH` unset. `export HIP_PATH=/opt/rocm` |
 | Undefined NVML symbols on a HIP-on-NVIDIA build | `build_helper_Hip_on_Nvidia.cpp` is only compiled when HIP is on, CUDA is off, and `CMAKE_HIP_PLATFORM=nvidia`. Check the three conditions |
