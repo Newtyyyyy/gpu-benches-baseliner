@@ -1,15 +1,231 @@
-# GPU benchmarks baseliner
+# gpu-benches-baseliner
 
-/!\ This for of Gpu-benches aims at porting this benchmark to the gpu-kernel-baseliner architecture, and provide the benchmarks for multiple architectures, with all the capabilities of gpu-kernel-baseliner.
-The rest of this README is the orginal one.
+A fork of [RRZE-HPC/gpu-benches](https://github.com/RRZE-HPC/gpu-benches) ported to the
+[gpu-kernel-baseliner](https://github.com/comeyrd/gpu-kernel-baseliner) architecture, so the
+same micro-benchmarks run on CUDA and HIP through one driver, one protocol format and one
+result format.
 
-/!\ This is a Work In Progress. For now only theses benchmark are supported :
+Every benchmark exists in two flavours:
 
-## Supported benchmarks
+- `cuda/` — the CUDA source, the reference implementation
+- `hipifiable/` — its mechanical HIP translation, produced by `hipify-perl` (see [Hipify_script.sh](Hipify_script.sh))
 
-## gpu-memcpy
+A third flavour, `hip/`, holds hand-tuned AMD code. It is **not part of this repository** —
+see [Known gotchas](#known-gotchas).
 
-Measures the host-to-device transfer rate of the Memcpy function over a range of transfer sizes.
+## Benchmarks
+
+| Benchmark | Measures | Docs |
+|---|---|---|
+| `gpu-cache` | Effective bandwidth per memory level (L1/L2/DRAM) | [GPU-cache.md](gpu-benches/gpu-cache/GPU-cache.md) |
+| `gpu-incore` | Arithmetic throughput in cycles/op, no memory traffic | [GPU-incore.md](gpu-benches/gpu-incore/GPU-incore.md), [Incore.md](gpu-benches/gpu-incore/Incore.md) |
+| `gpu-l2-stream` | Streaming kernels sized to stay in L2 | — |
+| `gpu-latency` | Memory access latency by pointer chasing | [GPU-latency.md](gpu-benches/gpu-latency/GPU-latency.md) |
+| `gpu-memcpy` | Host↔device transfer bandwidth over PCIe | [GPU-memcpy.md](gpu-benches/gpu-memcpy/GPU-memcpy.md) |
+| `gpu-roofline` | Arithmetic intensity sweep, roofline curve | — |
+| `gpu-small-kernels` | Launch overhead and short-kernel behaviour | — |
+| `gpu-strides` | Access-pattern efficiency, with L1/L2 counters via CUPTI | — |
+| `gpu-umstream` | Unified Memory bandwidth, with and without prefetch | [GPU-umstream.md](gpu-benches/gpu-umstream/GPU-umstream.md) |
+
+---
+
+# Setup, from scratch
+
+## 1. Requirements
+
+| Need | Why | Check with |
+|---|---|---|
+| CMake ≥ 3.15 | Build system, presets | `cmake --version` |
+| `clang++` and `lld` | Host compiler and linker hardcoded in the presets | `clang++ --version` |
+| CUDA Toolkit | Any CUDA build; also CUPTI for `gpu-strides` | `nvcc --version` |
+| ROCm (incl. `hipify-perl`) | Any HIP build, and regenerating `hipifiable/` | `hipify-perl --version` |
+| Python 3 | Optional, only for post-processing result JSON | `python3 --version` |
+
+The baseliner itself is **not** a prerequisite: CMake fetches it automatically
+(`FetchContent`, pinned to tag `v1.0`).
+
+## 2. Get the code
+
+```bash
+git clone -b helio https://github.com/Newtyyyyy/gpu-benches-baseliner.git
+cd gpu-benches-baseliner
+```
+
+## 3. Adapt the presets to your machine
+
+**Do not skip this.** [CMakePresets.json](CMakePresets.json) hardcodes a GCC toolchain path
+that only exists on the machine it was written for:
+
+```
+--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11
+```
+
+Find yours and replace every occurrence (it appears in the linker flags, in
+`CMAKE_CXX_FLAGS` for both debug and release, and in `CMAKE_CUDA_FLAGS`):
+
+```bash
+ls -d /usr/lib/gcc/x86_64-linux-gnu/*
+```
+
+If your `clang++` already picks the right GCC on its own, simply delete the flag.
+
+## 4. Pick a preset
+
+| Preset | Compiler | Needs | Builds |
+|---|---|---|---|
+| `release-cuda` | nvcc + clang++ | CUDA Toolkit | `cuda/` sources |
+| `debug-cuda` | nvcc + clang++ | CUDA Toolkit | same, `-O0 -g -G`, all warnings |
+| `release-hip` | ROCm | ROCm **and** CUDA present | `hipifiable/` |
+| `release-hip-only` | `amdclang++` | ROCm only, no CUDA | `hipifiable/` on a real AMD GPU |
+| `release-hip-nvidia` | nvcc under HIP's NVIDIA platform | ROCm headers + CUDA Toolkit | `hipifiable/` on an NVIDIA GPU |
+
+`release-hip-nvidia` is the one that lets you exercise the HIP path without owning an AMD
+card. It needs `HIP_PATH` pointing at a ROCm install, and pulls in
+[build_helper_Hip_on_Nvidia.cpp](build_helper_Hip_on_Nvidia.cpp), which supplies the clock /
+temperature / power stats through NVML (AMD-SMI is unavailable there).
+
+## 5. Configure and build
+
+Build directories follow `build/<preset-name>/`, and the target is always `gpu-benches_exec`.
+
+**CUDA:**
+
+```bash
+cmake --preset release-cuda
+cmake --build build/release-cuda --target gpu-benches_exec -j"$(nproc)"
+```
+
+**HIP on a real AMD GPU:**
+
+```bash
+cmake --preset release-hip-only -DBASELINER_BUILD_HIPIFIABLE=ON
+cmake --build build/release-hip-only --target gpu-benches_exec -j"$(nproc)"
+```
+
+**HIP on an NVIDIA GPU:**
+
+```bash
+export HIP_PATH=/opt/rocm
+cmake --preset release-hip-nvidia
+cmake --build build/release-hip-nvidia --target gpu-benches_exec -j"$(nproc)"
+```
+
+> `-DBASELINER_BUILD_HIPIFIABLE=ON` is **required** for `release-hip` and `release-hip-only`.
+> Without it CMake falls back to `add_subdirectory(hip)`, and `hip/` is not in this
+> repository, so the configure step fails. `release-hip-nvidia` already sets it.
+
+### Build options
+
+| Option | Default | Effect |
+|---|---|---|
+| `COMBINED_BUILD` | `ON` | One executable for all benchmarks. `OFF` produces one binary per benchmark |
+| `BASELINER_BUILD_HIPIFIABLE` | `OFF` | Build `hipifiable/` instead of `hip/` |
+| `BASELINER_FAST_MATH` | `ON` | Fast-math on `cuda/` and `hipifiable/` kernels, never on `hip/` |
+
+## 6. First run
+
+[default-protocol.json](default-protocol.json) runs five workloads on the CUDA backend and is
+the quickest way to confirm the build works:
+
+```bash
+./build/release-cuda/gpu-benches_exec run \
+    --protocol-files default-protocol.json \
+    --output-file result.json
+```
+
+A successful run prints `Report saved` and writes `result.json`. If you built a HIP preset,
+switch the backend first — see the next section.
+
+## 7. Read the results
+
+The output JSON nests as follows:
+
+```
+campaign_runs[]
+└── benchmark_runs[<backend>][<workload>]
+    └── benchmark_report.results[]
+        └── measurements[]  →  { name, data, granularity }
+```
+
+Pulling one metric out with Python:
+
+```python
+import json
+doc = json.load(open("result.json"))
+for c in doc["campaign_runs"]:
+    for backend, workloads in c["benchmark_runs"].items():
+        for name, run in workloads.items():
+            for r in run["benchmark_report"]["results"]:
+                m = {x["name"]: x["data"] for x in r["measurements"]
+                     if x["granularity"] != "EVERY_ELEMENT"}
+                print(backend, name, m.get("memory_bandwidth"), m.get("median"))
+```
+
+Metric names are per benchmark: `memory_bandwidth`, `latency_ns`, `rcp_throughput`,
+`arithmetic_bandwidth`, plus `median` / `mean` / `CoV` everywhere. Each benchmark's doc lists
+the ones it reports.
+
+## 8. Write your own protocol
+
+A protocol file has four parts:
+
+| Section | Role |
+|---|---|
+| `presets` | Option values, per workload and per backend (`lock_clock`, `batch_size`, …) |
+| `stats_presets` | Which statistics to compute (`Median`, `Mean`, `CoefficientOfVariation`) |
+| `recipes` | Sweep strategy and swept axes |
+| `campaigns` | Which workloads to run, on which backends |
+
+Start by copying `default-protocol.json`. To run it on HIP instead of CUDA, change the
+backend in the campaign and rename the matching preset:
+
+```json
+"backends": [ { "impl": "hip", "preset": "default" } ]
+```
+
+The knobs each benchmark understands, their valid ranges, and which ones actually matter for
+measurement quality are documented in the per-benchmark files linked in the table above.
+
+## 9. Adding a new benchmark
+
+1. Write `gpu-foo/GpuFooWorkload.hpp` and `gpu-foo/cuda/GpuFooWorkload.cu`
+2. Add `gpu-foo/cuda/CMakeLists.txt` (copy one from an existing benchmark)
+3. Run `./Hipify_script.sh` from the repo root — it regenerates every `hipifiable/*.hip`
+4. Add `gpu-foo/hipifiable/CMakeLists.txt` (again, copy an existing one)
+5. Add `gpu-foo/CMakeLists.txt`, and register it in `gpu-benches/CMakeLists.txt`
+
+Step 3 is a mechanical translation, not a tuned port, and it is **not automatic**: rerun the
+script and commit the regenerated `.hip` whenever you touch a `.cu`.
+
+## Repository layout
+
+```
+CMakeLists.txt                  root build, options, combined executable
+CMakePresets.json               build presets (machine-specific, see step 3)
+Hipify_script.sh                regenerates every hipifiable/*.hip from cuda/*.cu
+build_helper_Hip_on_Nvidia.cpp  NVML-backed stats, HIP-on-NVIDIA builds only
+default-protocol.json           ready-to-run protocol, CUDA backend
+gpu-benches/<bench>/
+├── Gpu<Bench>Workload.hpp      shared interface
+├── cuda/                       CUDA source + CMakeLists
+└── hipifiable/                 generated HIP source + CMakeLists
+```
+
+## Known gotchas
+
+| Symptom | Cause and fix |
+|---|---|
+| Configure fails on `add_subdirectory(hip)` | `hip/` is gitignored and absent. Pass `-DBASELINER_BUILD_HIPIFIABLE=ON` |
+| clang++ cannot find the C++ standard library | The `--gcc-install-dir` path in the presets is not yours. See step 3 |
+| `hipify-perl: command not found` | ROCm not in `PATH`. `export PATH=/opt/rocm/bin:$PATH` |
+| HIP-on-NVIDIA build cannot find `hip_runtime.h` | `HIP_PATH` unset. `export HIP_PATH=/opt/rocm` |
+| Undefined NVML symbols on a HIP-on-NVIDIA build | `build_helper_Hip_on_Nvidia.cpp` is only compiled when HIP is on, CUDA is off, and `CMAKE_HIP_PLATFORM=nvidia`. Check the three conditions |
+| Bandwidth or clocks vary between runs | Set `lock_clock` to `1` in the backend preset. It is critical for `gpu-incore`, where the clock enters the metric |
+| `gpu-strides` reports 0 for L1/L2 counters | Expected outside a native CUDA build: CUPTI is NVIDIA-only and the hipified variant is compiled without it |
+
+---
+
+*Everything below is the original upstream README.*
 
 # GPU benchmarks
 
