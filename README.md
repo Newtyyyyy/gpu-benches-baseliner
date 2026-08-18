@@ -52,10 +52,11 @@ Then, for any of them:
 cmake --build build/<preset-name> --target gpu-benches_exec -j"$(nproc)"
 ```
 
-`release-hip-nvidia` is the one that lets you exercise the HIP path without owning an AMD
-card. It pulls in [build_helper_Hip_on_Nvidia.cpp](build_helper_Hip_on_Nvidia.cpp), which
-supplies the clock / temperature / power stats through NVML, since AMD-SMI is unavailable
-there.
+`release-hip-nvidia` builds the HIP version of the code and runs it on an NVIDIA GPU, so it
+can be compared against the CUDA version **on the same hardware**. The gap between the two
+then measures what the HIP translation costs, not a difference between two GPUs. It pulls in
+[build_helper_Hip_on_Nvidia.cpp](build_helper_Hip_on_Nvidia.cpp), which supplies the clock /
+temperature / power stats through NVML, since AMD-SMI is unavailable there.
 
 ## 4. First run
 
