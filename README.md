@@ -70,7 +70,7 @@ there.
 ./build/release-cuda/gpu-benches_exec run --protocol-files default-protocol.json --output-file result.json
 ```
 
-Prints `Report saved` and writes `result.json`. On a HIP preset, switch the backend first (section 6).
+Prints `Report saved` and writes `result.json`. On a HIP preset, set the campaign's backend to `hip` in the protocol first.
 
 ## 5. Read the results
 
@@ -87,28 +87,7 @@ Metric names are per benchmark: `memory_bandwidth`, `latency_ns`, `rcp_throughpu
 `arithmetic_bandwidth`, plus `median` / `mean` / `CoV` everywhere. Each benchmark's doc lists
 the ones it reports.
 
-## 6. Write your own protocol
-
-A protocol file has four parts:
-
-| Section | Role |
-|---|---|
-| `presets` | Option values, per workload and per backend (`lock_clock`, `batch_size`, …) |
-| `stats_presets` | Which statistics to compute (`Median`, `Mean`, `CoefficientOfVariation`) |
-| `recipes` | Sweep strategy and swept axes |
-| `campaigns` | Which workloads to run, on which backends |
-
-Start by copying `default-protocol.json`. To run it on HIP instead of CUDA, change the
-backend in the campaign and rename the matching preset:
-
-```json
-"backends": [ { "impl": "hip", "preset": "default" } ]
-```
-
-The knobs each benchmark understands, their valid ranges, and which ones actually matter for
-measurement quality are documented in each benchmark's own `GPU-<name>.md`.
-
-## 7. Adding a new benchmark
+## 6. Adding a new benchmark
 
 1. Write `gpu-[name]/Gpu[name]Workload.hpp` and `gpu-[name]/cuda/Gpu[name]Workload.cu`
 2. Add `gpu-[name]/cuda/CMakeLists.txt` (copy one from an existing benchmark)
