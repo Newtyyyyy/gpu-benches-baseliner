@@ -4,5 +4,4 @@ build
 .clangd
 .vscode
 result*
-# code de reference AMD (hand-tuned) : garde en local, jamais pousse
 gpu-benches/*/hip/

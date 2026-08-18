@@ -1,71 +1,71 @@
-# gpu-latency — Recherche & Analyse
+# gpu-latency — Research & Analysis
 
-## Objectif
+## Goal
 
-Mesurer la **latence d'accès mémoire** du GPU en nanosecondes par niveau de mémoire (L1, L2, DRAM) via une technique de *pointer chasing*. Contrairement à gpu-cache qui mesure la bande passante, ce benchmark force les accès séquentiels dépendants pour isoler la latence pure.
+Measure the GPU's **memory access latency** in nanoseconds per memory level (L1, L2, DRAM) using a *pointer chasing* technique. Unlike gpu-cache which measures bandwidth, this benchmark forces dependent sequential accesses in order to isolate pure latency.
 
 ---
 
-## Principe de mesure
+## Measurement principle
 
-Le kernel parcourt une chaîne de pointeurs mélangés aléatoirement dans un buffer de taille `buffer_size_kb`. Chaque accès mémoire dépend du résultat du précédent (pointer chase), ce qui empêche toute exécution spéculative ou out-of-order. Après `iterations` accès, le temps total permet de calculer :
+The kernel walks a chain of randomly shuffled pointers inside a buffer of size `buffer_size_kb`. Each memory access depends on the result of the previous one (pointer chase), which prevents speculative or out-of-order execution. After `iterations` accesses, the total time gives:
 
 ```
-latency_ns = (temps_médian_ms × 1e6) / iterations
+latency_ns = (median_time_ms × 1e6) / iterations
 ```
 
-Le buffer est initialisé comme une permutation aléatoire d'indices (liste chaînée en mémoire), forçant le hardware prefetcher à échouer.
+The buffer is initialized as a random permutation of indices (a linked list in memory), which defeats the hardware prefetcher.
 
 ---
 
-## Paramètres de sweep
+## Sweep parameters
 
-| Paramètre | Valeurs | Description |
+| Parameter | Values | Description |
 |---|---|---|
-| `buffer_size_kb` | 16, 32, 64, ... 524288 (puissances de 2) | Taille du buffer de pointer chase (16 kB → 512 MB) |
-| `iterations` | 100 000 (fixe) | Nombre d'accès chaînés par mesure |
+| `buffer_size_kb` | 16, 32, 64, ... 524288 (powers of 2) | Pointer chase buffer size (16 kB → 512 MB) |
+| `iterations` | 100 000 (fixed) | Number of chained accesses per measurement |
 
 ---
 
 
-## Métriques reportées
+## Reported metrics
 
-| Métrique | Unité | Description |
+| Metric | Unit | Description |
 |---|---|---|
-| `median` | ms | Temps total médian pour `iterations` accès |
-| `iterations` | — | Nombre d'accès chaînés (configuré via JSON) |
-| `latency_ns` | ns | **Métrique principale** : latence par accès |
+| `median` | ms | Median total time for `iterations` accesses |
+| `iterations` | — | Number of chained accesses (set via JSON) |
+| `latency_ns` | ns | **Main metric**: latency per access |
 
-`latency_ns` est calculé dans `LatencyNsStat` à partir de la médiane et du nombre d'itérations.
+`latency_ns` is computed in `LatencyNsStat` from the median and the iteration count.
 
 ---
 
-## Paramètres de configuration (protocol JSON)
+## Configuration parameters (protocol JSON)
 
-| Paramètre | Section | Effet |
+| Parameter | Section | Effect |
 |---|---|---|
-| `buffer_size_kb` | `sweep > PowersOfTwo` | Plage de tailles de buffer |
-| `iterations` | `GpuLatency` | Nombre de pointer chases (défaut : 100 000) |
-| `lock_clock` | `cuda > Backend` | Recommandé `1` pour stabilité |
-| `warmup` | `Benchmark` | Run de chauffe pour initialiser le cache |
+| `buffer_size_kb` | `sweep > PowersOfTwo` | Range of buffer sizes |
+| `iterations` | `GpuLatency` | Number of pointer chases (default: 100 000) |
+| `lock_clock` | `cuda > Backend` | Recommended `1` for stability |
+| `warmup` | `Benchmark` | Warmup run to prime the cache |
 
 ---
 
-## Différences avec gpu-cache
+## Differences with gpu-cache
 
 | Aspect | gpu-cache | gpu-latency |
 |---|---|---|
-| **Métrique** | Bande passante (GB/s) | Latence (ns) |
-| **Accès** | Séquentiels (streaming) | Chaînés aléatoires (pointer chase) |
-| **Prefetcher** | Exploité | Contourné |
-| **Parallélisme** | Tous les SM en même temps | Généralement 1 thread actif par chaîne |
-| **Ce qui est mesuré** | Débit agrégé | Latence d'un accès unique |
+| **Metric** | Bandwidth (GB/s) | Latency (ns) |
+| **Accesses** | Sequential (streaming) | Randomly chained (pointer chase) |
+| **Prefetcher** | Exploited | Defeated |
+| **Parallelism** | All SMs at once | Generally 1 active thread per chain |
+| **What is measured** | Aggregate throughput | Latency of a single access |
 
 ---
 
-## Points d'attention
+## Caveats
 
-- `m_dummy_buffer` est alloué séparément pour empêcher les optimisations du compilateur sur le résultat final (le kernel écrit dedans pour éviter que le pointer chase ne soit éliminé).
-- `reset_device` réinitialise la permutation entre les runs pour garantir des accès aléatoires cohérents.
-- Avec `iterations` trop faibles (< 10 000), le bruit de lancement du kernel domine la mesure.
-- La longueur de la chaîne (`m_chain_length`) est calculée au `setup_device` selon la taille du buffer.
+- `m_dummy_buffer` is allocated separately to prevent compiler optimizations on the final result (the kernel writes into it so the pointer chase is not eliminated).
+- `reset_device` regenerates the permutation between runs to guarantee consistent random accesses.
+- With too few `iterations` (< 10 000), kernel launch noise dominates the measurement.
+- The chain length (`m_chain_length`) is computed in `setup_device` from the buffer size.

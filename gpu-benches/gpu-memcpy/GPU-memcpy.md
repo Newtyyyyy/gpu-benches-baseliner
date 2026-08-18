@@ -1,66 +1,66 @@
-# gpu-memcpy — Recherche & Analyse
+# gpu-memcpy — Research & Analysis
 
-## Objectif
+## Goal
 
-Mesurer la **bande passante de transfert mémoire** entre le CPU (host) et le GPU (device) via PCIe, en faisant varier la taille du transfert et le type de mémoire hôte (paginée vs verrouillée).
+Measure the **memory transfer bandwidth** between the CPU (host) and the GPU (device) over PCIe, varying the transfer size and the host memory type (pageable vs pinned).
 
 ---
 
-## Principe de mesure
+## Measurement principle
 
-Le benchmark alloue un buffer côté host et un buffer côté device, puis effectue un transfert `host → device` (ou `device → host` selon l'implémentation). Le temps mesuré couvre uniquement le transfert, pas l'allocation.
+The benchmark allocates a host-side buffer and a device-side buffer, then performs a `host → device` transfer (or `device → host` depending on the implementation). The measured time covers only the transfer, not the allocation.
 
 ```
-bandwidth (GB/s) = transfer_kb × 1024 / temps_s / 1e9
+bandwidth (GB/s) = transfer_kb × 1024 / time_s / 1e9
 ```
 
 ---
 
-## Paramètres de sweep
+## Sweep parameters
 
-| Paramètre | Valeurs | Description |
+| Parameter | Values | Description |
 |---|---|---|
-| `transfer_kb` | 128, 256, 512, ... 524288 (puissances de 2) | Taille du transfert en kB (128 kB → 512 MB) |
-| `pin_memory` | `false`, `true` | Mémoire hôte paginée vs verrouillée (pinned) |
+| `transfer_kb` | 128, 256, 512, ... 524288 (powers of 2) | Transfer size in kB (128 kB → 512 MB) |
+| `pin_memory` | `false`, `true` | Pageable vs pinned host memory |
 
-Le produit cartésien des deux sweeps est exécuté, soit **20 points de mesure** (10 tailles × 2 modes mémoire).
+The cartesian product of both sweeps is run, i.e. **20 measurement points** (10 sizes × 2 memory modes).
 
 ---
 
-## Mémoire paginée vs Pinned
+## Pageable vs pinned memory
 
-| Mode | Mécanisme | Impact perf |
+| Mode | Mechanism | Performance impact |
 |---|---|---|
-| **Paginée** (`pin_memory=false`) | Le driver CUDA alloue en interne une zone pinned temporaire et double-copie | Bande passante réduite (~50% de la valeur théorique PCIe) |
-| **Pinned** (`pin_memory=true`) | Mémoire verrouillée en RAM physique, DMA direct vers GPU | Bande passante maximale PCIe (≈ 16–32 GB/s selon génération) |
+| **Pageable** (`pin_memory=false`) | The CUDA driver internally allocates a temporary pinned staging area and double-copies | Reduced bandwidth (~50% of the theoretical PCIe value) |
+| **Pinned** (`pin_memory=true`) | Memory locked in physical RAM, direct DMA to the GPU | Peak PCIe bandwidth (≈ 16–32 GB/s depending on generation) |
 
 ---
 
-## Métriques reportées
+## Reported metrics
 
-| Métrique | Unité | Description |
+| Metric | Unit | Description |
 |---|---|---|
-| `median` | ms | Temps de transfert médian |
-| `mean` | ms | Moyenne |
-| `CoV` | % | Stabilité de la mesure |
-| `memory_bandwidth` | GB/s | Bande passante calculée (`number_of_bytes / temps`) |
+| `median` | ms | Median transfer time |
+| `mean` | ms | Mean |
+| `CoV` | % | Measurement stability |
+| `memory_bandwidth` | GB/s | Computed bandwidth (`number_of_bytes / time`) |
 
-`number_of_bytes()` retourne `m_item_count = transfer_kb × 1024`.
+`number_of_bytes()` returns `m_item_count = transfer_kb × 1024`.
 
 ---
 
-## Paramètres de configuration (protocol JSON)
+## Configuration parameters (protocol JSON)
 
-| Paramètre | Section | Effet |
+| Parameter | Section | Effect |
 |---|---|---|
-| `transfer_kb` | `sweep > PowersOfTwo` | Plage de tailles de transfert |
-| `pin_memory` | `sweep > enumerated` | Active/désactive la mémoire verrouillée |
-| `batch_size` | `Benchmark` | Répétitions par batch |
-| `warmup` | `Benchmark` | Run de chauffe (recommandé pour initialiser le lien PCIe) |
+| `transfer_kb` | `sweep > PowersOfTwo` | Range of transfer sizes |
+| `pin_memory` | `sweep > enumerated` | Enables/disables pinned memory |
+| `batch_size` | `Benchmark` | Repetitions per batch |
+| `warmup` | `Benchmark` | Warmup run (recommended to bring up the PCIe link) |
 
 ---
 
-## Points d'attention
+## Caveats
 
-- Le premier transfert PCIe après le boot est plus lent (initialisation du lien). Le `warmup` est essentiel pour des mesures stables.
-- `reset_device` est implémenté (contrairement à gpu-cache) : le buffer device est remis à zéro entre les runs pour éviter les effets de cache PCIe côté GPU.
+- The first PCIe transfer after boot is slower (link initialization). The `warmup` is essential for stable measurements.
+- `reset_device` is implemented (unlike gpu-cache): the device buffer is zeroed between runs to avoid GPU-side PCIe caching effects.

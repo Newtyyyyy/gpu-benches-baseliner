@@ -1,62 +1,62 @@
-# gpu-cache — Recherche & Analyse
+# gpu-cache — Research & Analysis
 
-## Objectif
+## Goal
 
-Mesurer la **bande passante effective** des différents niveaux de mémoire du GPU (L1, L2, DRAM) en faisant varier la taille du *working set* par SM. Les transitions de bande passante dans la courbe résultante révèlent les capacités et les seuils de chaque niveau de cache.
+Measure the **effective bandwidth** of the different GPU memory levels (L1, L2, DRAM) by varying the *working set* size per SM. The bandwidth transitions in the resulting curve reveal the capacity and thresholds of each cache level.
 
 ---
 
-## Principe de mesure
+## Measurement principle
 
-Le kernel `sumKernel` lance autant de blocs que de SM sur le GPU. Chaque SM charge deux buffers de `N` floats (`bufA`, `bufB`), les multiplie élément par élément et accumule le résultat dans une variable locale. L'accumulateur est utilisé dans une condition impossible (`localSum == 1233`) pour forcer le compilateur à conserver les loads.
+The `sumKernel` kernel launches as many blocks as there are SMs on the GPU. Each SM loads two buffers of `N` floats (`bufA`, `bufB`), multiplies them element-wise and accumulates the result into a local variable. The accumulator is used in an impossible condition (`localSum == 1233`) to force the compiler to keep the loads.
 
 ```
-bandwidth (GB/s) = (2 × N × sizeof(float) × smCount × ITERS) / temps_s / 1e9
+bandwidth (GB/s) = (2 × N × sizeof(float) × smCount × ITERS) / time_s / 1e9
 ```
 
-Le facteur `2` vient des deux buffers lus en séquence. `ITERS ≈ 1e9 / N` est calibré pour maintenir ~1 s de travail GPU par point.
+The factor `2` comes from the two buffers read in sequence. `ITERS ≈ 1e9 / N` is calibrated to keep ~1 s of GPU work per point.
 
 ---
 
-## Paramètres de sweep
+## Sweep parameters
 
-| Paramètre | Valeurs | Description |
+| Parameter | Values | Description |
 |---|---|---|
-| `working_set_elements` (N) | Dense : 128, 256, k×512 (k=1..32) puis série exponentielle ×1.17 jusqu'à ~137 MB | Taille en floats d'**un** buffer ; mémoire totale = 2×N×4 octets |
+| `working_set_elements` (N) | Dense: 128, 256, k×512 (k=1..32), then an exponential series ×1.17 up to ~137 MB | Size in floats of **one** buffer; total memory = 2×N×4 bytes |
 
-La série exponentielle (`cache_exp_series`) génère des valeurs arrondies au multiple de 512 le plus proche, espacées d'un facteur ×1.17.
+The exponential series (`cache_exp_series`) generates values rounded to the nearest multiple of 512, spaced by a factor of ×1.17.
 
 
 ---
 
-## Métriques reportées
+## Reported metrics
 
-| Métrique | Unité | Description |
+| Metric | Unit | Description |
 |---|---|---|
-| `median` | ms | Temps d'exécution médian par batch |
-| `mean` | ms | Moyenne |
-| `CoV` | % | Coefficient de variation (stabilité) |
-| `memory_bandwidth` | GB/s | Bande passante calculée |
-| `working_set_kb` | kB | Taille totale des deux buffers (2×N×4 / 1024) |
+| `median` | ms | Median execution time per batch |
+| `mean` | ms | Mean |
+| `CoV` | % | Coefficient of variation (stability) |
+| `memory_bandwidth` | GB/s | Computed bandwidth |
+| `working_set_kb` | kB | Total size of both buffers (2×N×4 / 1024) |
 
 ---
 
-## Paramètres de configuration (protocol JSON)
+## Configuration parameters (protocol JSON)
 
-| Paramètre | Section | Effet |
+| Parameter | Section | Effect |
 |---|---|---|
-| `lock_clock` | `cuda > Backend` | Verrouille le GPU à la fréquence de base pour reproductibilité |
-| `working_set_elements` | `sweep > enumerated` | Liste des valeurs N testées |
-| `batch_size` | `Benchmark` | Répétitions par batch |
-| `max_nb_repetition` | `StoppingCriterion` | Plafond total de répétitions |
-| `warmup` | `Benchmark` | Run de chauffe avant mesure (recommandé : `1`) |
-| `flush` | `Benchmark` | Flush L2 entre batches (recommandé : `1`) |
+| `lock_clock` | `cuda > Backend` | Locks the GPU to its base clock for reproducibility |
+| `working_set_elements` | `sweep > enumerated` | List of N values to test |
+| `batch_size` | `Benchmark` | Repetitions per batch |
+| `max_nb_repetition` | `StoppingCriterion` | Overall repetition cap |
+| `warmup` | `Benchmark` | Warmup run before measuring (recommended: `1`) |
+| `flush` | `Benchmark` | Flush L2 between batches (recommended: `1`) |
 
 ---
 
-## Points d'attention
+## Caveats
 
-- Toute valeur de N absente de la liste précompilée lève `std::runtime_error: cache: unsupported working_set_elements value`.
-- Sans `lock_clock`, le GPU peut booster sa fréquence sur les petits working sets (L1), faussant la comparaison avec les points DRAM.
-- Sans `flush`, le L2 résiduel d'un batch peut artificiellement améliorer le batch suivant.
-- `BLOCKSIZE` est choisi automatiquement : 512 si N multiple de 512, 256 si multiple de 256, sinon 128.
+- Any value of N missing from the precompiled list raises `std::runtime_error: cache: unsupported working_set_elements value`.
+- Without `lock_clock`, the GPU may boost its clock on small working sets (L1), skewing the comparison against the DRAM points.
+- Without `flush`, L2 residue from one batch can artificially improve the next one.
+- `BLOCKSIZE` is picked automatically: 512 if N is a multiple of 512, 256 if a multiple of 256, otherwise 128.

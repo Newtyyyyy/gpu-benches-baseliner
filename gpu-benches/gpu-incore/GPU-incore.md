@@ -1,74 +1,74 @@
-# gpu-incore — Recherche & Analyse
+# gpu-incore — Research & Analysis
 
-## Objectif
+## Goal
 
-Mesurer le **débit de calcul in-core** du GPU en cycles par opération (`rcp_throughput`), pour différents types d'instructions arithmétiques, niveaux d'ILP et précisions. Ce benchmark caractérise les unités fonctionnelles du GPU sans jamais saturer la mémoire.
+Measure the GPU's **in-core compute throughput** in cycles per operation (`rcp_throughput`), for different arithmetic instruction types, ILP levels and precisions. This benchmark characterizes the GPU functional units without ever saturating memory.
 
 ---
 
-## Principe de mesure
+## Measurement principle
 
-Chaque kernel exécute `ITERS = 10 000` passes sur une chaîne d'opérations arithmétiques indépendantes (FMA, DIV, SQRT) dont les résultats s'enchaînent pour empêcher le compilateur de les éliminer. La mesure du temps GPU permet de déduire le débit reciproque :
+Each kernel runs `ITERS = 10 000` passes over a chain of independent arithmetic operations (FMA, DIV, SQRT) whose results feed into each other so the compiler cannot eliminate them. Measuring the GPU time yields the reciprocal throughput:
 
 ```
-rcp_throughput (cycles/op) = (temps_médian_ms × 1e-3) × fréquence_GHz × 1e9 / ops_per_run
+rcp_throughput (cycles/op) = (median_time_ms × 1e-3) × frequency_GHz × 1e9 / ops_per_run
 ```
 
-où `ops_per_run = N_type × ITERS × warp_count` avec :
-- `N_FMA = 1024` opérations FMA par passe
-- `N_OTHER = 128` opérations par passe pour DIV et SQRT
+where `ops_per_run = N_type × ITERS × warp_count` with:
+- `N_FMA = 1024` FMA operations per pass
+- `N_OTHER = 128` operations per pass for DIV and SQRT
 
 ---
 
-## Paramètres de sweep
+## Sweep parameters
 
-| Paramètre | Valeurs | Description |
+| Parameter | Values | Description |
 |---|---|---|
-| `kernel_type` | `fma-mixed`, `fma-separated`, `div`, `sqrt` | Type d'instruction arithmétique |
-| `ilp` | 1, 2, 4, 8 | *Instruction-Level Parallelism* : nombre de chaînes indépendantes par thread |
-| `precision` | `float`, `double` | Précision virgule flottante |
-| `warp_count` | 1, 2, 4, 8, 16, 32 | Nombre de warps par bloc (block_size = 32 × warp_count) |
+| `kernel_type` | `fma-mixed`, `fma-separated`, `div`, `sqrt` | Arithmetic instruction type |
+| `ilp` | 1, 2, 4, 8 | *Instruction-Level Parallelism*: number of independent chains per thread |
+| `precision` | `float`, `double` | Floating-point precision |
+| `warp_count` | 1, 2, 4, 8, 16, 32 | Number of warps per block (block_size = 32 × warp_count) |
 
-Le sweep complet représente **4 × 4 × 2 × 6 = 192 points** de mesure.
+The full sweep amounts to **4 × 4 × 2 × 6 = 192 measurement points**.
 
 ---
 
-## Types de kernel
+## Kernel types
 
-| `kernel_type` | Description | Unité fonctionnelle ciblée |
+| `kernel_type` | Description | Targeted functional unit |
 |---|---|---|
-| `fma-mixed` | FMA avec dépendances entre opérations (latence chaînée) | FP ALU + pipeline |
-| `fma-separated` | FMA avec opérations indépendantes (ILP pur) | FP ALU (débit) |
-| `div` | Division flottante | SFU (Special Function Unit) |
-| `sqrt` | Racine carrée flottante | SFU |
+| `fma-mixed` | FMA with dependencies between operations (chained latency) | FP ALU + pipeline |
+| `fma-separated` | FMA with independent operations (pure ILP) | FP ALU (throughput) |
+| `div` | Floating-point division | SFU (Special Function Unit) |
+| `sqrt` | Floating-point square root | SFU |
 
 ---
 
-## Métriques reportées
+## Reported metrics
 
-| Métrique | Unité | Description |
+| Metric | Unit | Description |
 |---|---|---|
-| `median` | ms | Temps d'exécution médian |
-| `ops_per_run` | ops | Nombre total d'opérations calculé (`N_type × ITERS × warp_count`) |
-| `clock_frequency` | GHz | Fréquence GPU mesurée pendant le run |
-| `rcp_throughput` | cycles/op | Débit réciproque — **métrique principale** |
+| `median` | ms | Median execution time |
+| `ops_per_run` | ops | Total number of operations computed (`N_type × ITERS × warp_count`) |
+| `clock_frequency` | GHz | GPU clock measured during the run |
+| `rcp_throughput` | cycles/op | Reciprocal throughput — **main metric** |
 
 ---
 
-## Paramètres de configuration (protocol JSON)
+## Configuration parameters (protocol JSON)
 
-| Paramètre | Section | Effet |
+| Parameter | Section | Effect |
 |---|---|---|
-| `kernel_type` | `sweep > enumerated` | Types d'opérations à tester |
-| `ilp` | `sweep > enumerated` | Niveaux d'ILP à tester |
-| `precision` | `sweep > enumerated` | Précisions à tester |
-| `warp_count` | `sweep > enumerated` | Occupations à tester |
-| `lock_clock` | `cuda > Backend` | Recommandé `1` : la fréquence entre dans le calcul |
+| `kernel_type` | `sweep > enumerated` | Operation types to test |
+| `ilp` | `sweep > enumerated` | ILP levels to test |
+| `precision` | `sweep > enumerated` | Precisions to test |
+| `warp_count` | `sweep > enumerated` | Occupancies to test |
+| `lock_clock` | `cuda > Backend` | Recommended `1`: the clock is part of the computation |
 
 ---
 
-## Points d'attention
+## Caveats
 
-- `lock_clock` est **critique** ici : la fréquence GPU est utilisée directement dans le calcul de `rcp_throughput`. Une fréquence variable fausse la métrique.
-- `number_of_floating_point_operations()` retourne `nullopt` volontairement — le benchmark ne compte pas de FLOP/s mais des cycles/op.
-- DIV et SQRT utilisent `N_OTHER = 128` (vs `N_FMA = 1024`) car ils sont intrinsèquement plus lents : cela maintient des temps d'exécution comparables.
+- `lock_clock` is **critical** here: the GPU clock is used directly in the `rcp_throughput` computation. A varying clock skews the metric.
+- `number_of_floating_point_operations()` returns `nullopt` on purpose — the benchmark does not count FLOP/s but cycles/op.
+- DIV and SQRT use `N_OTHER = 128` (vs `N_FMA = 1024`) because they are intrinsically slower: this keeps execution times comparable.

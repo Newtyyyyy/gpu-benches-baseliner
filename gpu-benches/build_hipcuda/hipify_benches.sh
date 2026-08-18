@@ -1,23 +1,11 @@
 #!/usr/bin/env bash
-# Scanne tous les .cu sous */cuda et genere leur conversion mecanique
-# (hipify-perl + cuda->hip, CUDA->HIP, Cuda->Hip, .cu->.hip) dans un
-# dossier frere hipifiable/. Ne touche jamais a cuda/ ni a hip/.
-#
-# Post-traitement : enrobe le 1er argument des hipMalloc*(&ptr, ...) d'un
-# reinterpret_cast<void**>. CUDA fournit une surcharge templatee de
-# cudaMalloc* qui accepte un T**, HIP aussi sur AMD, mais PAS sous
-# HIP-sur-NVIDIA (nvcc) ou seule la signature void** existe. Le cast rend la
-# sortie compilable partout (AMD et HIP-sur-NVIDIA) et reste entierement
-# genere par le script -- aucune retouche manuelle.
-#
 # Usage: ./hipify_benches.sh [ROOT]
-
 set -euo pipefail
 
 ROOT="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
 if ! command -v hipify-perl >/dev/null 2>&1; then
-    echo "Erreur: hipify-perl introuvable dans le PATH." >&2
+    echo "Error: hipify-perl not found in PATH." >&2
     exit 1
 fi
 
