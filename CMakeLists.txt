@@ -63,8 +63,6 @@ baseliner_enable_git_version(gpu-benches-baseliner)
 
 # --- Benchmarks ------------------------------------------------------------
 
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/hipify.cmake)
-
 set_property(GLOBAL PROPERTY APP_OBJECT_TARGETS "")
 
 add_subdirectory(gpu-benches)

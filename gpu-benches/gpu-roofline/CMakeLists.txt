@@ -4,7 +4,7 @@ endif()
 
 if(HAS_HIP)
 if(BASELINER_BUILD_HIPIFIABLE)
-add_hipified_bench(gpu-roofline cuda/GpuRooflineWorkload.cu)
+add_subdirectory(hipifiable)
 else()
 add_subdirectory(hip)
 endif()
