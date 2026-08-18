@@ -4,7 +4,7 @@ endif()
 
 if(HAS_HIP)
 if(BASELINER_BUILD_HIPIFIABLE)
-add_subdirectory(hipifiable)
+add_hipified_bench(gpu-l2-stream cuda/GpuL2StreamWorkload.cu)
 else()
 add_subdirectory(hip)
 endif()
