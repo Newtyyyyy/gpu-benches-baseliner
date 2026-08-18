@@ -10,9 +10,6 @@ Every benchmark exists in two flavours:
 - `cuda/` — the CUDA source, the reference implementation
 - `hipifiable/` — its mechanical HIP translation, produced by `hipify-perl` (see [Hipify_script.sh](Hipify_script.sh))
 
-A third flavour, `hip/`, holds hand-tuned AMD code. It is **not part of this repository**:
-it is gitignored, so any HIP build needs `-DBASELINER_BUILD_HIPIFIABLE=ON`.
-
 ---
 
 # Setup, from scratch
