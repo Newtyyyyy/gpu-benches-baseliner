@@ -22,7 +22,7 @@ Every benchmark exists in two flavours:
 | `clang++` | 17 | Host compiler hardcoded in the presets, with `lld` as linker | `clang++ --version` |
 | GCC toolchain | 11 | Not a compiler here: clang++ takes its C++ standard library (libstdc++) from it. Forced by `--gcc-install-dir` in the presets | `clang++ -v 2>&1 \| grep 'Selected GCC'` |
 | CUDA Toolkit | 12.4 | Any CUDA build; also CUPTI for `gpu-strides` | `nvcc --version` |
-| ROCm | 7.0.1 on AMD, 6.4.4 for HIP-on-NVIDIA headers | Any HIP build, and `hipify-perl` to regenerate `hipifiable/` | `hipify-perl --version` |
+| ROCm | 7.0.1 on AMD, 6.4.4 for HIP-on-NVIDIA headers | Any HIP build needs its headers, even when nvcc does the compiling. `hipify-perl` is only needed for step 6 | `ls $HIP_PATH/include/hip/hip_runtime.h` |
 
 The baseliner itself is **not** a prerequisite: CMake fetches it automatically
 (`FetchContent`, pinned to tag `v1.0`).
@@ -44,7 +44,10 @@ Build directories follow `build/<preset-name>/`, and the target is always `gpu-b
 | `debug-cuda` | `cmake --preset debug-cuda` | CUDA Toolkit | `cuda/`, `-O0 -g -G`, all warnings |
 | `release-hip` | `cmake --preset release-hip -DBASELINER_BUILD_HIPIFIABLE=ON` | ROCm **and** CUDA present | `hipifiable/` |
 | `release-hip-only` | `cmake --preset release-hip-only -DBASELINER_BUILD_HIPIFIABLE=ON` | ROCm only, no CUDA, real AMD GPU | `hipifiable/` |
-| `release-hip-nvidia` | `export HIP_PATH=/opt/rocm` then `cmake --preset release-hip-nvidia` | ROCm headers + CUDA Toolkit, NVIDIA GPU | `hipifiable/` |
+| `release-hip-nvidia` | `export HIP_PATH=<your ROCm install>` then `cmake --preset release-hip-nvidia` | ROCm headers + CUDA Toolkit, NVIDIA GPU | `hipifiable/` |
+
+`HIP_PATH` must point at a ROCm installation — it does not have to be a system-wide one,
+a ROCm unpacked in your home works, since only the headers are used.
 
 Then, for any of them:
 

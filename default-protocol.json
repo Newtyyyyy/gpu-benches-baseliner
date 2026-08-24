@@ -3,119 +3,217 @@
   "presets": {
     "gpu-umstream": {
       "default": {
+        "description": "Unified Memory TRIAD, 1 MB per array with prefetch",
         "options": {
           "GpuUmstream": {
-            "prefetch": { "value": "1" },
-            "blocksize": { "value": "256" },
-            "transfer_mb": { "value": "1" }
+            "prefetch": {
+              "value": "1"
+            },
+            "blocksize": {
+              "value": "256"
+            },
+            "transfer_mb": {
+              "value": "1"
+            }
           },
           "Workload": {
-            "validation_type": { "value": "Reference" },
-            "validation_path": { "value": "" },
-            "seed": { "value": "333" },
-            "work_size": { "value": "50" }
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
           }
         }
       }
     },
     "gpu-latency": {
       "default": {
+        "description": "Pointer chase over a 64 kB buffer",
         "options": {
           "GpuLatency": {
-            "iterations": { "value": "100000" },
-            "buffer_size_kb": { "value": "64" }
+            "iterations": {
+              "value": "100000"
+            },
+            "buffer_size_kb": {
+              "value": "64"
+            }
           },
           "Workload": {
-            "validation_type": { "value": "Reference" },
-            "validation_path": { "value": "" },
-            "seed": { "value": "333" },
-            "work_size": { "value": "50" }
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
           }
         }
       }
     },
     "gpu-memcpy": {
       "default": {
+        "description": "Pinned host-to-device transfer, 1 MB",
         "options": {
           "GpuMemcpy": {
-            "pin_memory": { "value": "1" },
-            "transfer_mb": { "value": "1" }
+            "pin_memory": {
+              "value": "1"
+            },
+            "transfer_mb": {
+              "value": "1"
+            }
           },
           "Workload": {
-            "validation_type": { "value": "Reference" },
-            "validation_path": { "value": "" },
-            "seed": { "value": "333" },
-            "work_size": { "value": "50" }
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
           }
         }
       }
     },
     "gpu-cache": {
       "default": {
+        "description": "Cache bandwidth at a 4096-element working set",
         "options": {
           "GpuCache": {
-            "working_set_elements": { "value": "4096" }
+            "working_set_elements": {
+              "value": "4096"
+            }
           },
           "Workload": {
-            "validation_type": { "value": "Reference" },
-            "validation_path": { "value": "" },
-            "seed": { "value": "333" },
-            "work_size": { "value": "50" }
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
           }
         }
       }
     },
     "gpu-incore": {
       "default": {
+        "description": "FMA throughput, float, ILP 4, 4 warps",
         "options": {
           "GpuIncore": {
-            "warp_count": { "value": "4" },
-            "precision": { "value": "float" },
-            "ilp": { "value": "4" },
-            "kernel_type": { "value": "fma-mixed" }
+            "warp_count": {
+              "value": "4"
+            },
+            "precision": {
+              "value": "float"
+            },
+            "ilp": {
+              "value": "4"
+            },
+            "kernel_type": {
+              "value": "fma-mixed"
+            }
           },
           "Workload": {
-            "validation_type": { "value": "Reference" },
-            "validation_path": { "value": "" },
-            "seed": { "value": "333" },
-            "work_size": { "value": "50" }
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
           }
         }
       }
     },
     "cuda": {
       "default": {
+        "description": "CUDA backend on device 0, clocks unlocked",
         "options": {
           "Backend": {
-            "device": { "value": "0" },
-            "lock_clock": { "value": "0" },
-            "max_clock_value": { "value": "-1" },
-            "min_clock_value": { "value": "-1" }
+            "device": {
+              "value": "0"
+            },
+            "lock_clock": {
+              "value": "0"
+            },
+            "max_clock_value": {
+              "value": "-1"
+            },
+            "min_clock_value": {
+              "value": "-1"
+            }
           }
         }
       }
     },
     "StoppingCriterion": {
       "default": {
+        "description": "Default stopping criterion",
         "options": {
           "StoppingCriterion": {
-            "max_nb_repetition": { "value": "500" }
+            "max_nb_repetition": {
+              "value": "500"
+            }
           }
         }
       }
     },
     "Benchmark": {
       "default": {
+        "description": "Default benchmark settings",
         "options": {
           "Benchmark": {
-            "validate_workload": { "value": "0" },
-            "warmup": { "value": "1" },
-            "batch_size": { "value": "25" },
-            "dynamic_batch": { "value": "0" },
-            "block": { "value": "1" },
-            "block_duration": { "value": "1000.0" },
-            "flush": { "value": "1" },
-            "warm_cool": { "value": "0" }
+            "validate_workload": {
+              "value": "0"
+            },
+            "warmup": {
+              "value": "1"
+            },
+            "batch_size": {
+              "value": "25"
+            },
+            "dynamic_batch": {
+              "value": "0"
+            },
+            "block": {
+              "value": "1"
+            },
+            "block_duration": {
+              "value": "1000.0"
+            },
+            "flush": {
+              "value": "1"
+            },
+            "warm_cool": {
+              "value": "0"
+            }
           }
         }
       }
@@ -123,22 +221,42 @@
   },
   "stats_presets": {
     "default": {
-      "stat_names": ["Median", "Mean", "CoefficientOfVariation"],
+      "description": "Median, mean and coefficient of variation",
+      "stat_names": [
+        "Median",
+        "Mean",
+        "CoefficientOfVariation"
+      ],
       "stat_options": {}
     }
   },
   "recipes": {
     "default": {
-      "benchmark": { "impl": "Benchmark", "preset": "default" },
-      "stopping": { "impl": "StoppingCriterion", "preset": "default" },
-      "stats": { "preset": "default" },
+      "description": "Default recipe: full-grid sweep over work_size",
+      "benchmark": {
+        "impl": "Benchmark",
+        "preset": "default"
+      },
+      "stopping": {
+        "impl": "StoppingCriterion",
+        "preset": "default"
+      },
+      "stats": {
+        "preset": "default"
+      },
       "sweep": {
         "strategy": "FullGrid",
         "axes": [
           {
             "interface": "Workload",
             "option": "work_size",
-            "hint": { "policy": "PowersOfTwo", "min": "1", "max": "256", "step": "1", "enumerated": [] }
+            "hint": {
+              "policy": "PowersOfTwo",
+              "min": "1",
+              "max": "256",
+              "step": "1",
+              "enumerated": []
+            }
           }
         ]
       }
@@ -149,14 +267,32 @@
       "name": "full_audit",
       "recipe": "default",
       "workloads": [
-        { "impl": "gpu-incore", "preset": "default" },
-        { "impl": "gpu-latency", "preset": "default" },
-        { "impl": "gpu-memcpy", "preset": "default" },
-        { "impl": "gpu-cache", "preset": "default" },
-        { "impl": "gpu-umstream", "preset": "default" }
+        {
+          "impl": "gpu-incore",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-latency",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-memcpy",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-cache",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-umstream",
+          "preset": "default"
+        }
       ],
       "backends": [
-        { "impl": "cuda", "preset": "default" }
+        {
+          "impl": "cuda",
+          "preset": "default"
+        }
       ],
       "on_incompatible": "Skip"
     }
