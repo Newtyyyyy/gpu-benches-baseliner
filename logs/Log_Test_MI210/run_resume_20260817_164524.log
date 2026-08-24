@@ -1,0 +1,385 @@
+=== REPRISE dans results/mi210_hipifiable_20260813_163004 16:45:24 ===
+    workloads : gpu-latency gpu-memcpy gpu-roofline gpu-small-kernels gpu-strides gpu-umstream
+
+=== 1/3 : build HIPIFIABLE (job srun sur le nœud) 16:45:24 ===
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CUDA_COMPILER="NOTFOUND"
+  CMAKE_CXX_COMPILER="clang++"
+  CMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11"
+  CMAKE_CXX_FLAGS_RELEASE="-O3 -march=native -DNDEBUG -ffast-math -funroll-loops"
+  CMAKE_CXX_STANDARD="17"
+  CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES="OFF"
+  CMAKE_CXX_USE_RESPONSE_FILE_FOR_LIBRARIES="OFF"
+  CMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS="OFF"
+  CMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11"
+  CMAKE_EXPORT_COMPILE_COMMANDS="ON"
+  CMAKE_HIP_ARCHITECTURES="native"
+  CMAKE_HIP_COMPILER="amdclang++"
+  CMAKE_HIP_FLAGS_RELEASE="-O3 -DNDEBUG"
+  CMAKE_POLICY_DEFAULT_CMP0135="NEW"
+  CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11"
+  COMBINED_BUILD="ON"
+
+-- Found AMD SMI: /opt/rocm/lib/libamd_smi.so
+-- Using the multi-header code from /home/hmeli/gpu-baseliner/build/release-hip-only/_deps/json-src/include/
+-- Configuring done (6.1s)
+-- Generating done (7.0s)
+-- Build files have been written to: /home/hmeli/gpu-baseliner/build/release-hip-only
+[ 41%] Built target baseliner_core
+[ 67%] Built target baseliner
+[ 70%] Building HIP object gpu-benches/gpu-cache/hipifiable/CMakeFiles/gpu-cache-hipifiable-obj.dir/GpuCacheWorkload.hip.o
+[ 74%] Building HIP object gpu-benches/gpu-umstream/hipifiable/CMakeFiles/gpu-umstream-hipifiable-obj.dir/GpuUmstreamWorkload.hip.o
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-cache/hipifiable/GpuCacheWorkload.hip:18:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   18 |     hipGetDevice(&dev);
+      |     ^~~~~~~~~~~~ ~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-cache/hipifiable/GpuCacheWorkload.hip:20:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   20 |     hipGetDeviceProperties(&p, dev);
+      |     ^~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~
+/opt/rocm-7.0.1/include/hip/hip_runtime_api.h:102:32: note: expanded from macro 'hipGetDeviceProperties'
+  102 | #define hipGetDeviceProperties hipGetDevicePropertiesR0600
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-umstream/hipifiable/GpuUmstreamWorkload.hip:49:16: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   49 |     if (m_A) { hipFree(m_A); m_A = nullptr; }
+      |                ^~~~~~~ ~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-umstream/hipifiable/GpuUmstreamWorkload.hip:50:16: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   50 |     if (m_B) { hipFree(m_B); m_B = nullptr; }
+      |                ^~~~~~~ ~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-umstream/hipifiable/GpuUmstreamWorkload.hip:51:16: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   51 |     if (m_C) { hipFree(m_C); m_C = nullptr; }
+      |                ^~~~~~~ ~~~
+3 warnings generated when compiling for gfx90a.
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-umstream/hipifiable/GpuUmstreamWorkload.hip:49:16: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   49 |     if (m_A) { hipFree(m_A); m_A = nullptr; }
+      |                ^~~~~~~ ~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-umstream/hipifiable/GpuUmstreamWorkload.hip:50:16: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   50 |     if (m_B) { hipFree(m_B); m_B = nullptr; }
+      |                ^~~~~~~ ~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-umstream/hipifiable/GpuUmstreamWorkload.hip:51:16: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   51 |     if (m_C) { hipFree(m_C); m_C = nullptr; }
+      |                ^~~~~~~ ~~~
+2 warnings generated when compiling for gfx90a.
+3 warnings generated when compiling for host.
+[ 74%] Built target gpu-umstream-hipifiable-obj
+[ 77%] Building HIP object gpu-benches/gpu-incore/hipifiable/CMakeFiles/gpu-incore-hipifiable-obj.dir/GpuIncoreWorkload.hip.o
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-cache/hipifiable/GpuCacheWorkload.hip:18:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   18 |     hipGetDevice(&dev);
+      |     ^~~~~~~~~~~~ ~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-cache/hipifiable/GpuCacheWorkload.hip:20:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   20 |     hipGetDeviceProperties(&p, dev);
+      |     ^~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~
+/opt/rocm-7.0.1/include/hip/hip_runtime_api.h:102:32: note: expanded from macro 'hipGetDeviceProperties'
+  102 | #define hipGetDeviceProperties hipGetDevicePropertiesR0600
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-incore/hipifiable/GpuIncoreWorkload.hip:13:16: warning: argument to '#pragma unroll' should not be in parentheses in CUDA C/C++ [-Wcuda-compat]
+   13 | #pragma unroll(1)
+      |                ^
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-incore/hipifiable/GpuIncoreWorkload.hip:42:16: warning: argument to '#pragma unroll' should not be in parentheses in CUDA C/C++ [-Wcuda-compat]
+   42 | #pragma unroll(1)
+      |                ^
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-incore/hipifiable/GpuIncoreWorkload.hip:54:16: warning: argument to '#pragma unroll' should not be in parentheses in CUDA C/C++ [-Wcuda-compat]
+   54 | #pragma unroll(1)
+      |                ^
+3 warnings generated when compiling for gfx90a.
+2 warnings generated when compiling for host.
+[ 77%] Built target gpu-cache-hipifiable-obj
+[ 80%] Building HIP object gpu-benches/gpu-l2-stream/hipifiable/CMakeFiles/gpu-l2-stream-hipifiable-obj.dir/GpuL2StreamWorkload.hip.o
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-incore/hipifiable/GpuIncoreWorkload.hip:13:16: warning: argument to '#pragma unroll' should not be in parentheses in CUDA C/C++ [-Wcuda-compat]
+   13 | #pragma unroll(1)
+      |                ^
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-incore/hipifiable/GpuIncoreWorkload.hip:42:16: warning: argument to '#pragma unroll' should not be in parentheses in CUDA C/C++ [-Wcuda-compat]
+   42 | #pragma unroll(1)
+      |                ^
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-incore/hipifiable/GpuIncoreWorkload.hip:54:16: warning: argument to '#pragma unroll' should not be in parentheses in CUDA C/C++ [-Wcuda-compat]
+   54 | #pragma unroll(1)
+      |                ^
+3 warnings generated when compiling for host.
+[ 80%] Built target gpu-incore-hipifiable-obj
+[ 83%] Building HIP object gpu-benches/gpu-latency/hipifiable/CMakeFiles/gpu-latency-hipifiable-obj.dir/GpuLatencyWorkload.hip.o
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-latency/hipifiable/GpuLatencyWorkload.hip:92:28: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   92 |     if (m_device_buffer) { hipFree(m_device_buffer); m_device_buffer = nullptr; }
+      |                            ^~~~~~~ ~~~~~~~~~~~~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-latency/hipifiable/GpuLatencyWorkload.hip:93:28: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   93 |     if (m_dummy_buffer)  { hipFree(m_dummy_buffer);  m_dummy_buffer  = nullptr; }
+      |                            ^~~~~~~ ~~~~~~~~~~~~~~
+[ 83%] Built target gpu-l2-stream-hipifiable-obj
+[ 87%] Building HIP object gpu-benches/gpu-memcpy/hipifiable/CMakeFiles/gpu-memcpy-hipifiable-obj.dir/GpuMemcpyWorkload.hip.o
+2 warnings generated when compiling for gfx90a.
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-memcpy/hipifiable/GpuMemcpyWorkload.hip:32:9: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   32 |         hipFree(m_device_buffer);
+      |         ^~~~~~~ ~~~~~~~~~~~~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-memcpy/hipifiable/GpuMemcpyWorkload.hip:41:13: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   41 |             hipHostFree(m_host_buffer);
+      |             ^~~~~~~~~~~ ~~~~~~~~~~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-latency/hipifiable/GpuLatencyWorkload.hip:92:28: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   92 |     if (m_device_buffer) { hipFree(m_device_buffer); m_device_buffer = nullptr; }
+      |                            ^~~~~~~ ~~~~~~~~~~~~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-latency/hipifiable/GpuLatencyWorkload.hip:93:28: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   93 |     if (m_dummy_buffer)  { hipFree(m_dummy_buffer);  m_dummy_buffer  = nullptr; }
+      |                            ^~~~~~~ ~~~~~~~~~~~~~~
+2 warnings generated when compiling for gfx90a.
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-memcpy/hipifiable/GpuMemcpyWorkload.hip:32:9: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   32 |         hipFree(m_device_buffer);
+      |         ^~~~~~~ ~~~~~~~~~~~~~~~
+/home/hmeli/gpu-baseliner/gpu-benches/gpu-memcpy/hipifiable/GpuMemcpyWorkload.hip:41:13: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   41 |             hipHostFree(m_host_buffer);
+      |             ^~~~~~~~~~~ ~~~~~~~~~~~~~
+2 warnings generated when compiling for host.
+[ 87%] Built target gpu-latency-hipifiable-obj
+[ 90%] Building HIP object gpu-benches/gpu-roofline/hipifiable/CMakeFiles/gpu-roofline-hipifiable-obj.dir/GpuRooflineWorkload.hip.o
+2 warnings generated when compiling for host.
+[ 90%] Built target gpu-memcpy-hipifiable-obj
+[ 93%] Building HIP object gpu-benches/gpu-small-kernels/hipifiable/CMakeFiles/gpu-small-kernels-hipifiable-obj.dir/GpuSmallKernelsWorkload.hip.o
+[ 93%] Built target gpu-roofline-hipifiable-obj
+[ 96%] Building HIP object gpu-benches/gpu-strides/hipifiable/CMakeFiles/gpu-strides-hipifiable-obj.dir/GpuStridesWorkload.hip.o
+[ 96%] Built target gpu-small-kernels-hipifiable-obj
+[ 96%] Built target gpu-strides-hipifiable-obj
+[100%] Linking HIP executable gpu-benches_exec
+[100%] Built target gpu-benches_exec
+  exec: /home/hmeli/gpu-baseliner/build/release-hip-only/gpu-benches_exec
+
+=== 2/3 : jobs SLURM par benchmark, lots de 5 runs, cible 10 16:46:35 ===
+
+--- JOB gpu-latency : cible 10 runs, lots de 5 16:46:35 ---
+  [gpu-latency] 5/10 faits -> nouveau job srun (lot de 5) 16:46:35
+  [gpu-latency] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-latency] power-cap 230 W OK
+  [gpu-latency] run 1/10 déjà OK, skip
+  [gpu-latency] run 2/10 déjà OK, skip
+  [gpu-latency] run 3/10 déjà OK, skip
+  [gpu-latency] run 4/10 déjà OK, skip
+  [gpu-latency] run 5/10 déjà OK, skip
+  [gpu-latency] run 6/10 16:46:35
+    OK
+  [gpu-latency] run 7/10 23:22:40
+    OK
+  [gpu-latency] run 8/10 05:59:09
+    OK
+  [gpu-latency] run 9/10 12:35:21
+    OK
+  [gpu-latency] run 10/10 19:12:02
+    OK
+  [gpu-latency] lot terminé (le job s'est fermé) 01:48:42
+
+--- JOB gpu-memcpy : cible 10 runs, lots de 5 01:48:42 ---
+  [gpu-memcpy] 0/10 faits -> nouveau job srun (lot de 5) 01:48:42
+  [gpu-memcpy] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-memcpy] power-cap 230 W OK
+  [gpu-memcpy] run 1/10 01:48:43
+    OK
+  [gpu-memcpy] run 2/10 01:51:41
+    OK
+  [gpu-memcpy] run 3/10 01:54:39
+    OK
+  [gpu-memcpy] run 4/10 01:57:38
+    OK
+  [gpu-memcpy] run 5/10 02:00:36
+    OK
+  [gpu-memcpy] lot de 5 runs atteint -> sortie (reste à faire au prochain job)
+  [gpu-memcpy] lot terminé (le job s'est fermé) 02:03:34
+  [gpu-memcpy] 5/10 faits -> nouveau job srun (lot de 5) 02:03:34
+  [gpu-memcpy] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-memcpy] power-cap 230 W OK
+  [gpu-memcpy] run 1/10 déjà OK, skip
+  [gpu-memcpy] run 2/10 déjà OK, skip
+  [gpu-memcpy] run 3/10 déjà OK, skip
+  [gpu-memcpy] run 4/10 déjà OK, skip
+  [gpu-memcpy] run 5/10 déjà OK, skip
+  [gpu-memcpy] run 6/10 02:03:35
+    OK
+  [gpu-memcpy] run 7/10 02:06:33
+    OK
+  [gpu-memcpy] run 8/10 02:09:32
+    OK
+  [gpu-memcpy] run 9/10 02:12:30
+    OK
+  [gpu-memcpy] run 10/10 02:15:28
+    OK
+  [gpu-memcpy] lot terminé (le job s'est fermé) 02:18:26
+
+--- JOB gpu-roofline : cible 10 runs, lots de 5 02:18:26 ---
+  [gpu-roofline] 0/10 faits -> nouveau job srun (lot de 5) 02:18:26
+  [gpu-roofline] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-roofline] power-cap 230 W OK
+  [gpu-roofline] run 1/10 02:18:27
+    OK
+  [gpu-roofline] run 2/10 02:19:58
+    OK
+  [gpu-roofline] run 3/10 02:21:29
+    OK
+  [gpu-roofline] run 4/10 02:23:00
+    OK
+  [gpu-roofline] run 5/10 02:24:31
+    OK
+  [gpu-roofline] lot de 5 runs atteint -> sortie (reste à faire au prochain job)
+  [gpu-roofline] lot terminé (le job s'est fermé) 02:26:02
+  [gpu-roofline] 5/10 faits -> nouveau job srun (lot de 5) 02:26:02
+  [gpu-roofline] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-roofline] power-cap 230 W OK
+  [gpu-roofline] run 1/10 déjà OK, skip
+  [gpu-roofline] run 2/10 déjà OK, skip
+  [gpu-roofline] run 3/10 déjà OK, skip
+  [gpu-roofline] run 4/10 déjà OK, skip
+  [gpu-roofline] run 5/10 déjà OK, skip
+  [gpu-roofline] run 6/10 02:26:03
+    OK
+  [gpu-roofline] run 7/10 02:27:33
+    OK
+  [gpu-roofline] run 8/10 02:29:04
+    OK
+  [gpu-roofline] run 9/10 02:30:35
+    OK
+  [gpu-roofline] run 10/10 02:32:06
+    OK
+  [gpu-roofline] lot terminé (le job s'est fermé) 02:33:37
+
+--- JOB gpu-small-kernels : cible 10 runs, lots de 5 02:33:37 ---
+  [gpu-small-kernels] 0/10 faits -> nouveau job srun (lot de 5) 02:33:37
+  [gpu-small-kernels] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-small-kernels] power-cap 230 W OK
+  [gpu-small-kernels] run 1/10 02:33:38
+    OK
+  [gpu-small-kernels] run 2/10 02:34:07
+    OK
+  [gpu-small-kernels] run 3/10 02:34:37
+    OK
+  [gpu-small-kernels] run 4/10 02:35:06
+    OK
+  [gpu-small-kernels] run 5/10 02:35:36
+    OK
+  [gpu-small-kernels] lot de 5 runs atteint -> sortie (reste à faire au prochain job)
+  [gpu-small-kernels] lot terminé (le job s'est fermé) 02:36:06
+  [gpu-small-kernels] 5/10 faits -> nouveau job srun (lot de 5) 02:36:06
+  [gpu-small-kernels] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-small-kernels] power-cap 230 W OK
+  [gpu-small-kernels] run 1/10 déjà OK, skip
+  [gpu-small-kernels] run 2/10 déjà OK, skip
+  [gpu-small-kernels] run 3/10 déjà OK, skip
+  [gpu-small-kernels] run 4/10 déjà OK, skip
+  [gpu-small-kernels] run 5/10 déjà OK, skip
+  [gpu-small-kernels] run 6/10 02:36:06
+    OK
+  [gpu-small-kernels] run 7/10 02:36:36
+    OK
+  [gpu-small-kernels] run 8/10 02:37:06
+    OK
+  [gpu-small-kernels] run 9/10 02:37:35
+    OK
+  [gpu-small-kernels] run 10/10 02:38:05
+    OK
+  [gpu-small-kernels] lot terminé (le job s'est fermé) 02:38:35
+
+--- JOB gpu-strides : cible 10 runs, lots de 5 02:38:35 ---
+  [gpu-strides] 0/10 faits -> nouveau job srun (lot de 5) 02:38:35
+  [gpu-strides] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-strides] power-cap 230 W OK
+  [gpu-strides] run 1/10 02:38:35
+    OK
+  [gpu-strides] run 2/10 04:49:19
+    OK
+  [gpu-strides] run 3/10 07:00:03
+    OK
+  [gpu-strides] run 4/10 09:10:48
+    OK
+  [gpu-strides] run 5/10 11:21:33
+    OK
+  [gpu-strides] lot de 5 runs atteint -> sortie (reste à faire au prochain job)
+  [gpu-strides] lot terminé (le job s'est fermé) 13:32:18
+  [gpu-strides] 5/10 faits -> nouveau job srun (lot de 5) 13:32:18
+  [gpu-strides] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-strides] power-cap 230 W OK
+  [gpu-strides] run 1/10 déjà OK, skip
+  [gpu-strides] run 2/10 déjà OK, skip
+  [gpu-strides] run 3/10 déjà OK, skip
+  [gpu-strides] run 4/10 déjà OK, skip
+  [gpu-strides] run 5/10 déjà OK, skip
+  [gpu-strides] run 6/10 13:32:19
+    OK
+  [gpu-strides] run 7/10 15:43:02
+    OK
+  [gpu-strides] run 8/10 17:53:46
+    OK
+  [gpu-strides] run 9/10 20:04:29
+    OK
+  [gpu-strides] run 10/10 22:15:13
+    OK
+  [gpu-strides] lot terminé (le job s'est fermé) 00:25:57
+
+--- JOB gpu-umstream : cible 10 runs, lots de 5 00:25:57 ---
+  [gpu-umstream] 0/10 faits -> nouveau job srun (lot de 5) 00:25:57
+  [gpu-umstream] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-umstream] power-cap 230 W OK
+  [gpu-umstream] run 1/10 00:25:58
+    OK
+  [gpu-umstream] run 2/10 01:18:37
+    OK
+  [gpu-umstream] run 3/10 02:11:39
+    OK
+  [gpu-umstream] run 4/10 03:04:41
+    OK
+  [gpu-umstream] run 5/10 03:55:59
+    OK
+  [gpu-umstream] lot de 5 runs atteint -> sortie (reste à faire au prochain job)
+  [gpu-umstream] lot terminé (le job s'est fermé) 04:45:17
+  [gpu-umstream] 5/10 faits -> nouveau job srun (lot de 5) 04:45:17
+  [gpu-umstream] nœud=epyc1 HIP_VISIBLE_DEVICES=0 gpu=0
+GPU: 0
+    POWERCAP: Power cap is already set to 230W
+
+  [gpu-umstream] power-cap 230 W OK
+  [gpu-umstream] run 1/10 déjà OK, skip
+  [gpu-umstream] run 2/10 déjà OK, skip
+  [gpu-umstream] run 3/10 déjà OK, skip
+  [gpu-umstream] run 4/10 déjà OK, skip
+  [gpu-umstream] run 5/10 déjà OK, skip
+  [gpu-umstream] run 6/10 04:45:18
+    OK
+  [gpu-umstream] run 7/10 05:38:35
+    OK
+  [gpu-umstream] run 8/10 06:31:50
+    OK
+  [gpu-umstream] run 9/10 07:24:53
+    OK
+  [gpu-umstream] run 10/10 08:17:38
+    OK
+  [gpu-umstream] lot terminé (le job s'est fermé) 09:10:45
+
+=== 3/3 : récap reprise ===
+  gpu-latency          10/10 OK
+  gpu-memcpy           10/10 OK
+  gpu-roofline         10/10 OK
+  gpu-small-kernels    10/10 OK
+  gpu-strides          10/10 OK
+  gpu-umstream         10/10 OK
+Résultats : results/mi210_hipifiable_20260813_163004

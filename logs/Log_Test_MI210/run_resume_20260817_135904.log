@@ -1,0 +1,6 @@
+=== REPRISE dans results_mi210_hipifiable_20260813_163004 13:59:04 ===
+    workloads : gpu-latency gpu-memcpy gpu-roofline gpu-small-kernels gpu-strides gpu-umstream
+
+=== 1/3 : build HIPIFIABLE (job srun sur le nœud) 13:59:04 ===
+srun: Required node not available (down, drained or reserved)
+srun: job 5517 queued and waiting for resources

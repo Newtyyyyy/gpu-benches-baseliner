@@ -1,0 +1,207 @@
+{
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "gpu-umstream": {
+      "default": {
+        "description": "Unified memory stream triad sweep over transfer sizes",
+        "options": {
+          "GpuUmstream": {
+            "prefetch": {
+              "value": "0"
+            },
+            "block_count": {
+              "value": "640"
+            },
+            "blocksize": {
+              "value": "256"
+            },
+            "transfer_mb": {
+              "value": "24"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
+          }
+        }
+      }
+    },
+    "hip": {
+      "default": {
+        "description": "HIP backend",
+        "options": {
+          "Backend": {
+            "lock_clock": {
+              "value": "0"
+            },
+            "max_clock_value": {
+              "value": "-1"
+            },
+            "min_clock_value": {
+              "value": "-1"
+            },
+            "device": {
+              "value": "0"
+            }
+          }
+        }
+      }
+    },
+    "Benchmark": {
+      "default": {
+        "options": {
+          "Benchmark": {
+            "validate_workload": {
+              "value": "0"
+            },
+            "warmup": {
+              "value": "1"
+            },
+            "flush": {
+              "value": "0"
+            },
+            "block": {
+              "value": "0"
+            },
+            "block_duration": {
+              "value": "1000.000000"
+            },
+            "block_queue_size": {
+              "value": "64"
+            },
+            "batch_size": {
+              "value": "25"
+            },
+            "dynamic_batch": {
+              "value": "0"
+            },
+            "minimal_batch_duration": {
+              "value": "10.000000"
+            },
+            "warm_cool": {
+              "value": "0"
+            },
+            "warm_cool_timeout": {
+              "value": "3"
+            },
+            "max_gpu_temp": {
+              "value": "60.000000"
+            },
+            "min_gpu_temp": {
+              "value": "45.000000"
+            }
+          }
+        }
+      }
+    },
+    "StoppingCriterion": {
+      "default": {
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "value": "25"
+            }
+          }
+        }
+      }
+    }
+  },
+  "stats_presets": {
+    "default": {
+      "stat_names": [
+        "Median",
+        "Mean",
+        "CoefficientOfVariation"
+      ],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "default": {
+      "description": "Sweep transfer sizes from 24MB to 24GB",
+      "benchmark": {
+        "impl": "Benchmark",
+        "preset": "default"
+      },
+      "stopping": {
+        "impl": "StoppingCriterion",
+        "preset": "default"
+      },
+      "stats": {
+        "preset": "default"
+      },
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "GpuUmstream",
+            "option": "transfer_mb",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "24",
+                "36",
+                "48",
+                "72",
+                "96",
+                "144",
+                "192",
+                "288",
+                "384",
+                "576",
+                "768",
+                "1152",
+                "1536",
+                "2304",
+                "3072",
+                "4608",
+                "6144",
+                "9216",
+                "12288",
+                "18432",
+                "24576",
+                "32768",
+                "49152",
+                "65536",
+                "98304",
+                "131072"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "campaigns": [
+    {
+      "name": "umstream-hip",
+      "recipe": "default",
+      "workloads": [
+        {
+          "impl": "gpu-umstream",
+          "preset": "default"
+        }
+      ],
+      "backends": [
+        {
+          "impl": "hip",
+          "preset": "default"
+        }
+      ],
+      "on_incompatible": "Skip"
+    }
+  ]
+}

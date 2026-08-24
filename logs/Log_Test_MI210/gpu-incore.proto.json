@@ -1,0 +1,136 @@
+{
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "gpu-incore": {
+      "default": {
+        "description": "FMA/DIV/SQRT sweep over ILP and warp count",
+        "options": {
+          "GpuIncore": {
+            "warp_count": { "value": "4" },
+            "precision":  { "value": "float" },
+            "ilp":        { "value": "8" },
+            "kernel_type":{ "value": "fma-mixed" }
+          },
+          "Workload": {
+            "validation_type": { "value": "Reference" },
+            "validation_path": { "value": "" },
+            "seed":            { "value": "333" },
+            "work_size":       { "value": "50" }
+          }
+        }
+      }
+    },
+    "hip": {
+      "default": {
+        "description": "HIP backend",
+        "options": {
+          "Backend": {
+            "lock_clock":      { "value": "0" },
+            "max_clock_value": { "value": "-1" },
+            "min_clock_value": { "value": "-1" },
+            "device":          { "value": "0" }
+          }
+        }
+      }
+    },
+    "Benchmark": {
+      "default": {
+        "options": {
+          "Benchmark": {
+            "validate_workload":      { "value": "0" },
+            "warmup":                 { "value": "1" },
+            "flush":                  { "value": "1" },
+            "block":                  { "value": "1" },
+            "block_duration":         { "value": "1000.000000" },
+            "block_queue_size":       { "value": "64" },
+            "batch_size":             { "value": "10" },
+            "dynamic_batch":          { "value": "0" },
+            "minimal_batch_duration": { "value": "10.000000" },
+            "warm_cool":              { "value": "0" },
+            "warm_cool_timeout":      { "value": "3" },
+            "max_gpu_temp":           { "value": "60.000000" },
+            "min_gpu_temp":           { "value": "45.000000" }
+          }
+        }
+      }
+    },
+    "StoppingCriterion": {
+      "default": {
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": { "value": "5" }
+          }
+        }
+      }
+    }
+  },
+  "stats_presets": {
+    "default": {
+      "stat_names": ["Median", "Mean", "CoefficientOfVariation"],
+      "stat_options": {}
+    },
+    "incore": {
+      "description": "InCore benchmark stats with throughput",
+      "stat_names": ["Median"],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "default": {
+      "description": "InCore Recipe with throughput metrics",
+      "benchmark": { "impl": "Benchmark",         "preset": "default" },
+      "stopping":  { "impl": "StoppingCriterion", "preset": "default" },
+      "stats":     { "preset": "incore" },
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "GpuIncore",
+            "option": "precision",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "", "max": "", "step": "",
+              "enumerated": ["float", "double"]
+            }
+          },
+          {
+            "interface": "GpuIncore",
+            "option": "kernel_type",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "", "max": "", "step": "",
+              "enumerated": ["fma-mixed", "fma-separated", "div", "sqrt"]
+            }
+          },
+          {
+            "interface": "GpuIncore",
+            "option": "ilp",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "", "max": "", "step": "",
+              "enumerated": ["1", "2", "4", "8"]
+            }
+          },
+          {
+            "interface": "GpuIncore",
+            "option": "warp_count",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "", "max": "", "step": "",
+              "enumerated": ["1", "2", "4", "8", "16", "32"]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "campaigns": [
+    {
+      "name":      "incore-hip",
+      "recipe":    "default",
+      "workloads": [{ "impl": "gpu-incore", "preset": "default" }],
+      "backends":  [{ "impl": "hip",        "preset": "default" }],
+      "on_incompatible": "Skip"
+    }
+  ]
+}

@@ -1,0 +1,4696 @@
+{
+  "baseliner_version": "1.0.0",
+  "id": "06p4vdrhny4x0",
+  "git_version": "not-provided",
+  "datetime": "2026-08-20 01:18:37.931",
+  "campaign_runs": [
+    {
+      "id": "06p4vdrhnrfqx",
+      "name": "umstream-hip",
+      "recipe_name": "default",
+      "recipe": {
+        "description": "Sweep transfer sizes from 24MB to 24GB",
+        "benchmark": {
+          "impl": "Benchmark",
+          "preset": "default"
+        },
+        "stopping": {
+          "impl": "StoppingCriterion",
+          "preset": "default"
+        },
+        "stats": {
+          "preset": "default"
+        },
+        "sweep": {
+          "strategy": "FullGrid",
+          "axes": [
+            {
+              "interface": "GpuUmstream",
+              "option": "transfer_mb",
+              "hint": {
+                "policy": "Enumerated",
+                "min": "",
+                "max": "",
+                "step": "1",
+                "enumerated": [
+                  "24",
+                  "36",
+                  "48",
+                  "72",
+                  "96",
+                  "144",
+                  "192",
+                  "288",
+                  "384",
+                  "576",
+                  "768",
+                  "1152",
+                  "1536",
+                  "2304",
+                  "3072",
+                  "4608",
+                  "6144",
+                  "9216",
+                  "12288",
+                  "18432",
+                  "24576",
+                  "32768",
+                  "49152",
+                  "65536",
+                  "98304",
+                  "131072"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "benchmark_runs": {
+        "hip": {
+          "gpu-umstream": {
+            "plan": {
+              "workload": {
+                "impl": "gpu-umstream",
+                "preset": "default",
+                "options": {
+                  "GpuUmstream": {
+                    "transfer_mb": {
+                      "value": "24"
+                    },
+                    "blocksize": {
+                      "value": "256"
+                    },
+                    "block_count": {
+                      "value": "640"
+                    },
+                    "prefetch": {
+                      "value": "0"
+                    }
+                  },
+                  "Workload": {
+                    "work_size": {
+                      "value": "50"
+                    },
+                    "seed": {
+                      "value": "333"
+                    },
+                    "validation_path": {
+                      "value": ""
+                    },
+                    "validation_type": {
+                      "value": "Reference"
+                    }
+                  }
+                }
+              },
+              "backend": {
+                "impl": "hip",
+                "preset": "default",
+                "options": {
+                  "Backend": {
+                    "device": {
+                      "value": "0"
+                    },
+                    "min_clock_value": {
+                      "value": "-1"
+                    },
+                    "max_clock_value": {
+                      "value": "-1"
+                    },
+                    "lock_clock": {
+                      "value": "0"
+                    }
+                  }
+                }
+              },
+              "benchmark": {
+                "impl": "Benchmark",
+                "preset": "default",
+                "options": {
+                  "Benchmark": {
+                    "max_gpu_temp": {
+                      "value": "60.000000"
+                    },
+                    "warm_cool_timeout": {
+                      "value": "3"
+                    },
+                    "min_gpu_temp": {
+                      "value": "45.000000"
+                    },
+                    "minimal_batch_duration": {
+                      "value": "10.000000"
+                    },
+                    "batch_size": {
+                      "value": "25"
+                    },
+                    "block_queue_size": {
+                      "value": "64"
+                    },
+                    "warm_cool": {
+                      "value": "0"
+                    },
+                    "dynamic_batch": {
+                      "value": "0"
+                    },
+                    "block_duration": {
+                      "value": "1000.000000"
+                    },
+                    "block": {
+                      "value": "0"
+                    },
+                    "flush": {
+                      "value": "0"
+                    },
+                    "warmup": {
+                      "value": "1"
+                    },
+                    "validate_workload": {
+                      "value": "0"
+                    }
+                  }
+                }
+              },
+              "stopping": {
+                "impl": "StoppingCriterion",
+                "preset": "default",
+                "options": {
+                  "StoppingCriterion": {
+                    "max_nb_repetition": {
+                      "value": "25"
+                    }
+                  }
+                }
+              },
+              "stats": {
+                "preset": "default",
+                "stats": [
+                  "Median",
+                  "Mean",
+                  "CoefficientOfVariation"
+                ],
+                "options": {}
+              },
+              "sweep": {
+                "strategy": "FullGrid",
+                "axes": [
+                  {
+                    "interface": "GpuUmstream",
+                    "option": "transfer_mb",
+                    "hint": {
+                      "policy": "Enumerated",
+                      "min": "",
+                      "max": "",
+                      "step": "1",
+                      "enumerated": [
+                        "24",
+                        "36",
+                        "48",
+                        "72",
+                        "96",
+                        "144",
+                        "192",
+                        "288",
+                        "384",
+                        "576",
+                        "768",
+                        "1152",
+                        "1536",
+                        "2304",
+                        "3072",
+                        "4608",
+                        "6144",
+                        "9216",
+                        "12288",
+                        "18432",
+                        "24576",
+                        "32768",
+                        "49152",
+                        "65536",
+                        "98304",
+                        "131072"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "benchmark_report": {
+              "id": "06p4vdrhnlqib",
+              "results": [
+                {
+                  "id": "06p4vdrmw2uej",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "24"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1.9156800508499146,
+                        1.8913609981536865,
+                        1.9331200122833252,
+                        1.9011210203170776,
+                        1.9009599685668945,
+                        1.925441026687622,
+                        1.909600019454956,
+                        1.8955210447311401,
+                        1.9236799478530884,
+                        1.9115209579467773,
+                        1.9422399997711182,
+                        1.9084810018539429,
+                        1.9342399835586548,
+                        1.9142409563064575,
+                        1.9020800590515137,
+                        1.8747210502624512,
+                        1.8913600444793701,
+                        1.943681001663208,
+                        1.9268779754638672,
+                        1.9071990251541138,
+                        1.9396779537200928,
+                        1.8873579502105713,
+                        1.89615797996521,
+                        1.896317958831787,
+                        1.9175989627838135
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        47.79024124145508
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 1.909600019454956,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1.8747210502624512,
+                        1.8873579502105713,
+                        1.8913600444793701,
+                        1.8913609981536865,
+                        1.8955210447311401,
+                        1.89615797996521,
+                        1.896317958831787,
+                        1.9009599685668945,
+                        1.9011210203170776,
+                        1.9020800590515137,
+                        1.9071990251541138,
+                        1.9084810018539429,
+                        1.909600019454956,
+                        1.9115209579467773,
+                        1.9142409563064575,
+                        1.9156800508499146,
+                        1.9175989627838135,
+                        1.9236799478530884,
+                        1.925441026687622,
+                        1.9268779754638672,
+                        1.9331200122833252,
+                        1.9342399835586548,
+                        1.9396779537200928,
+                        1.9422399997711182,
+                        1.943681001663208
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 1.9116095304489136,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 13.165912628173828,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 1.9114378690719604,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 2.015199899673462,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0011599999852478504,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 189.15028381347656,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 5.99760103225708,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 25165824,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdrpen221",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "36"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        2.938236951828003,
+                        2.9857571125030518,
+                        2.9857571125030518,
+                        2.948957920074463,
+                        2.91983699798584,
+                        2.9975969791412354,
+                        2.978076934814453,
+                        2.980797052383423,
+                        2.88415789604187,
+                        2.8699169158935547,
+                        3.3014369010925293,
+                        3.1944000720977783,
+                        2.9636800289154053,
+                        2.9723188877105713,
+                        2.8929600715637207,
+                        2.9679999351501465,
+                        2.9617600440979004,
+                        2.919198989868164,
+                        2.926719903945923,
+                        2.932960033416748,
+                        2.9190399646759033,
+                        2.9956789016723633,
+                        2.9230399131774902,
+                        2.944159984588623,
+                        2.970720052719116
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        74.2751693725586
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 2.9617600440979004,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        2.8699169158935547,
+                        2.88415789604187,
+                        2.8929600715637207,
+                        2.9190399646759033,
+                        2.919198989868164,
+                        2.91983699798584,
+                        2.9230399131774902,
+                        2.926719903945923,
+                        2.932960033416748,
+                        2.938236951828003,
+                        2.944159984588623,
+                        2.948957920074463,
+                        2.9617600440979004,
+                        2.9636800289154053,
+                        2.9679999351501465,
+                        2.970720052719116,
+                        2.9723188877105713,
+                        2.978076934814453,
+                        2.980797052383423,
+                        2.9857571125030518,
+                        2.9857571125030518,
+                        2.9956789016723633,
+                        2.9975969791412354,
+                        3.1944000720977783,
+                        3.3014369010925293
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 2.9710066318511963,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 12.716504096984863,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 2.9684836864471436,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 2.91599702835083,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0004299999854993075,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 88.7334213256836,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 7.516633033752441,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 37748736,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdrspt50e",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "48"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        3.958559036254883,
+                        3.8532800674438477,
+                        3.9385600090026855,
+                        3.885438919067383,
+                        3.8379199504852295,
+                        3.944960117340088,
+                        4.014719009399414,
+                        3.9252800941467285,
+                        3.949120044708252,
+                        4.206559181213379,
+                        4.245920181274414,
+                        3.911679983139038,
+                        4.013279914855957,
+                        3.93503999710083,
+                        3.8510398864746094,
+                        3.784480094909668,
+                        3.957119941711426,
+                        3.961280107498169,
+                        3.9356799125671387,
+                        3.9062399864196777,
+                        3.933120012283325,
+                        3.991039991378784,
+                        3.7638399600982666,
+                        3.951200008392334,
+                        3.9769599437713623
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        98.63231658935547
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 3.9385600090026855,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        3.7638399600982666,
+                        3.784480094909668,
+                        3.8379199504852295,
+                        3.8510398864746094,
+                        3.8532800674438477,
+                        3.885438919067383,
+                        3.9062399864196777,
+                        3.911679983139038,
+                        3.9252800941467285,
+                        3.933120012283325,
+                        3.93503999710083,
+                        3.9356799125671387,
+                        3.9385600090026855,
+                        3.944960117340088,
+                        3.949120044708252,
+                        3.951200008392334,
+                        3.957119941711426,
+                        3.958559036254883,
+                        3.961280107498169,
+                        3.9769599437713623,
+                        3.991039991378784,
+                        4.013279914855957,
+                        4.014719009399414,
+                        4.206559181213379,
+                        4.245920181274414
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 3.9452927112579346,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 12.765889167785645,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 3.94266676902771,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 3.8915200233459473,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.000590000010561198,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 118.96784210205078,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 10.379199028015137,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.004000000189989805,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 50331648,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdrxo42jo",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "72"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        5.829919815063477,
+                        5.83951997756958,
+                        6.428639888763428,
+                        5.932960033416748,
+                        5.809279918670654,
+                        5.731681823730469,
+                        5.796162128448486,
+                        5.835361957550049,
+                        5.841122150421143,
+                        5.848001003265381,
+                        5.86912202835083,
+                        5.959842205047607,
+                        5.870242118835449,
+                        5.976481914520264,
+                        5.8350419998168945,
+                        5.868961811065674,
+                        5.849441051483154,
+                        5.856962203979492,
+                        5.845602035522461,
+                        6.414402008056641,
+                        5.846402168273926,
+                        5.813921928405762,
+                        5.832642078399658,
+                        5.874561786651611,
+                        5.80224084854126
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        147.4085235595703
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 5.846402168273926,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        5.731681823730469,
+                        5.796162128448486,
+                        5.80224084854126,
+                        5.809279918670654,
+                        5.813921928405762,
+                        5.829919815063477,
+                        5.832642078399658,
+                        5.8350419998168945,
+                        5.835361957550049,
+                        5.83951997756958,
+                        5.841122150421143,
+                        5.845602035522461,
+                        5.846402168273926,
+                        5.848001003265381,
+                        5.849441051483154,
+                        5.856962203979492,
+                        5.868961811065674,
+                        5.86912202835083,
+                        5.870242118835449,
+                        5.874561786651611,
+                        5.932960033416748,
+                        5.959842205047607,
+                        5.976481914520264,
+                        6.414402008056641,
+                        6.428639888763428
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 5.896340847015381,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 12.813201904296875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 5.892162799835205,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 5.940159797668457,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0005310000269673765,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 178.1703643798828,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 16.171680450439453,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 75497472,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vds4cib6r",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "96"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        7.911043167114258,
+                        7.959843158721924,
+                        7.9265618324279785,
+                        8.624163627624512,
+                        7.878882884979248,
+                        7.940164089202881,
+                        7.994564056396484,
+                        8.009123802185059,
+                        7.982563018798828,
+                        8.011363983154297,
+                        7.98224401473999,
+                        7.93968391418457,
+                        7.925443172454834,
+                        7.976004123687744,
+                        7.995523929595947,
+                        7.869284152984619,
+                        8.614724159240723,
+                        7.899682998657227,
+                        7.919683933258057,
+                        7.952643871307373,
+                        8.023524284362793,
+                        7.954563140869141,
+                        7.971203804016113,
+                        7.981604099273682,
+                        8.028963088989258
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        200.27305603027344
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 7.971203804016113,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        7.869284152984619,
+                        7.878882884979248,
+                        7.899682998657227,
+                        7.911043167114258,
+                        7.919683933258057,
+                        7.925443172454834,
+                        7.9265618324279785,
+                        7.93968391418457,
+                        7.940164089202881,
+                        7.952643871307373,
+                        7.954563140869141,
+                        7.959843158721924,
+                        7.971203804016113,
+                        7.976004123687744,
+                        7.981604099273682,
+                        7.98224401473999,
+                        7.982563018798828,
+                        7.994564056396484,
+                        7.995523929595947,
+                        8.009123802185059,
+                        8.011363983154297,
+                        8.023524284362793,
+                        8.028963088989258,
+                        8.614724159240723,
+                        8.624163627624512
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 8.0109224319458,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 12.572006225585938,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 8.006939888000488,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 7.978722095489502,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0006099999882280827,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 237.32931518554688,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 21.013608932495117,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 100663296,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdseikoe2",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "144"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        12.238567352294922,
+                        12.114567756652832,
+                        11.99632740020752,
+                        12.129128456115723,
+                        12.075048446655273,
+                        12.060647010803223,
+                        12.708328247070313,
+                        12.056167602539063,
+                        12.078566551208496,
+                        12.182727813720703,
+                        12.017447471618652,
+                        12.214568138122559,
+                        12.027527809143066,
+                        11.992647171020508,
+                        12.80688762664795,
+                        12.147368431091309,
+                        12.010887145996094,
+                        12.05888843536377,
+                        12.154727935791016,
+                        12.097606658935547,
+                        12.258567810058594,
+                        12.023846626281738,
+                        12.089287757873535,
+                        12.77184772491455,
+                        12.146407127380371
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        304.45855712890625
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 12.097606658935547,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        11.992647171020508,
+                        11.99632740020752,
+                        12.010887145996094,
+                        12.017447471618652,
+                        12.023846626281738,
+                        12.027527809143066,
+                        12.056167602539063,
+                        12.05888843536377,
+                        12.060647010803223,
+                        12.075048446655273,
+                        12.078566551208496,
+                        12.089287757873535,
+                        12.097606658935547,
+                        12.114567756652832,
+                        12.129128456115723,
+                        12.146407127380371,
+                        12.147368431091309,
+                        12.154727935791016,
+                        12.182727813720703,
+                        12.214568138122559,
+                        12.238567352294922,
+                        12.258567810058594,
+                        12.708328247070313,
+                        12.77184772491455,
+                        12.80688762664795
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 12.178343772888184,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 12.402824401855469,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 12.174238204956055,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 11.973444938659668,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.000590000010561198,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 360.6881408691406,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 32.04817581176758,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 150994944,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdstisw19",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "192"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        16.92353057861328,
+                        16.35392951965332,
+                        16.397449493408203,
+                        16.617130279541016,
+                        16.52065086364746,
+                        16.36928939819336,
+                        16.95345115661621,
+                        16.39681053161621,
+                        16.570571899414063,
+                        16.41568946838379,
+                        16.210569381713867,
+                        16.403850555419922,
+                        77.71717071533203,
+                        16.350250244140625,
+                        16.935211181640625,
+                        16.316009521484375,
+                        16.35504913330078,
+                        16.264650344848633,
+                        16.36256980895996,
+                        16.246570587158203,
+                        16.876012802124023,
+                        16.289289474487305,
+                        16.404010772705078,
+                        16.263050079345703,
+                        16.358089447021484
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        472.8708801269531
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 16.39681053161621,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        16.210569381713867,
+                        16.246570587158203,
+                        16.263050079345703,
+                        16.264650344848633,
+                        16.289289474487305,
+                        16.316009521484375,
+                        16.350250244140625,
+                        16.35392951965332,
+                        16.35504913330078,
+                        16.358089447021484,
+                        16.36256980895996,
+                        16.36928939819336,
+                        16.39681053161621,
+                        16.397449493408203,
+                        16.403850555419922,
+                        16.404010772705078,
+                        16.41568946838379,
+                        16.52065086364746,
+                        16.570571899414063,
+                        16.617130279541016,
+                        16.876012802124023,
+                        16.92353057861328,
+                        16.935211181640625,
+                        16.95345115661621,
+                        77.71717071533203
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 18.91483497619629,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 11.844403266906738,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 16.99761390686035,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 16.347850799560547,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0006200000061653554,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 540.6182861328125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 42.94594955444336,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 201326592,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdteqlcut",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "288"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        24.862899780273438,
+                        25.510740280151367,
+                        24.74273681640625,
+                        24.72433853149414,
+                        24.914417266845703,
+                        25.412338256835938,
+                        32.90114212036133,
+                        24.83201789855957,
+                        24.727218627929688,
+                        25.528018951416016,
+                        24.841777801513672,
+                        24.759218215942383,
+                        24.838897705078125,
+                        25.429458618164063,
+                        24.68033790588379,
+                        24.61377716064453,
+                        24.868175506591797,
+                        24.989458084106445,
+                        24.7059383392334,
+                        24.917137145996094,
+                        24.933778762817383,
+                        24.90401840209961,
+                        24.733457565307617,
+                        24.8552188873291,
+                        24.600496292114258
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        630.8270263671875
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 24.8552188873291,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        24.600496292114258,
+                        24.61377716064453,
+                        24.68033790588379,
+                        24.7059383392334,
+                        24.72433853149414,
+                        24.727218627929688,
+                        24.733457565307617,
+                        24.74273681640625,
+                        24.759218215942383,
+                        24.83201789855957,
+                        24.838897705078125,
+                        24.841777801513672,
+                        24.8552188873291,
+                        24.862899780273438,
+                        24.868175506591797,
+                        24.90401840209961,
+                        24.914417266845703,
+                        24.917137145996094,
+                        24.933778762817383,
+                        24.989458084106445,
+                        25.412338256835938,
+                        25.429458618164063,
+                        25.510740280151367,
+                        25.528018951416016,
+                        32.90114212036133
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 25.23307991027832,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 12.005112648010254,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 25.155105590820313,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 24.7985782623291,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0006099999882280827,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 751.0999755859375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 64.07380676269531,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 301989888,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdub86k8c",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "384"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        34.883705139160156,
+                        111.70503997802734,
+                        35.168663024902344,
+                        35.3969841003418,
+                        35.35490417480469,
+                        35.08818435668945,
+                        35.27778244018555,
+                        35.2048225402832,
+                        35.22306442260742,
+                        35.10994338989258,
+                        35.046104431152344,
+                        35.83042526245117,
+                        35.64290237426758,
+                        35.897308349609375,
+                        35.394744873046875,
+                        35.983707427978516,
+                        35.32882308959961,
+                        35.064823150634766,
+                        109.24600219726563,
+                        34.9659423828125,
+                        35.31122589111328,
+                        35.15986251831055,
+                        35.170902252197266,
+                        35.316505432128906,
+                        35.30082321166992
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1033.0731201171875
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 35.30082321166992,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        34.883705139160156,
+                        34.9659423828125,
+                        35.046104431152344,
+                        35.064823150634766,
+                        35.08818435668945,
+                        35.10994338989258,
+                        35.15986251831055,
+                        35.168663024902344,
+                        35.170902252197266,
+                        35.2048225402832,
+                        35.22306442260742,
+                        35.27778244018555,
+                        35.30082321166992,
+                        35.31122589111328,
+                        35.316505432128906,
+                        35.32882308959961,
+                        35.35490417480469,
+                        35.394744873046875,
+                        35.3969841003418,
+                        35.64290237426758,
+                        35.83042526245117,
+                        35.897308349609375,
+                        35.983707427978516,
+                        109.24600219726563,
+                        111.70503997802734
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 41.32292938232422,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 10.78347396850586,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 37.339839935302734,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 35.94706726074219,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0006000000284984708,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 1169.2725830078125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 84.49014282226563,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 402653184,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdvnvn1w3",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "576"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        51.02275848388672,
+                        50.904361724853516,
+                        50.591400146484375,
+                        50.762760162353516,
+                        50.802921295166016,
+                        51.29124069213867,
+                        50.30643844604492,
+                        156.3497314453125,
+                        50.540199279785156,
+                        51.61172103881836,
+                        50.59939956665039,
+                        51.67652130126953,
+                        50.63956069946289,
+                        52.11988067626953,
+                        50.586761474609375,
+                        51.15652084350586,
+                        50.54227828979492,
+                        51.230438232421875,
+                        50.96931838989258,
+                        51.304840087890625,
+                        50.98500061035156,
+                        51.57379913330078,
+                        158.8751678466797,
+                        50.924041748046875,
+                        51.06595993041992
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1488.4329833984375
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 50.98500061035156,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        50.30643844604492,
+                        50.540199279785156,
+                        50.54227828979492,
+                        50.586761474609375,
+                        50.591400146484375,
+                        50.59939956665039,
+                        50.63956069946289,
+                        50.762760162353516,
+                        50.802921295166016,
+                        50.904361724853516,
+                        50.924041748046875,
+                        50.96931838989258,
+                        50.98500061035156,
+                        51.02275848388672,
+                        51.06595993041992,
+                        51.15652084350586,
+                        51.230438232421875,
+                        51.29124069213867,
+                        51.304840087890625,
+                        51.57379913330078,
+                        51.61172103881836,
+                        51.67652130126953,
+                        52.11988067626953,
+                        156.3497314453125,
+                        158.8751678466797
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 59.53731918334961,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 11.200753211975098,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 53.92313766479492,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 50.66931915283203,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0008800000068731606,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 1733.35302734375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 127.20601654052734,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 603979776,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdxcriu8l",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "768"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        69.37317657470703,
+                        70.06069946289063,
+                        70.0234146118164,
+                        69.97237396240234,
+                        69.85189819335938,
+                        115.5258560180664,
+                        69.05909729003906,
+                        70.36277770996094,
+                        69.44165802001953,
+                        69.75605773925781,
+                        69.82501220703125,
+                        70.05477905273438,
+                        70.01301574707031,
+                        69.85653686523438,
+                        69.92581939697266,
+                        69.85077667236328,
+                        69.50053405761719,
+                        70.5542984008789,
+                        70.07301330566406,
+                        70.3109359741211,
+                        150.53004455566406,
+                        69.71173858642578,
+                        71.05125427246094,
+                        70.22069549560547,
+                        70.3309326171875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1875.236328125
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 70.01301574707031,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        69.05909729003906,
+                        69.37317657470703,
+                        69.44165802001953,
+                        69.50053405761719,
+                        69.71173858642578,
+                        69.75605773925781,
+                        69.82501220703125,
+                        69.85077667236328,
+                        69.85189819335938,
+                        69.85653686523438,
+                        69.92581939697266,
+                        69.97237396240234,
+                        70.01301574707031,
+                        70.0234146118164,
+                        70.05477905273438,
+                        70.06069946289063,
+                        70.07301330566406,
+                        70.22069549560547,
+                        70.3109359741211,
+                        70.3309326171875,
+                        70.36277770996094,
+                        70.5542984008789,
+                        71.05125427246094,
+                        115.5258560180664,
+                        150.53004455566406
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 75.00945281982422,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 11.082603454589844,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 72.66400909423828,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 70.05829620361328,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.000699999975040555,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 2131.185791015625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 168.80812072753906,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 805306368,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vdzz5u2xt",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "1152"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        105.04744720458984,
+                        105.37944793701172,
+                        104.67640686035156,
+                        239.45059204101563,
+                        104.89112854003906,
+                        104.7144775390625,
+                        105.47320556640625,
+                        103.61239624023438,
+                        104.07864379882813,
+                        105.50664520263672,
+                        104.62984466552734,
+                        103.5840835571289,
+                        231.3605194091797,
+                        103.72583770751953,
+                        103.2144775390625,
+                        104.26216888427734,
+                        104.13495635986328,
+                        104.33016204833984,
+                        105.35977172851563,
+                        104.16600036621094,
+                        104.87928771972656,
+                        105.50505065917969,
+                        142.84747314453125,
+                        104.32392120361328,
+                        104.88391876220703
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        2914.038330078125
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 104.7144775390625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        103.2144775390625,
+                        103.5840835571289,
+                        103.61239624023438,
+                        103.72583770751953,
+                        104.07864379882813,
+                        104.13495635986328,
+                        104.16600036621094,
+                        104.26216888427734,
+                        104.32392120361328,
+                        104.33016204833984,
+                        104.62984466552734,
+                        104.67640686035156,
+                        104.7144775390625,
+                        104.87928771972656,
+                        104.88391876220703,
+                        104.89112854003906,
+                        105.04744720458984,
+                        105.35977172851563,
+                        105.37944793701172,
+                        105.47320556640625,
+                        105.50505065917969,
+                        105.50664520263672,
+                        142.84747314453125,
+                        231.3605194091797,
+                        239.45059204101563
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 116.56151580810547,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 10.915484428405762,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 110.66476440429688,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 105.57303619384766,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0007800000021234155,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 3307.260498046875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 255.90309143066406,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 1207959552,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4ve3g1me8r",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "1536"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        138.18186950683594,
+                        138.04347229003906,
+                        138.42523193359375,
+                        138.3793182373047,
+                        249.4078826904297,
+                        138.22666931152344,
+                        139.82955932617188,
+                        137.9993133544922,
+                        138.91995239257813,
+                        138.45419311523438,
+                        139.27035522460938,
+                        137.879150390625,
+                        138.9429931640625,
+                        277.77349853515625,
+                        138.80874633789063,
+                        138.65882873535156,
+                        138.63531494140625,
+                        139.25930786132813,
+                        139.42811584472656,
+                        138.25819396972656,
+                        138.17803955078125,
+                        137.48587036132813,
+                        138.190185546875,
+                        276.77349853515625,
+                        139.4164276123047
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        3852.826171875
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 138.63531494140625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        137.48587036132813,
+                        137.879150390625,
+                        137.9993133544922,
+                        138.04347229003906,
+                        138.17803955078125,
+                        138.18186950683594,
+                        138.190185546875,
+                        138.22666931152344,
+                        138.25819396972656,
+                        138.3793182373047,
+                        138.42523193359375,
+                        138.45419311523438,
+                        138.63531494140625,
+                        138.65882873535156,
+                        138.80874633789063,
+                        138.91995239257813,
+                        138.9429931640625,
+                        139.25930786132813,
+                        139.27035522460938,
+                        139.4164276123047,
+                        139.42811584472656,
+                        139.82955932617188,
+                        249.4078826904297,
+                        276.77349853515625,
+                        277.77349853515625
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 154.113037109375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 10.950404167175293,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 147.08248901367188,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 140.0186767578125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.000830999983008951,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 4394.3232421875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 339.85052490234375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 1610612736,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4ve8qgo5li",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "2304"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        204.05458068847656,
+                        459.4910888671875,
+                        208.53761291503906,
+                        206.1822509765625,
+                        206.89329528808594,
+                        207.0859375,
+                        206.02993774414063,
+                        389.3796691894531,
+                        208.95506286621094,
+                        207.28050231933594,
+                        207.61842346191406,
+                        208.42929077148438,
+                        207.83905029296875,
+                        446.4546203613281,
+                        208.24801635742188,
+                        209.1803436279297,
+                        207.1636962890625,
+                        206.50929260253906,
+                        207.5229034423828,
+                        250.11221313476563,
+                        206.85809326171875,
+                        205.38113403320313,
+                        206.5739288330078,
+                        206.482421875,
+                        207.10401916503906
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        5895.3671875
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 207.28050231933594,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        204.05458068847656,
+                        205.38113403320313,
+                        206.02993774414063,
+                        206.1822509765625,
+                        206.482421875,
+                        206.50929260253906,
+                        206.5739288330078,
+                        206.85809326171875,
+                        206.89329528808594,
+                        207.0859375,
+                        207.10401916503906,
+                        207.1636962890625,
+                        207.28050231933594,
+                        207.5229034423828,
+                        207.61842346191406,
+                        207.83905029296875,
+                        208.24801635742188,
+                        208.42929077148438,
+                        208.53761291503906,
+                        208.95506286621094,
+                        209.1803436279297,
+                        250.11221313476563,
+                        389.3796691894531,
+                        446.4546203613281,
+                        459.4910888671875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 235.814697265625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 10.85876750946045,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 222.48558044433594,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 205.35794067382813,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0014199999859556556,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 6636.0615234375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 512.49462890625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 2415919104,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vefo5caqs",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "3072"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        277.18804931640625,
+                        275.0606994628906,
+                        274.96759033203125,
+                        275.48052978515625,
+                        275.1418151855469,
+                        508.64715576171875,
+                        275.3040771484375,
+                        276.3463134765625,
+                        276.0442199707031,
+                        275.537353515625,
+                        274.5063171386719,
+                        410.72772216796875,
+                        275.8266296386719,
+                        274.3603820800781,
+                        275.6808776855469,
+                        276.046630859375,
+                        274.39239501953125,
+                        457.4658203125,
+                        274.8802185058594,
+                        273.2128601074219,
+                        274.7803955078125,
+                        275.9451904296875,
+                        276.3133544921875,
+                        428.5154113769531,
+                        275.7403869628906
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        7588.11279296875
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 275.6808776855469,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        273.2128601074219,
+                        274.3603820800781,
+                        274.39239501953125,
+                        274.5063171386719,
+                        274.7803955078125,
+                        274.8802185058594,
+                        274.96759033203125,
+                        275.0606994628906,
+                        275.1418151855469,
+                        275.3040771484375,
+                        275.48052978515625,
+                        275.537353515625,
+                        275.6808776855469,
+                        275.7403869628906,
+                        275.8266296386719,
+                        275.9451904296875,
+                        276.0442199707031,
+                        276.046630859375,
+                        276.3133544921875,
+                        276.3463134765625,
+                        277.18804931640625,
+                        410.72772216796875,
+                        428.5154113769531,
+                        457.4658203125,
+                        508.64715576171875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 303.5245056152344,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 10.97564697265625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 293.4884338378906,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 276.1147766113281,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.001180000021122396,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 8782.1005859375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 796.4280395507813,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 3221225472,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vepmskgek",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "4608"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        413.27093505859375,
+                        410.09173583984375,
+                        411.8583068847656,
+                        512.77294921875,
+                        412.04119873046875,
+                        410.04486083984375,
+                        408.743896484375,
+                        407.67156982421875,
+                        576.0029296875,
+                        410.2237548828125,
+                        411.1415100097656,
+                        409.4566955566406,
+                        515.4271850585938,
+                        410.45782470703125,
+                        408.791259765625,
+                        408.5779724121094,
+                        595.3192749023438,
+                        407.7645568847656,
+                        409.24359130859375,
+                        410.8451843261719,
+                        514.5075073242188,
+                        408.6984558105469,
+                        409.461181640625,
+                        410.80517578125,
+                        410.47607421875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        10913.6953125
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 410.45782470703125,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        407.67156982421875,
+                        407.7645568847656,
+                        408.5779724121094,
+                        408.6984558105469,
+                        408.743896484375,
+                        408.791259765625,
+                        409.24359130859375,
+                        409.4566955566406,
+                        409.461181640625,
+                        410.04486083984375,
+                        410.09173583984375,
+                        410.2237548828125,
+                        410.45782470703125,
+                        410.47607421875,
+                        410.80517578125,
+                        410.8451843261719,
+                        411.1415100097656,
+                        411.8583068847656,
+                        412.04119873046875,
+                        413.27093505859375,
+                        512.77294921875,
+                        514.5075073242188,
+                        515.4271850585938,
+                        576.0029296875,
+                        595.3192749023438
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 436.5478210449219,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 11.216214179992676,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 430.79046630859375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 531.718505859375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.001120000029914081,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 12591.4638671875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 1088.0772705078125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 4831838208,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vf33mbpjf",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "6144"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        546.86083984375,
+                        544.2506103515625,
+                        574.5369262695313,
+                        542.1109008789063,
+                        546.7557373046875,
+                        550.4609985351563,
+                        546.9274291992188,
+                        655.7561645507813,
+                        544.034423828125,
+                        545.411376953125,
+                        543.8653564453125,
+                        777.202392578125,
+                        543.51171875,
+                        546.585693359375,
+                        573.1183471679688,
+                        690.194091796875,
+                        543.9563598632813,
+                        543.1431274414063,
+                        543.4686889648438,
+                        806.5972290039063,
+                        548.3284912109375,
+                        550.0798950195313,
+                        548.035888671875,
+                        685.1624145507813,
+                        543.3003540039063
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        14583.65625
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 546.86083984375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        542.1109008789063,
+                        543.1431274414063,
+                        543.3003540039063,
+                        543.4686889648438,
+                        543.51171875,
+                        543.8653564453125,
+                        543.9563598632813,
+                        544.034423828125,
+                        544.2506103515625,
+                        545.411376953125,
+                        546.585693359375,
+                        546.7557373046875,
+                        546.86083984375,
+                        546.9274291992188,
+                        548.035888671875,
+                        548.3284912109375,
+                        550.0798950195313,
+                        550.4609985351563,
+                        573.1183471679688,
+                        574.5369262695313,
+                        655.7561645507813,
+                        685.1624145507813,
+                        690.194091796875,
+                        777.202392578125,
+                        806.5972290039063
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 583.34619140625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 11.193379402160645,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 575.55908203125,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 672.1802978515625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.001069999998435378,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 16928.54296875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 1432.9893798828125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 6442450944,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vfmsevmrk",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "9216"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        953.2214965820313,
+                        814.8892211914063,
+                        813.4168701171875,
+                        1049.3861083984375,
+                        924.5587768554688,
+                        861.398193359375,
+                        935.1616821289063,
+                        807.755126953125,
+                        1013.4570922851563,
+                        812.3538818359375,
+                        813.5660400390625,
+                        919.0134887695313,
+                        811.1959228515625,
+                        811.9655151367188,
+                        936.5798950195313,
+                        811.6851806640625,
+                        813.8096923828125,
+                        917.9088745117188,
+                        810.76708984375,
+                        808.9642333984375,
+                        977.1848754882813,
+                        814.6576538085938,
+                        911.5064086914063,
+                        808.3302001953125,
+                        827.6376953125
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        21780.375
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 814.8892211914063,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        807.755126953125,
+                        808.3302001953125,
+                        808.9642333984375,
+                        810.76708984375,
+                        811.1959228515625,
+                        811.6851806640625,
+                        811.9655151367188,
+                        812.3538818359375,
+                        813.4168701171875,
+                        813.5660400390625,
+                        813.8096923828125,
+                        814.6576538085938,
+                        814.8892211914063,
+                        827.6376953125,
+                        861.398193359375,
+                        911.5064086914063,
+                        917.9088745117188,
+                        919.0134887695313,
+                        924.5587768554688,
+                        935.1616821289063,
+                        936.5798950195313,
+                        953.2214965820313,
+                        977.1848754882813,
+                        1013.4570922851563,
+                        1049.3861083984375
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 871.21484375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 11.166770935058594,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 865.3958129882813,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 811.0328369140625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0010600000387057662,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 25193.3125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 2471.17333984375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 9663676416,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vge6171ab",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "12288"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1189.09619140625,
+                        1079.1302490234375,
+                        1265.177734375,
+                        1082.5228271484375,
+                        1184.3994140625,
+                        1083.6580810546875,
+                        1268.9852294921875,
+                        1088.3927001953125,
+                        1185.622802734375,
+                        1086.6380615234375,
+                        1079.8909912109375,
+                        1267.2034912109375,
+                        1086.6781005859375,
+                        1184.7255859375,
+                        1087.00439453125,
+                        1208.34130859375,
+                        1086.720458984375,
+                        1113.4326171875,
+                        1083.3548583984375,
+                        1189.12255859375,
+                        1316.0526123046875,
+                        1245.787353515625,
+                        1349.421875,
+                        1222.6688232421875,
+                        1344.7742919921875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        29378.802734375
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 1184.7255859375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1079.1302490234375,
+                        1079.8909912109375,
+                        1082.5228271484375,
+                        1083.3548583984375,
+                        1083.6580810546875,
+                        1086.6380615234375,
+                        1086.6781005859375,
+                        1086.720458984375,
+                        1087.00439453125,
+                        1088.3927001953125,
+                        1113.4326171875,
+                        1184.3994140625,
+                        1184.7255859375,
+                        1185.622802734375,
+                        1189.09619140625,
+                        1189.12255859375,
+                        1208.34130859375,
+                        1222.6688232421875,
+                        1245.787353515625,
+                        1265.177734375,
+                        1267.2034912109375,
+                        1268.9852294921875,
+                        1316.0526123046875,
+                        1344.7742919921875,
+                        1349.421875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 1175.152099609375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 11.02634048461914,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 1168.5565185546875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 1077.334716796875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0010710000060498714,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 34322.6640625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 3172.175537109375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 12884901888,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vhmt0cnps",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "18432"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1909.9068603515625,
+                        2046.6343994140625,
+                        1791.30517578125,
+                        2007.479736328125,
+                        1838.387939453125,
+                        1932.2296142578125,
+                        1751.1236572265625,
+                        1930.1029052734375,
+                        1830.8533935546875,
+                        1933.139404296875,
+                        1744.6837158203125,
+                        1928.9674072265625,
+                        1822.7669677734375,
+                        1873.429443359375,
+                        1645.1671142578125,
+                        1984.7353515625,
+                        2046.62255859375,
+                        2193.1044921875,
+                        2045.925048828125,
+                        2305.57373046875,
+                        2181.781982421875,
+                        2074.921875,
+                        2301.796875,
+                        2044.129150390625,
+                        2091.90576171875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        49256.67578125
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 1933.139404296875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1645.1671142578125,
+                        1744.6837158203125,
+                        1751.1236572265625,
+                        1791.30517578125,
+                        1822.7669677734375,
+                        1830.8533935546875,
+                        1838.387939453125,
+                        1873.429443359375,
+                        1909.9068603515625,
+                        1928.9674072265625,
+                        1930.1029052734375,
+                        1932.2296142578125,
+                        1933.139404296875,
+                        1984.7353515625,
+                        2007.479736328125,
+                        2044.129150390625,
+                        2045.925048828125,
+                        2046.62255859375,
+                        2046.6343994140625,
+                        2074.921875,
+                        2091.90576171875,
+                        2181.781982421875,
+                        2193.1044921875,
+                        2301.796875,
+                        2305.57373046875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 1970.2669677734375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 9.878175735473633,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 1956.571044921875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 2032.874755859375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.001069999998435378,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 56264.75390625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 4704.1259765625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 19327352832,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vjhii9vkt",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "24576"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        3028.8603515625,
+                        2764.19140625,
+                        3040.5966796875,
+                        2768.43896484375,
+                        2617.079833984375,
+                        2788.55224609375,
+                        2694.61865234375,
+                        2605.33154296875,
+                        2343.13916015625,
+                        3120.91552734375,
+                        3287.431640625,
+                        3178.251220703125,
+                        3288.73193359375,
+                        3160.04052734375,
+                        3280.574951171875,
+                        3050.13671875,
+                        3289.3251953125,
+                        3160.099853515625,
+                        3414.81884765625,
+                        3017.58935546875,
+                        3419.6533203125,
+                        2954.987548828125,
+                        3415.7060546875,
+                        3313.562744140625,
+                        3126.703125
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        76129.3359375
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 3120.91552734375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        2343.13916015625,
+                        2605.33154296875,
+                        2617.079833984375,
+                        2694.61865234375,
+                        2764.19140625,
+                        2768.43896484375,
+                        2788.55224609375,
+                        2954.987548828125,
+                        3017.58935546875,
+                        3028.8603515625,
+                        3040.5966796875,
+                        3050.13671875,
+                        3120.91552734375,
+                        3126.703125,
+                        3160.04052734375,
+                        3160.099853515625,
+                        3178.251220703125,
+                        3280.574951171875,
+                        3287.431640625,
+                        3288.73193359375,
+                        3289.3251953125,
+                        3313.562744140625,
+                        3414.81884765625,
+                        3415.7060546875,
+                        3419.6533203125
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 3045.173583984375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 8.54197883605957,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 3016.842529296875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 2632.331787109375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0010300000431016088,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 85461.3671875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 6516.119140625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 25769803776,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vmhim8tyo",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "32768"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        3853.2666015625,
+                        3886.1015625,
+                        5115.21826171875,
+                        5026.69189453125,
+                        5235.17578125,
+                        4872.4716796875,
+                        5132.55517578125,
+                        5005.44677734375,
+                        4991.5078125,
+                        5231.11572265625,
+                        5124.02392578125,
+                        4976.056640625,
+                        4516.599609375,
+                        4231.59130859375,
+                        4419.015625,
+                        5248.64208984375,
+                        4982.7724609375,
+                        5110.0849609375,
+                        4878.1611328125,
+                        4998.57080078125,
+                        5241.365234375,
+                        4988.142578125,
+                        5104.666015625,
+                        5042.3330078125,
+                        5242.12109375
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        122453.703125
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 5005.44677734375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        3853.2666015625,
+                        3886.1015625,
+                        4231.59130859375,
+                        4419.015625,
+                        4516.599609375,
+                        4872.4716796875,
+                        4878.1611328125,
+                        4976.056640625,
+                        4982.7724609375,
+                        4988.142578125,
+                        4991.5078125,
+                        4998.57080078125,
+                        5005.44677734375,
+                        5026.69189453125,
+                        5042.3330078125,
+                        5104.666015625,
+                        5110.0849609375,
+                        5115.21826171875,
+                        5124.02392578125,
+                        5132.55517578125,
+                        5231.11572265625,
+                        5235.17578125,
+                        5241.365234375,
+                        5242.12109375,
+                        5248.64208984375
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 4898.14794921875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 7.067111015319824,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 4861.92138671875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 3672.6513671875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0011599999852478504,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 136255.703125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 8641.791015625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 34359738360,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4vsx4nqpke",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "49152"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        10030.28515625,
+                        11826.640625,
+                        11312.908203125,
+                        11705.654296875,
+                        11680.1962890625,
+                        8839.6865234375,
+                        11551.7392578125,
+                        11571.3916015625,
+                        11835.6923828125,
+                        11453.2353515625,
+                        11605.9306640625,
+                        8940.4033203125,
+                        11865.8056640625,
+                        11484.7822265625,
+                        11873.26171875,
+                        11751.0361328125,
+                        10353.6728515625,
+                        10199.7373046875,
+                        11871.744140625,
+                        11474.4306640625,
+                        11605.080078125,
+                        11873.4697265625,
+                        9049.4306640625,
+                        11901.9755859375,
+                        11656.3447265625
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        279314.5625
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 11605.080078125,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        8839.6865234375,
+                        8940.4033203125,
+                        9049.4306640625,
+                        10030.28515625,
+                        10199.7373046875,
+                        10353.6728515625,
+                        11312.908203125,
+                        11453.2353515625,
+                        11474.4306640625,
+                        11484.7822265625,
+                        11551.7392578125,
+                        11571.3916015625,
+                        11605.080078125,
+                        11605.9306640625,
+                        11656.3447265625,
+                        11680.1962890625,
+                        11705.654296875,
+                        11751.0361328125,
+                        11826.640625,
+                        11835.6923828125,
+                        11865.8056640625,
+                        11871.744140625,
+                        11873.26171875,
+                        11873.4697265625,
+                        11901.9755859375
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 11172.5810546875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 4.653005123138428,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 11076.6279296875,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 6286.50244140625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0011690000537782907,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 298766.28125,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 12748.9208984375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 51539607552,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4w12u3b2yh",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "65536"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        12769.771484375,
+                        13224.5673828125,
+                        13362.078125,
+                        13352.8701171875,
+                        13082.48046875,
+                        13663.6923828125,
+                        13429.2978515625,
+                        13862.5986328125,
+                        13125.1337890625,
+                        13357.724609375,
+                        13273.0966796875,
+                        13387.51171875,
+                        13702.9580078125,
+                        13471.4306640625,
+                        14072.8115234375,
+                        13499.853515625,
+                        13467.734375,
+                        13809.033203125,
+                        13458.669921875,
+                        13712.7294921875,
+                        13408.955078125,
+                        13633.962890625,
+                        13425.6748046875,
+                        13846.9150390625,
+                        13427.5068359375
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        336829.09375
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 13429.2978515625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        12769.771484375,
+                        13082.48046875,
+                        13125.1337890625,
+                        13224.5673828125,
+                        13273.0966796875,
+                        13352.8701171875,
+                        13357.724609375,
+                        13362.078125,
+                        13387.51171875,
+                        13408.955078125,
+                        13425.6748046875,
+                        13427.5068359375,
+                        13429.2978515625,
+                        13458.669921875,
+                        13467.734375,
+                        13471.4306640625,
+                        13499.853515625,
+                        13633.962890625,
+                        13663.6923828125,
+                        13702.9580078125,
+                        13712.7294921875,
+                        13809.033203125,
+                        13846.9150390625,
+                        13862.5986328125,
+                        14072.8115234375
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 13473.162109375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 5.102577209472656,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 13467.6015625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 15584.3740234375,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0014900000533089042,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 373430.15625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 17115.0625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.0041600000113248825,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 68719476720,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4wp29n1cov",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "98304"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        20215.115234375,
+                        37616.06640625,
+                        43946.3515625,
+                        39627.109375,
+                        44706.09375,
+                        40400.234375,
+                        45393.46875,
+                        44396.609375,
+                        41382.34765625,
+                        45626.0625,
+                        41490.58203125,
+                        45754.98046875,
+                        40952.69140625,
+                        45477.17578125,
+                        42321.19921875,
+                        47020.14453125,
+                        43873.38671875,
+                        43912.18359375,
+                        47150.39453125,
+                        42366.19921875,
+                        47108.71875,
+                        41467.9296875,
+                        46821.8984375,
+                        44015.42578125,
+                        48348.26171875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        1071390.625
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 43946.3515625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        20215.115234375,
+                        37616.06640625,
+                        39627.109375,
+                        40400.234375,
+                        40952.69140625,
+                        41382.34765625,
+                        41467.9296875,
+                        41490.58203125,
+                        42321.19921875,
+                        42366.19921875,
+                        43873.38671875,
+                        43912.18359375,
+                        43946.3515625,
+                        44015.42578125,
+                        44396.609375,
+                        44706.09375,
+                        45393.46875,
+                        45477.17578125,
+                        45626.0625,
+                        45754.98046875,
+                        46821.8984375,
+                        47020.14453125,
+                        47108.71875,
+                        47150.39453125,
+                        48348.26171875
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 42855.625,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 2.4720091819763184,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 41698.55859375,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 20246.306640625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0008500000112690032,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 1117400.0,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 25335.7890625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 103079215104,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                },
+                {
+                  "id": "06p4x9y3lm8k1",
+                  "sweep_point": {
+                    "GpuUmstream": {
+                      "transfer_mb": {
+                        "description": "",
+                        "value": "131072"
+                      }
+                    }
+                  },
+                  "measurements": [
+                    {
+                      "name": "execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        34043.39453125,
+                        34999.578125,
+                        34978.4609375,
+                        33935.40625,
+                        35094.41015625,
+                        34091.68359375,
+                        35168.0625,
+                        34954.71875,
+                        36208.671875,
+                        33796.0859375,
+                        34320.3203125,
+                        34064.15625,
+                        35129.359375,
+                        36433.6484375,
+                        34624.859375,
+                        34769.6484375,
+                        34820.8828125,
+                        35111.65234375,
+                        35162.2890625,
+                        34577.8046875,
+                        34684.125,
+                        34709.6328125,
+                        35962.06640625,
+                        34954.32421875,
+                        34786.50390625
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_size_vector",
+                      "unit": "",
+                      "data": [
+                        25
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "batch_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        871381.6875
+                      ],
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "repetitions",
+                      "unit": "",
+                      "data": 25,
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "batch_count",
+                      "unit": "",
+                      "data": 1,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "median",
+                      "unit": "ms",
+                      "data": 34820.8828125,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "sorted_execution_time_vector",
+                      "unit": "ms",
+                      "data": [
+                        33796.0859375,
+                        33935.40625,
+                        34043.39453125,
+                        34064.15625,
+                        34091.68359375,
+                        34320.3203125,
+                        34577.8046875,
+                        34624.859375,
+                        34684.125,
+                        34709.6328125,
+                        34769.6484375,
+                        34786.50390625,
+                        34820.8828125,
+                        34954.32421875,
+                        34954.71875,
+                        34978.4609375,
+                        34999.578125,
+                        35094.41015625,
+                        35111.65234375,
+                        35129.359375,
+                        35162.2890625,
+                        35168.0625,
+                        35962.06640625,
+                        36208.671875,
+                        36433.6484375
+                      ],
+                      "granularity": "EVERY_ELEMENT"
+                    },
+                    {
+                      "name": "mean",
+                      "unit": "ms",
+                      "data": 34855.26953125,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "coefficient_of_variation",
+                      "unit": "%",
+                      "data": 100.0,
+                      "granularity": "EVERY_BATCH"
+                    },
+                    {
+                      "name": "memory_bandwidth",
+                      "unit": "GB/s",
+                      "data": 3.9444565773010254,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "harmonic_mean",
+                      "unit": "ms",
+                      "data": 34843.5703125,
+                      "granularity": "ON_DEMAND"
+                    },
+                    {
+                      "name": "warmup_time",
+                      "unit": "ms",
+                      "data": 45001.28515625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "host_setup_time",
+                      "unit": "ms",
+                      "data": 0.0014799999771639705,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "cpu_time",
+                      "unit": "ms",
+                      "data": 959803.0625,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "device_setup_time",
+                      "unit": "ms",
+                      "data": 33855.51171875,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "fetch_results_time",
+                      "unit": "ms",
+                      "data": 0.00431999983265996,
+                      "granularity": "ONCE"
+                    },
+                    {
+                      "name": "memory_usage",
+                      "unit": "bytes",
+                      "data": 137438953464,
+                      "granularity": "ONCE"
+                    }
+                  ]
+                }
+              ],
+              "hardware": {
+                "card_name": "AMD Instinct MI210"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

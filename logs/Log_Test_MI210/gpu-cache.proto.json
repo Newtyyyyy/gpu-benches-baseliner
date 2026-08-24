@@ -1,0 +1,213 @@
+{
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "gpu-cache": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuCache": {
+            "working_set_elements": {
+              "value": "4096"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
+          }
+        }
+      }
+    },
+    "hip": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "Backend": {
+            "max_clock_value": {
+              "value": "-1"
+            },
+            "min_clock_value": {
+              "value": "-1"
+            },
+            "lock_clock": {
+              "value": "0"
+            },
+            "device": {
+              "value": "0"
+            }
+          }
+        }
+      }
+    },
+    "StoppingCriterion": {
+      "default": {
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "value": "100"
+            }
+          }
+        }
+      }
+    },
+    "Benchmark": {
+      "default": {
+        "options": {
+          "Benchmark": {
+            "validate_workload": {
+              "value": "0"
+            },
+            "batch_size": {
+              "value": "10"
+            },
+            "warmup": {
+              "value": "1"
+            },
+            "flush": {
+              "value": "1"
+            },
+            "block": {
+              "value": "1"
+            },
+            "block_duration": {
+              "value": "1000.000000"
+            },
+            "block_queue_size": {
+              "value": "64"
+            },
+            "dynamic_batch": {
+              "value": "0"
+            },
+            "minimal_batch_duration": {
+              "value": "10.000000"
+            },
+            "warm_cool": {
+              "value": "1"
+            },
+            "warm_cool_timeout": {
+              "value": "60"
+            },
+            "max_gpu_temp": {
+              "value": "70.000000"
+            },
+            "min_gpu_temp": {
+              "value": "55.000000"
+            }
+          }
+        }
+      }
+    }
+  },
+  "stats_presets": {
+    "default": {
+      "description": "Default preset",
+      "stat_names": [
+        "Median",
+        "Mean",
+        "CoefficientOfVariation"
+      ],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "default": {
+      "description": "Default Recipe",
+      "benchmark": {
+        "impl": "Benchmark",
+        "preset": "default"
+      },
+      "stopping": {
+        "impl": "StoppingCriterion",
+        "preset": "default"
+      },
+      "stats": {
+        "preset": "default"
+      },
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "GpuCache",
+            "option": "working_set_elements",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "128",
+                "256",
+                "512",
+                "768",
+                "1024",
+                "2048",
+                "3072",
+                "4096",
+                "5120",
+                "6144",
+                "7168",
+                "8192",
+                "10240",
+                "12288",
+                "14336",
+                "16384",
+                "24576",
+                "32768",
+                "49152",
+                "65536",
+                "131072",
+                "262144",
+                "524288",
+                "1048576",
+                "2097152",
+                "4194304",
+                "4666368",
+                "5459968",
+                "6388224",
+                "7474176",
+                "8744960",
+                "10231808",
+                "11971072",
+                "14006272",
+                "16387072",
+                "19172864",
+                "22432768",
+                "26246144",
+                "30707712",
+                "35928576"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "campaigns": [
+    {
+      "name": "cache-hip",
+      "recipe": "default",
+      "workloads": [
+        {
+          "impl": "gpu-cache",
+          "preset": "default"
+        }
+      ],
+      "backends": [
+        {
+          "impl": "hip",
+          "preset": "default"
+        }
+      ],
+      "on_incompatible": "Skip"
+    }
+  ]
+}
