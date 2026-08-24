@@ -64,7 +64,7 @@ The `length` values are deliberately odd, non-power-of-two numbers. Powers of tw
 | `length` | `sweep > enumerated` | Range of reuse footprints |
 | `lock_clock` | `cuda > Backend` | Recommended `1`: small footprints let the GPU boost |
 | `batch_size` | `Benchmark` | Repetitions per batch |
-| `flush` | `Benchmark` | Flush L2 between batches (recommended `1`) |
+| `flush` | `Benchmark` | Flush L2 before every repetition (recommended `1`) |
 
 ---
 

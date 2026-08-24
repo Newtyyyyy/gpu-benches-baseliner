@@ -50,7 +50,7 @@ The exponential series (`cache_exp_series`) generates values rounded to the near
 | `batch_size` | `Benchmark` | Repetitions per batch |
 | `max_nb_repetition` | `StoppingCriterion` | Overall repetition cap |
 | `warmup` | `Benchmark` | Warmup run before measuring (recommended: `1`) |
-| `flush` | `Benchmark` | Flush L2 between batches (recommended: `1`) |
+| `flush` | `Benchmark` | Flush L2 before every repetition (recommended: `1`) |
 
 ---
 
@@ -58,5 +58,5 @@ The exponential series (`cache_exp_series`) generates values rounded to the near
 
 - Any value of N missing from the precompiled list raises `std::runtime_error: cache: unsupported working_set_elements value`.
 - Without `lock_clock`, the GPU may boost its clock on small working sets (L1), skewing the comparison against the DRAM points.
-- Without `flush`, L2 residue from one batch can artificially improve the next one.
+- Without `flush`, L2 residue from one repetition can artificially improve the next one.
 - `BLOCKSIZE` is picked automatically: 512 if N is a multiple of 512, 256 if a multiple of 256, otherwise 128.
