@@ -24,8 +24,9 @@ Every plot in this part compares the **same workload on the same GPU**, changing
 option. The point is to justify the defaults, and to make visible what silently breaks a
 measurement when a knob is wrong.
 
-The options come from the `Benchmark`, `Backend` and `StoppingCriterion` sections of the
-protocol. The measurement loop applies them in this order:
+Two options are covered here, the two that were actually varied during this work: the L2 flush
+and the thermal control. Both belong to the `Benchmark` section of the protocol. The measurement
+loop applies them in this order:
 
 ```
 setup_device
@@ -45,16 +46,21 @@ setup_device
 ## 1.1 `flush` — L2 flush before every repetition
 
 **Default** `1`. Empties the L2 cache before each timed run, so every repetition starts from a
-cold cache.
+cold cache. Note it happens before *every repetition*, not between batches.
 
-**Expected** No effect once the working set is far larger than L2, since the data could not
-have stayed resident anyway. A large effect in the L1/L2 region, where a warm cache from the
-previous repetition would inflate the bandwidth.
+**Why it matters** Without it, data left in L2 by the previous repetition is still resident when
+the next one starts. The kernel then reads from cache what it was supposed to read from memory,
+and the reported bandwidth is not the bandwidth of the level being probed.
 
-**Experiment** `gpu-cache`, full `working_set_elements` sweep, `flush=0` vs `flush=1`.
+**Expected** No effect once the working set is far larger than L2 — the data could not have
+stayed resident anyway. A large effect in the L1/L2 region.
+
+**Experiment** `gpu-cache`, full `working_set_elements` sweep, with `Benchmark.flush` as a
+second sweep axis over {0, 1}, so both curves come from a single campaign under identical
+thermal conditions.
 
 <!-- figure: figures/flush-gpu-cache.svg -->
-> _(to fill: bandwidth vs working set, two curves)_
+> _(to fill: bandwidth vs working set, one curve per flush value)_
 
 **Observed** _(to fill)_
 
@@ -62,100 +68,26 @@ previous repetition would inflate the bandwidth.
 
 ---
 
-## 1.2 `warmup` — one untimed run first
+## 1.2 `warm_cool` — hold the GPU inside a temperature window
 
-**Default** `1`. Runs the workload once without timing it, and reports the duration separately
-as `warmup_time`.
+**Default** `0`, window `45–60 °C`, `warm_cool_timeout` `3 s`. Before each batch, a warming
+kernel runs until the GPU reaches `min_gpu_temp`, or the GPU is cooled until it drops below
+`max_gpu_temp`. If the window is not reached within the timeout, the run throws.
 
-**Expected** Removes module loading and JIT from the first measurement. The effect should be
-largest where a single run is short, so `gpu-small-kernels` at the low end of its `size` sweep.
+**Why it matters** A campaign is long. Its first benchmarks run on a cold GPU and its last ones
+on a hot, possibly throttled one. That drift is indistinguishable from a real difference between
+the benchmarks unless the temperature is held.
 
-**Experiment** `gpu-small-kernels`, `warmup=0` vs `warmup=1`; compare `warmup_time` against
-the `median`.
+**Expected** The effect should appear as a trend across the runs of a campaign, not inside a
+single run. With `warm_cool=0`, the metric drifts with run index; with `warm_cool=1`, it should
+stay flat.
 
-<!-- figure: figures/warmup-small-kernels.svg -->
-> _(to fill)_
-
-**Observed** _(to fill)_
-
-**Verdict** _(to fill)_
-
----
-
-## 1.3 `block` — queue the whole batch before running it
-
-**Default** `1`. A blocking kernel holds the stream while the whole batch is enqueued, then
-releases it, so per-launch enqueue cost does not land inside the timed section. The stream is
-released every `block_queue_size` (64) runs to keep the queue bounded.
-
-**Expected** Matters where launch overhead is comparable to the kernel itself — again
-`gpu-small-kernels`, and any benchmark at a small sweep point.
-
-**Experiment** `gpu-small-kernels`, `block=0` vs `block=1`, across the `size` sweep.
-
-<!-- figure: figures/block-small-kernels.svg -->
-> _(to fill)_
-
-**Observed** _(to fill)_
-
-**Verdict** _(to fill)_
-
----
-
-## 1.4 `batch_size` and `dynamic_batch`
-
-**Defaults** `batch_size=25`, `dynamic_batch=0`, `minimal_batch_duration=10 ms`. With the
-dynamic mode on, the batch size doubles when a batch runs shorter than the target and halves
-when it runs more than twice as long.
-
-**Expected** Larger batches amortize timer granularity, so the coefficient of variation should
-fall as `batch_size` grows, then flatten once the timer stops being the limit.
-
-**Experiment** One short workload, `batch_size` swept over 1, 5, 25, 100, 400; plot `CoV`.
-
-<!-- figure: figures/batch-size-cov.svg -->
-> _(to fill)_
-
-**Observed** _(to fill)_
-
-**Verdict** _(to fill)_
-
----
-
-## 1.5 `lock_clock` — pin the GPU clocks
-
-**Default** `0`. Locks the clocks, optionally between `min_clock_value` and `max_clock_value`.
-
-**Expected** The most consequential knob of all for `gpu-incore`, where the measured clock
-enters the `rcp_throughput` formula directly: a drifting clock does not add noise, it biases
-the metric. Elsewhere it mostly narrows the spread between repetitions.
-
-**Experiment** `gpu-incore`, `lock_clock=0` vs `lock_clock=1`, plotting both
-`clock_frenquency` and `rcp_throughput` over the sweep.
-
-<!-- figure: figures/lock-clock-incore.svg -->
-> _(to fill)_
-
-**Observed** _(to fill)_
-
-**Verdict** _(to fill)_
-
----
-
-## 1.6 `warm_cool` — hold a temperature window
-
-**Defaults** `0`, window `45–60 °C`, `warm_cool_timeout=3 s`. Before each batch, a warming
-kernel runs until the GPU reaches `min_gpu_temp`, or the GPU is cooled until it drops under
-`max_gpu_temp`. Throws if the window is not reached within the timeout.
-
-**Expected** Matters on long campaigns, where the first benchmarks run on a cold GPU and the
-last ones on a hot, possibly throttled one. Should show up as drift across the 10 runs of a
-campaign rather than within one run.
-
-**Experiment** Same campaign twice, `warm_cool=0` then `1`; plot the metric against run index.
+**Experiment** The same campaign twice, 10 runs each, `warm_cool=0` then `warm_cool=1`, plotting
+the metric against run index. Unlike `flush`, this cannot be a sweep axis: it is a
+time-dependent effect, so the two conditions have to be separate campaigns.
 
 <!-- figure: figures/warm-cool-drift.svg -->
-> _(to fill)_
+> _(to fill: metric vs run index, one curve per warm_cool value)_
 
 **Observed** _(to fill)_
 
