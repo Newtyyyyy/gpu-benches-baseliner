@@ -22,5 +22,6 @@
     "gpu-umstream"
   ],
   "runs_per_benchmark": 10,
-  "notes": "Power cap set with amd-smi before each job. One SLURM job per benchmark. git_version was not populated by the build, so the exact commit is not recorded."
+  "notes": "Power cap set with amd-smi before each job. One SLURM job per benchmark. git_version was not populated by the build, so the exact commit is not recorded.",
+  "file_naming": "Run numbers are zero-padded (run01..run10) so alphabetical order matches numerical order."
 }
