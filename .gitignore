@@ -6,6 +6,8 @@ build
 result*
 gpu-benches/*/hip/
 
-# this branch archives runs: the result* rule above would swallow them
+# this branch archives runs: the result* rule above would swallow them.
+# It also matches RESULTS.md where core.ignorecase is on (Windows).
+!RESULTS.md
 !logs/**
 !figures/**
