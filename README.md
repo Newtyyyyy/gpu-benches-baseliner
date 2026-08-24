@@ -62,11 +62,31 @@ temperature / power stats through NVML, since AMD-SMI is unavailable there.
 
 ## 4. First run
 
+Smoke test — no protocol file involved. One measurement point per workload, on every backend
+compiled into the binary:
+
+```bash
+./build/release-cuda/gpu-benches_exec run --tiny --output-file tiny.json
+```
+
+Full sweep, driven by a protocol file:
+
 ```bash
 ./build/release-cuda/gpu-benches_exec run --protocol-files default-protocol.json --output-file result.json
 ```
 
-Prints `Report saved` and writes `result.json`. On a HIP preset, set the campaign's backend to `hip` in the protocol first.
+Both print `Report saved`. Add `--device N` to pick a GPU.
+
+`--tiny` builds its protocol in memory and picks up whichever backends the binary carries, so
+the exact same command works on `build/release-hip-nvidia/gpu-benches_exec`. It is the quickest
+way to tell a broken build from a broken protocol. `default-protocol.json`, on the other hand,
+hardcodes `"impl": "cuda"`: to run it on a HIP build, switch its campaign backend to `hip` first.
+
+To start a protocol of your own from a file the binary is guaranteed to accept:
+
+```bash
+./build/release-cuda/gpu-benches_exec gen --default-pf my-protocol.json
+```
 
 ## 5. Read the results
 
