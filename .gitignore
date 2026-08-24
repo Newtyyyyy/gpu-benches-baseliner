@@ -5,3 +5,7 @@ build
 .vscode
 result*
 gpu-benches/*/hip/
+
+# this branch archives runs: the result* rule above would swallow them
+!logs/**
+!figures/**
