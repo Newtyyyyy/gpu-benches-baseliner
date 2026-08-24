@@ -1,101 +1,262 @@
 {
-  "baseliner_version": "0.8.0",
-  "presets": [
-    {
-      "implementation": "cuda",
-      "preset_name": "special",
-      "options": {
-        "Backend": {
-          "device": "2"
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "gpu-memcpy": {
+      "default": {
+        "description": "Pinned host-to-device transfer, 1 MB",
+        "options": {
+          "GpuMemcpy": {
+            "pin_memory": {
+              "value": "1"
+            },
+            "transfer_mb": {
+              "value": "1"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
+          }
+        }
+      },
+      "no-pin": {
+        "description": "Pageable host memory instead of pinned",
+        "options": {
+          "GpuMemcpy": {
+            "pin_memory": {
+              "value": "0"
+            },
+            "transfer_mb": {
+              "value": "1"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
+          }
         }
       }
     },
-    {
-      "implementation": "StoppingCriterion",
-      "preset_name": "small",
-      "options": {
-        "StoppingCriterion": {
-          "max_nb_repetition": "50"
+    "gpu-umstream": {
+      "default": {
+        "description": "Unified Memory TRIAD, 1 MB per array with prefetch",
+        "options": {
+          "GpuUmstream": {
+            "prefetch": {
+              "value": "1"
+            },
+            "blocksize": {
+              "value": "256"
+            },
+            "transfer_mb": {
+              "value": "1"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "value": "Reference"
+            },
+            "validation_path": {
+              "value": ""
+            },
+            "seed": {
+              "value": "333"
+            },
+            "work_size": {
+              "value": "50"
+            }
+          }
         }
       }
     },
-    {
-      "implementation": "StoppingCriterion",
-      "preset_name": "medium",
-      "options": {
-        "StoppingCriterion": {
-          "max_nb_repetition": "100"
+    "cuda": {
+      "special": {
+        "description": "CUDA backend on device 2",
+        "options": {
+          "Backend": {
+            "device": {
+              "value": "2"
+            },
+            "lock_clock": {
+              "value": "0"
+            },
+            "max_clock_value": {
+              "value": "-1"
+            },
+            "min_clock_value": {
+              "value": "-1"
+            }
+          }
         }
       }
     },
-    {
-      "implementation": "StoppingCriterion",
-      "preset_name": "big",
-      "options": {
-        "StoppingCriterion": {
-          "max_nb_repetition": "500"
+    "StoppingCriterion": {
+      "small": {
+        "description": "Stop after 50 repetitions",
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "value": "50"
+            }
+          }
+        }
+      },
+      "medium": {
+        "description": "Stop after 100 repetitions",
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "value": "100"
+            }
+          }
+        }
+      },
+      "big": {
+        "description": "Stop after 500 repetitions",
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "value": "500"
+            }
+          }
         }
       }
     },
-    {
-      "implementation": "SingleAxeSuite",
-      "preset_name": "worksize-suite",
-      "description": "Benchmarking work sizes",
-      "options": {
-        "SingleAxe": {
-          "values": "[1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]",
-          "option_name": "work_size",
-          "interface_name": "Case"
-        }
-      }
-    },
-    {
-      "implementation": "gpu-memcpy",
-      "preset_name": "no-pin",
-      "description": "Not pinning the host memory",
-      "options": {
-        "gpu-memcpy": {
-          "pin-memory": "0"
+    "Benchmark": {
+      "default": {
+        "description": "Default benchmark settings",
+        "options": {
+          "Benchmark": {
+            "validate_workload": {
+              "value": "0"
+            },
+            "warmup": {
+              "value": "1"
+            },
+            "batch_size": {
+              "value": "25"
+            },
+            "dynamic_batch": {
+              "value": "0"
+            },
+            "block": {
+              "value": "1"
+            },
+            "block_duration": {
+              "value": "1000.0"
+            },
+            "flush": {
+              "value": "1"
+            },
+            "warm_cool": {
+              "value": "0"
+            }
+          }
         }
       }
     }
-  ],
-  "recipes": [
-    {
-      "backend": { "name": "cuda", "preset": "special" },
-      "case": "gpu-memcpy",
-      "stopping_criterion": {
-        "name": "StoppingCriterion",
+  },
+  "stats_presets": {
+    "default": {
+      "description": "Median, mean and coefficient of variation",
+      "stat_names": [
+        "Median",
+        "Mean",
+        "CoefficientOfVariation"
+      ],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "worksize": {
+      "description": "Sweep work_size from 1 to 2048, 50 repetitions max",
+      "benchmark": {
+        "impl": "Benchmark",
+        "preset": "default"
+      },
+      "stopping": {
+        "impl": "StoppingCriterion",
         "preset": "small"
       },
-      "suite": {
-        "name": "SingleAxeSuite",
-        "preset": "worksize-suite"
-      }
-    },
-    {
-      "backend": { "name": "cuda", "preset": "special" },
-      "case": { "name": "gpu-memcpy", "preset": "no-pin" },
-      "stopping_criterion": {
-        "name": "StoppingCriterion",
-        "preset": "small"
+      "stats": {
+        "preset": "default"
       },
-      "suite": {
-        "name": "SingleAxeSuite",
-        "preset": "worksize-suite"
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "Workload",
+            "option": "work_size",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "1",
+                "2",
+                "4",
+                "8",
+                "16",
+                "32",
+                "64",
+                "128",
+                "256",
+                "512",
+                "1024",
+                "2048"
+              ]
+            }
+          }
+        ]
       }
-    },
+    }
+  },
+  "campaigns": [
     {
-      "backend": { "name": "cuda", "preset": "special" },
-      "case": "gpu-umstream",
-      "stopping_criterion": {
-        "name": "StoppingCriterion",
-        "preset": "small"
-      },
-      "suite": {
-        "name": "SingleAxeSuite",
-        "preset": "worksize-suite"
-      }
+      "name": "worksize_example",
+      "recipe": "worksize",
+      "workloads": [
+        {
+          "impl": "gpu-memcpy",
+          "preset": "default"
+        },
+        {
+          "impl": "gpu-memcpy",
+          "preset": "no-pin"
+        },
+        {
+          "impl": "gpu-umstream",
+          "preset": "default"
+        }
+      ],
+      "backends": [
+        {
+          "impl": "cuda",
+          "preset": "special"
+        }
+      ],
+      "on_incompatible": "Skip"
     }
   ]
 }

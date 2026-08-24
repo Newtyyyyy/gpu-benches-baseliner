@@ -42,7 +42,6 @@ Build directories follow `build/<preset-name>/`, and the target is always `gpu-b
 |---|---|---|---|
 | `release-cuda` | `cmake --preset release-cuda` | CUDA Toolkit | `cuda/` |
 | `debug-cuda` | `cmake --preset debug-cuda` | CUDA Toolkit | `cuda/`, `-O0 -g -G`, all warnings |
-| `release-hip` | `cmake --preset release-hip -DBASELINER_BUILD_HIPIFIABLE=ON` | ROCm **and** CUDA present | `hipifiable/` |
 | `release-hip-only` | `cmake --preset release-hip-only -DBASELINER_BUILD_HIPIFIABLE=ON` | ROCm only, no CUDA, real AMD GPU | `hipifiable/` |
 | `release-hip-nvidia` | `export HIP_PATH=<your ROCm install>` then `cmake --preset release-hip-nvidia` | ROCm headers + CUDA Toolkit, NVIDIA GPU | `hipifiable/` |
 

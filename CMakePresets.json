@@ -39,7 +39,10 @@
     },
     {
       "name": "debug-cuda",
-      "inherits": ["base-common", "flags-debug"],
+      "inherits": [
+        "base-common",
+        "flags-debug"
+      ],
       "displayName": "Debug CUDA (Clang/NVCC)",
       "cacheVariables": {
         "CMAKE_CUDA_HOST_COMPILER": "clang++",
@@ -51,7 +54,10 @@
     },
     {
       "name": "release-cuda",
-      "inherits": ["base-common", "flags-release"],
+      "inherits": [
+        "base-common",
+        "flags-release"
+      ],
       "displayName": "Release CUDA (Clang/NVCC)",
       "cacheVariables": {
         "CMAKE_CUDA_HOST_COMPILER": "clang++",
@@ -63,7 +69,10 @@
     },
     {
       "name": "debug-hip",
-      "inherits": ["base-common", "flags-debug"],
+      "inherits": [
+        "base-common",
+        "flags-debug"
+      ],
       "displayName": "Debug HIP (ROCm)",
       "cacheVariables": {
         "CMAKE_HIP_COMPILER": "clang++",
@@ -72,18 +81,11 @@
       }
     },
     {
-      "name": "release-hip",
-      "inherits": ["base-common", "flags-release"],
-      "displayName": "Release HIP (ROCm)",
-      "cacheVariables": {
-        "CMAKE_HIP_COMPILER": "clang++",
-        "CMAKE_HIP_ARCHITECTURES": "native",
-        "CMAKE_HIP_FLAGS_RELEASE": "-O3 -DNDEBUG"
-      }
-    },
-    {
       "name": "release-hip-only",
-      "inherits": ["base-common", "flags-release"],
+      "inherits": [
+        "base-common",
+        "flags-release"
+      ],
       "displayName": "Release HIP-only (ROCm, no CUDA)",
       "cacheVariables": {
         "CMAKE_CUDA_COMPILER": "NOTFOUND",
@@ -94,7 +96,10 @@
     },
     {
       "name": "release-hip-nvidia",
-      "inherits": ["base-common", "flags-release"],
+      "inherits": [
+        "base-common",
+        "flags-release"
+      ],
       "displayName": "Release HIP hipifiable (HIP-on-NVIDIA via nvcc)",
       "description": "Builds hipifiable/ with nvcc under HIP's NVIDIA platform. Needs HIP_PATH set for the headers.",
       "cacheVariables": {
@@ -126,10 +131,6 @@
     {
       "name": "release-cuda",
       "configurePreset": "release-cuda"
-    },
-    {
-      "name": "release-hip",
-      "configurePreset": "release-hip"
     },
     {
       "name": "release-hip-only",
