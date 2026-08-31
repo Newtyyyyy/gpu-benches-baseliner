@@ -115,13 +115,13 @@ it is read against AMD's published figures rather than against the first two.
 
 _(to fill: bandwidth per memory level, three curves; L1/L2 thresholds vs specs)_
 
-<!-- figure: figures/arch-gpu-cache.svg -->
+![gpu-cache, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_cache.png)
 
 ## 2.2 gpu-incore
 
 _(to fill: rcp_throughput vs theoretical 32/N; FP32/FP64 ratio)_
 
-<!-- figure: figures/arch-gpu-incore.svg -->
+![gpu-incore, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_incore.png)
 
 ## 2.3 gpu-l2-stream
 
@@ -129,27 +129,27 @@ _(to fill: rcp_throughput vs theoretical 32/N; FP32/FP64 ratio)_
 
 ## 2.4 gpu-latency
 
-<!-- figure: figures/arch-gpu-latency.svg -->
+![gpu-latency, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_latency.png)
 
 ## 2.5 gpu-memcpy
 
-<!-- figure: figures/arch-gpu-memcpy.svg -->
+![gpu-memcpy, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_memcpy.png)
 
 ## 2.6 gpu-roofline
 
-<!-- figure: figures/arch-gpu-roofline.svg -->
+![gpu-roofline, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_roofline.png)
 
 ## 2.7 gpu-small-kernels
 
-<!-- figure: figures/arch-gpu-small-kernels.svg -->
+![gpu-small-kernels, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_small_kernels.png)
 
 ## 2.8 gpu-strides
 
-<!-- figure: figures/arch-gpu-strides.svg -->
+![gpu-strides, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_strides.png)
 
 ## 2.9 gpu-umstream
 
-<!-- figure: figures/arch-gpu-umstream.svg -->
+![gpu-umstream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_umstream.png)
 
 ---
 
