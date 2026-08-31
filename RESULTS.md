@@ -272,17 +272,49 @@ ran under a **230 W cap with free clocks** (`amd-smi`), while both 2080 Ti campa
 
 # Part 5 — Reproducing this
 
-Each campaign directory under `logs/` carries a `metadata.json` recording the machine, the GPU,
-the driver and toolkit versions, the preset used and the commit the binary was built from, so a
-figure can always be traced back to the conditions that produced it.
+Every figure in this document comes from one of three campaigns, each kept whole under `logs/`:
+
+| Campaign | Backend | Hardware | Used by |
+|---|---|---|---|
+| `Log_Test_RTX2080ti_cuda` | `cuda` | RTX 2080 Ti | Parts 2 and 3 |
+| `Log_Test_RTX2080ti_hip` | `hip` | RTX 2080 Ti | Part 3 |
+| `Log_Test_MI210` | `hip` | AMD Instinct MI210 | Part 4 |
+
+Each directory holds 191 files:
 
 ```
-logs/<date>_<machine>_<variant>/
-├── metadata.json
-├── <benchmark>.proto.json      the protocol actually used
-├── <benchmark>.run<N>.json     one file per repetition of the campaign
-└── run.log
+logs/Log_Test_<target>/
+├── metadata.json                the conditions of the campaign
+├── <benchmark>.proto.json       the protocol actually used          (9)
+├── <benchmark>.run<NN>.json     one file per repetition, NN = 01..10 (90)
+├── <benchmark>.run<NN>.json.log the workload's own output           (90)
+└── run.log                      the orchestrator log
 ```
+
+Run numbers are **zero-padded** so alphabetical order matches numerical order.
+
+`metadata.json` records the machine, the GPU and its PCI address, the backend, the build preset,
+the baseliner version, the throttling policy and the number of runs. Two limits are worth
+stating plainly rather than discovering later:
+
+- **The commit is not recorded.** `git_version` is `not-provided` in all three campaigns: the
+  build did not populate it. The binary that produced these numbers cannot be identified from
+  the results alone.
+- **Driver and toolkit versions are not recorded either.** Neither the campaign files nor the
+  result JSON carry them.
+
+The throttling policy is not the same on both cards, and it is a field to read before comparing
+anything clock-related: the MI210 ran under a **230 W cap with free clocks** (`amd-smi`), while
+both 2080 Ti campaigns had their **clocks pinned to TDP** with no power cap (`nvidia-smi`).
+
+One more thing the result files do not carry: the options of the `Benchmark` section. A report
+holds only `id`, `results` and `hardware`, so the value of `flush` or `warm_cool` for a given
+run exists **only** in that campaign's `.proto.json` and `metadata.json`. Anything varied there
+has to be either promoted to a sweep axis, where it lands in each result's `sweep_point`, or
+recorded by hand in the metadata.
+
+The figures under `figures/` are produced from these campaigns by a notebook that is **not yet
+in this repository**, so they cannot currently be regenerated from a clone alone.
 
 Build and run instructions are in the [README](README.md). The quickest check that a build is
 sane at all:
