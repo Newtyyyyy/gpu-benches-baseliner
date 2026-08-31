@@ -125,7 +125,7 @@ _(to fill: rcp_throughput vs theoretical 32/N; FP32/FP64 ratio)_
 
 ## 2.3 gpu-l2-stream
 
-<!-- figure: figures/arch-gpu-l2-stream.svg -->
+![gpu-l2-stream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_l2_stream.png)
 
 ## 2.4 gpu-latency
 
