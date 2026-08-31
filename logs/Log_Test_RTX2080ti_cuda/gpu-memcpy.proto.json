@@ -1,0 +1,97 @@
+{
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "gpu-memcpy": {
+      "default": {
+        "description": "Pinned H2D memcpy, sweep 128KB→512MB ×16",
+        "options": {
+          "GpuMemcpy": {
+            "pin_memory": { "value": "1" },
+            "transfer_kb": { "value": "128" }
+          }
+        }
+      }
+    },
+    "cuda": {
+      "default": {
+        "description": "CUDA backend, pas de lock d'horloge",
+        "options": {
+          "Backend": {
+            "lock_clock": { "value": "0" },
+            "max_clock_value": { "value": "-1" },
+            "min_clock_value": { "value": "-1" },
+            "device": { "value": "0" }
+          }
+        }
+      }
+    },
+    "Benchmark": {
+      "default": {
+        "description": "5 samples, pas de warmup/flush/blocking kernel",
+        "options": {
+          "Benchmark": {
+            "validate_workload": { "value": "0" },
+            "warmup":            { "value": "0" },
+            "flush":             { "value": "0" },
+            "block":             { "value": "0" },
+            "batch_size":        { "value": "5" },
+            "dynamic_batch":     { "value": "0" },
+            "warm_cool":         { "value": "0" }
+          }
+        }
+      }
+    },
+    "StoppingCriterion": {
+      "default": {
+        "description": "Exactement 200 répétitions fixes",
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": { "value": "200" }
+          }
+        }
+      }
+    }
+  },
+  "stats_presets": {
+    "default": {
+      "description": "Median + Mean + CV",
+      "stat_names": ["Median", "Mean", "CoefficientOfVariation"],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "default": {
+      "description": "Sweep 128KB / 2MB / 32MB / 512MB (×16), 5 samples fixes",
+      "benchmark": { "impl": "Benchmark",         "preset": "default" },
+      "stopping":  { "impl": "StoppingCriterion", "preset": "default" },
+      "stats":     { "preset": "default" },
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "GpuMemcpy",
+            "option":    "transfer_kb",
+            "hint": {
+              "policy":     "Enumerated",
+              "min":        "1",
+              "max":        "1048576",
+              "step":       "1",
+              "enumerated": ["1", "2", "4", "8", "16", "32", "64", "128", "256", "512",
+                             "1024", "2048", "4096", "8192", "16384", "32768", "65536",
+                             "131072", "262144", "524288", "1048576"]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "campaigns": [
+    {
+      "name":     "memcpy",
+      "recipe":   "default",
+      "workloads": [{ "impl": "gpu-memcpy", "preset": "default" }],
+      "backends":  [{ "impl": "cuda",       "preset": "default" }],
+      "on_incompatible": "Skip"
+    }
+  ]
+}

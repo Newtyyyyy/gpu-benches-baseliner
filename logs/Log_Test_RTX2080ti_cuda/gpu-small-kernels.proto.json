@@ -1,0 +1,399 @@
+{
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "cuda": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "Backend": {
+            "max_clock_value": {
+              "description": "-1 means locking to the base clock, else is locking to a specific frequency",
+              "value": "-1"
+            },
+            "min_clock_value": {
+              "description": "-1 means locking to the base clock, else is locking to a specific frequency",
+              "value": "-1"
+            },
+            "lock_clock": {
+              "description": "If the clocks should be locked",
+              "value": "0"
+            },
+            "device": {
+              "description": "The device number to run on",
+              "value": "0"
+            }
+          }
+        }
+      }
+    },
+    "StoppingCriterion": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "description": "Maximum number of repetitions",
+              "value": "100"
+            }
+          }
+        }
+      }
+    },
+    "Benchmark": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "Benchmark": {
+            "validate_workload": {
+              "description": "If you want the workload results to be validated",
+              "value": "0"
+            },
+            "max_gpu_temp": {
+              "description": "If warm_cool, the minimum accepted temperature before cooling down the GPU",
+              "value": "60.000000"
+            },
+            "warm_cool_timeout": {
+              "description": "How long the benchmark warms or cool before throwing",
+              "value": "3"
+            },
+            "minimal_batch_duration": {
+              "description": "If dynamic batch size is set tu true, how long a batch should minimaly be",
+              "value": "10.000000"
+            },
+            "min_gpu_temp": {
+              "description": "If warm_cool, the minimum accepted temperature before warming up the GPU",
+              "value": "45.000000"
+            },
+            "batch_size": {
+              "description": "The size of the batch",
+              "value": "10"
+            },
+            "warmup": {
+              "description": "Having a warmup run",
+              "value": "1"
+            },
+            "flush": {
+              "description": "Enables the flushing of the L2 cache",
+              "value": "1"
+            },
+            "block_queue_size": {
+              "description": "The max size of the blocking queue",
+              "value": "64"
+            },
+            "dynamic_batch": {
+              "description": "If the batch size is dynamic",
+              "value": "0"
+            },
+            "warm_cool": {
+              "description": "Does the Benchmark actively warm or cool the GPU",
+              "value": "0"
+            },
+            "block_duration": {
+              "description": "Duration of the blocking kernel (in ms)",
+              "value": "1000.000000"
+            },
+            "block": {
+              "description": "Using a blocking kernel",
+              "value": "1"
+            }
+          }
+        }
+      }
+    },
+    "gpu-small-kernels": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuSmallKernels": {
+            "size": {
+              "description": "Number of doubles processed by the scale kernel",
+              "value": "1048576"
+            },
+            "block_size": {
+              "description": "CUDA thread block size for the scale kernel launch",
+              "value": "256"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
+            }
+          }
+        }
+      }
+    }
+  },
+  "stats_presets": {
+    "default": {
+      "description": "Default preset",
+      "stat_names": [
+        "Median",
+        "Mean",
+        "CoefficientOfVariation"
+      ],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "default": {
+      "description": "Default Recipe",
+      "benchmark": {
+        "impl": "Benchmark",
+        "preset": "default"
+      },
+      "stopping": {
+        "impl": "StoppingCriterion",
+        "preset": "default"
+      },
+      "stats": {
+        "preset": "default"
+      },
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "GpuSmallKernels",
+            "option": "size",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "4096",
+                "4341",
+                "4601",
+                "4877",
+                "5169",
+                "5479",
+                "5807",
+                "6155",
+                "6524",
+                "6915",
+                "7329",
+                "7768",
+                "8234",
+                "8728",
+                "9251",
+                "9806",
+                "10394",
+                "11017",
+                "11678",
+                "12378",
+                "13120",
+                "13907",
+                "14741",
+                "15625",
+                "16562",
+                "17555",
+                "18608",
+                "19724",
+                "20907",
+                "22161",
+                "23490",
+                "24899",
+                "26392",
+                "27975",
+                "29653",
+                "31432",
+                "33317",
+                "35316",
+                "37434",
+                "39680",
+                "42060",
+                "44583",
+                "47257",
+                "50092",
+                "53097",
+                "56282",
+                "59658",
+                "63237",
+                "67031",
+                "71052",
+                "75315",
+                "79833",
+                "84622",
+                "89699",
+                "95080",
+                "100784",
+                "106831",
+                "113240",
+                "120034",
+                "127236",
+                "134870",
+                "142962",
+                "151539",
+                "160631",
+                "170268",
+                "180484",
+                "191313",
+                "202791",
+                "214958",
+                "227855",
+                "241526",
+                "256017",
+                "271378",
+                "287660",
+                "304919",
+                "323214",
+                "342606",
+                "363162",
+                "384951",
+                "408048",
+                "432530",
+                "458481",
+                "485989",
+                "515148",
+                "546056",
+                "578819",
+                "613548",
+                "650360",
+                "689381",
+                "730743",
+                "774587",
+                "821062",
+                "870325",
+                "922544",
+                "977896",
+                "1036569",
+                "1098763",
+                "1164688",
+                "1234569",
+                "1308643",
+                "1387161",
+                "1470390",
+                "1558613",
+                "1652129",
+                "1751256",
+                "1856331",
+                "1967710",
+                "2085772",
+                "2210918",
+                "2343573",
+                "2484187",
+                "2633238",
+                "2791232",
+                "2958705",
+                "3136227",
+                "3324400",
+                "3523864",
+                "3735295",
+                "3959412",
+                "4196976",
+                "4448794",
+                "4715721",
+                "4998664",
+                "5298583",
+                "5616497",
+                "5953486",
+                "6310695",
+                "6689336",
+                "7090696",
+                "7516137",
+                "7967105",
+                "8445131",
+                "8951838",
+                "9488948",
+                "10058284",
+                "10661781",
+                "11301487",
+                "11979576",
+                "12698350",
+                "13460251",
+                "14267866",
+                "15123937",
+                "16031373",
+                "16993255",
+                "18012850",
+                "19093621",
+                "20239238",
+                "21453592",
+                "22740807",
+                "24105255",
+                "25551570",
+                "27084664",
+                "28709743",
+                "30432327",
+                "32258266",
+                "34193761",
+                "36245386",
+                "38420109",
+                "40725315",
+                "43168833",
+                "45758962",
+                "48504499",
+                "51414768",
+                "54499654",
+                "57769633",
+                "61235810",
+                "64909958",
+                "68804555",
+                "72932828",
+                "77308797",
+                "81947324",
+                "86864163",
+                "92076012",
+                "97600572",
+                "103456606",
+                "109664002",
+                "116243842",
+                "123218472",
+                "130611580"
+              ]
+            }
+          },
+          {
+            "interface": "GpuSmallKernels",
+            "option": "block_size",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "32",
+                "64",
+                "128",
+                "256",
+                "512",
+                "1024"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "campaigns": [
+    {
+      "name": "default",
+      "recipe": "default",
+      "workloads": [
+        {
+          "impl": "gpu-small-kernels",
+          "preset": "default"
+        }
+      ],
+      "backends": [
+        {
+          "impl": "cuda",
+          "preset": "default"
+        }
+      ],
+      "on_incompatible": "Skip"
+    }
+  ]
+}
