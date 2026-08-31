@@ -1,0 +1,28 @@
+{
+  "campaign": "Log_Test_RTX2080ti_hip",
+  "source_directory": "results/hip_nvidia_tdp_20260824_172224",
+  "date": "2026-08-24",
+  "machine": "cachaca (SLURM)",
+  "gpu": "NVIDIA GeForce RTX 2080 Ti (Turing TU102, PCI 00000000:5E:00.0)",
+  "variant": "hip-on-nvidia",
+  "build_preset": "release-hip-nvidia",
+  "backend": "hip",
+  "baseliner_version": "1.0.0",
+  "git_version": "not-provided",
+  "power_cap_watts": null,
+  "clock_policy": "clocks locked to TDP with nvidia-smi before each job (gpuClkMin tdp, gpuClkMax tdp)",
+  "benchmarks": [
+    "gpu-cache",
+    "gpu-incore",
+    "gpu-l2-stream",
+    "gpu-latency",
+    "gpu-memcpy",
+    "gpu-roofline",
+    "gpu-small-kernels",
+    "gpu-strides",
+    "gpu-umstream"
+  ],
+  "runs_per_benchmark": 10,
+  "notes": "Single pass, 17:22:24 to 21:51:40, 10/10 runs OK on all nine benchmarks. Runs were executed in batches of 5, so each benchmark used two SLURM jobs. The CUDA protocols were flipped to the hip backend before the campaign. No power cap in watts on this card: the clocks were pinned to TDP instead, which is why power_cap_watts is null. git_version was not populated by the build, so the exact commit is not recorded. Paired with Log_Test_RTX2080ti_cuda for a backend-to-backend comparison; note that the two campaigns ran on different PCI slots of the same node (3B:00.0 for CUDA, 5E:00.0 here), so they are the same GPU model but not necessarily the same physical card.",
+  "file_naming": "Run numbers are zero-padded (run01..run10) so alphabetical order matches numerical order."
+}

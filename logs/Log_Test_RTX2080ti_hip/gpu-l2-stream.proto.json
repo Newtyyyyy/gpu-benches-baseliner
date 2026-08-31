@@ -1,0 +1,374 @@
+{
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "StoppingCriterion": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "description": "Maximum number of repetitions",
+              "value": "100"
+            }
+          }
+        }
+      }
+    },
+    "Benchmark": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "Benchmark": {
+            "validate_workload": {
+              "description": "If you want the workload results to be validated",
+              "value": "0"
+            },
+            "max_gpu_temp": {
+              "description": "If warm_cool, the minimum accepted temperature before cooling down the GPU",
+              "value": "60.000000"
+            },
+            "warm_cool_timeout": {
+              "description": "How long the benchmark warms or cool before throwing",
+              "value": "3"
+            },
+            "minimal_batch_duration": {
+              "description": "If dynamic batch size is set tu true, how long a batch should minimaly be",
+              "value": "10.000000"
+            },
+            "min_gpu_temp": {
+              "description": "If warm_cool, the minimum accepted temperature before warming up the GPU",
+              "value": "45.000000"
+            },
+            "batch_size": {
+              "description": "The size of the batch",
+              "value": "10"
+            },
+            "warmup": {
+              "description": "Having a warmup run",
+              "value": "1"
+            },
+            "flush": {
+              "description": "Enables the flushing of the L2 cache",
+              "value": "1"
+            },
+            "block_queue_size": {
+              "description": "The max size of the blocking queue",
+              "value": "64"
+            },
+            "dynamic_batch": {
+              "description": "If the batch size is dynamic",
+              "value": "0"
+            },
+            "warm_cool": {
+              "description": "Does the Benchmark actively warm or cool the GPU",
+              "value": "0"
+            },
+            "block_duration": {
+              "description": "Duration of the blocking kernel (in ms)",
+              "value": "1000.000000"
+            },
+            "block": {
+              "description": "Using a blocking kernel",
+              "value": "1"
+            }
+          }
+        }
+      }
+    },
+    "gpu-l2-stream": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuL2Stream": {
+            "kernel_type": {
+              "description": "STREAM kernel: read, scale, write or triad",
+              "value": "triad"
+            },
+            "length": {
+              "description": "Number of doubles the per-thread index wraps around (controls the reuse footprint)",
+              "value": "1040353"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
+            }
+          }
+        }
+      }
+    },
+    "hip": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "Backend": {
+            "max_clock_value": {
+              "description": "-1 means locking to the base clock, else is locking to a specific frequency",
+              "value": "-1"
+            },
+            "min_clock_value": {
+              "description": "-1 means locking to the base clock, else is locking to a specific frequency",
+              "value": "-1"
+            },
+            "lock_clock": {
+              "description": "If the clocks should be locked",
+              "value": "0"
+            },
+            "device": {
+              "description": "The device number to run on",
+              "value": "0"
+            }
+          }
+        }
+      }
+    }
+  },
+  "stats_presets": {
+    "default": {
+      "description": "Default preset",
+      "stat_names": [
+        "Median",
+        "Mean",
+        "CoefficientOfVariation"
+      ],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "default": {
+      "description": "Default Recipe",
+      "benchmark": {
+        "impl": "Benchmark",
+        "preset": "default"
+      },
+      "stopping": {
+        "impl": "StoppingCriterion",
+        "preset": "default"
+      },
+      "stats": {
+        "preset": "default"
+      },
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "GpuL2Stream",
+            "option": "kernel_type",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "read",
+                "scale",
+                "write",
+                "triad"
+              ]
+            }
+          },
+          {
+            "interface": "GpuL2Stream",
+            "option": "length",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "24545",
+                "32737",
+                "40929",
+                "49121",
+                "57313",
+                "65505",
+                "81889",
+                "90081",
+                "98273",
+                "114657",
+                "122849",
+                "139233",
+                "155617",
+                "163809",
+                "180193",
+                "196577",
+                "212961",
+                "229345",
+                "245729",
+                "262113",
+                "286689",
+                "303073",
+                "319457",
+                "344033",
+                "368609",
+                "384993",
+                "409569",
+                "434145",
+                "458721",
+                "491489",
+                "516065",
+                "548833",
+                "573409",
+                "606177",
+                "638945",
+                "671713",
+                "704481",
+                "745441",
+                "778209",
+                "819169",
+                "860129",
+                "901089",
+                "950241",
+                "991201",
+                "1040353",
+                "1089505",
+                "1146849",
+                "1196001",
+                "1253345",
+                "1310689",
+                "1368033",
+                "1433569",
+                "1499105",
+                "1564641",
+                "1638369",
+                "1712097",
+                "1785825",
+                "1867745",
+                "1949665",
+                "2039777",
+                "2129889",
+                "2220001",
+                "2318305",
+                "2416609",
+                "2523105",
+                "2629601",
+                "2744289",
+                "2858977",
+                "2981857",
+                "3112929",
+                "3244001",
+                "3383265",
+                "3522529",
+                "3669985",
+                "3825633",
+                "3989473",
+                "4153313",
+                "4333537",
+                "4513761",
+                "4702177",
+                "4898785",
+                "5103585",
+                "5316577",
+                "5537761",
+                "5767137",
+                "6004705",
+                "6250465",
+                "6504417",
+                "6774753",
+                "7053281",
+                "7348193",
+                "7651297",
+                "7962593",
+                "8290273",
+                "8626145",
+                "8978401",
+                "9347041",
+                "9732065",
+                "10125281",
+                "10543073",
+                "10969057",
+                "11419617",
+                "11878369",
+                "12361697",
+                "12869601",
+                "13393889",
+                "13934561",
+                "14499809",
+                "15089633",
+                "15695841",
+                "16334817",
+                "16998369",
+                "17686497",
+                "18399201",
+                "19144673",
+                "19914721",
+                "20725729",
+                "21561313",
+                "22429665",
+                "23330785",
+                "24272865",
+                "25255905",
+                "26271713",
+                "27328481",
+                "28434401",
+                "29581281",
+                "30769121",
+                "32006113",
+                "33300449",
+                "34635745",
+                "36028385",
+                "37478369",
+                "38985697",
+                "40558561",
+                "42188769",
+                "43884513",
+                "45645793",
+                "47480801",
+                "49381345",
+                "51372001",
+                "53428193",
+                "55574497",
+                "57810913",
+                "60129249",
+                "62537697",
+                "65052641",
+                "67657697",
+                "70377441",
+                "73195489",
+                "76136417",
+                "79183841",
+                "82362337",
+                "85663713",
+                "89096161",
+                "92667873",
+                "96387041"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "campaigns": [
+    {
+      "name": "default",
+      "recipe": "default",
+      "workloads": [
+        {
+          "impl": "gpu-l2-stream",
+          "preset": "default"
+        }
+      ],
+      "backends": [
+        {
+          "impl": "hip",
+          "preset": "default"
+        }
+      ],
+      "on_incompatible": "Skip"
+    }
+  ]
+}

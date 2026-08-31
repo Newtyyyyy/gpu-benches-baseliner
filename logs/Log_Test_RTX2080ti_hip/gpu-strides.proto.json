@@ -1,0 +1,299 @@
+{
+  "baseliner_version": "1.0.0",
+  "presets": {
+    "StoppingCriterion": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "StoppingCriterion": {
+            "max_nb_repetition": {
+              "description": "Maximum number of repetitions",
+              "value": "100"
+            }
+          }
+        }
+      }
+    },
+    "Benchmark": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "Benchmark": {
+            "validate_workload": {
+              "description": "If you want the workload results to be validated",
+              "value": "0"
+            },
+            "max_gpu_temp": {
+              "description": "If warm_cool, the minimum accepted temperature before cooling down the GPU",
+              "value": "60.000000"
+            },
+            "warm_cool_timeout": {
+              "description": "How long the benchmark warms or cool before throwing",
+              "value": "3"
+            },
+            "minimal_batch_duration": {
+              "description": "If dynamic batch size is set tu true, how long a batch should minimaly be",
+              "value": "10.000000"
+            },
+            "min_gpu_temp": {
+              "description": "If warm_cool, the minimum accepted temperature before warming up the GPU",
+              "value": "45.000000"
+            },
+            "batch_size": {
+              "description": "The size of the batch",
+              "value": "10"
+            },
+            "warmup": {
+              "description": "Having a warmup run",
+              "value": "1"
+            },
+            "flush": {
+              "description": "Enables the flushing of the L2 cache",
+              "value": "1"
+            },
+            "block_queue_size": {
+              "description": "The max size of the blocking queue",
+              "value": "64"
+            },
+            "dynamic_batch": {
+              "description": "If the batch size is dynamic",
+              "value": "0"
+            },
+            "warm_cool": {
+              "description": "Does the Benchmark actively warm or cool the GPU",
+              "value": "0"
+            },
+            "block_duration": {
+              "description": "Duration of the blocking kernel (in ms)",
+              "value": "1000.000000"
+            },
+            "block": {
+              "description": "Using a blocking kernel",
+              "value": "1"
+            }
+          }
+        }
+      }
+    },
+    "gpu-strides": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "GpuStrides": {
+            "kernel_type": {
+              "description": "Access pattern: stride (strided re-reads) or block (pitched 2D access)",
+              "value": "stride"
+            },
+            "precision": {
+              "description": "Floating-point precision: float or double",
+              "value": "float"
+            },
+            "arg": {
+              "description": "Stride (kernel_type=stride) or warp count (kernel_type=block, rounded down to a divisor of 1024)",
+              "value": "1"
+            }
+          },
+          "Workload": {
+            "validation_type": {
+              "description": "How the workload should be validated",
+              "value": "Reference"
+            },
+            "validation_path": {
+              "description": "if the validation is file based, the path where the comparison files is located",
+              "value": ""
+            },
+            "seed": {
+              "description": "The seed used for the generation of input data",
+              "value": "333"
+            },
+            "work_size": {
+              "description": "The work size to apply, 1 = 32MFlop & 1 = 1MB",
+              "value": "50"
+            }
+          }
+        }
+      }
+    },
+    "hip": {
+      "default": {
+        "description": "Default preset",
+        "options": {
+          "Backend": {
+            "max_clock_value": {
+              "description": "-1 means locking to the base clock, else is locking to a specific frequency",
+              "value": "-1"
+            },
+            "min_clock_value": {
+              "description": "-1 means locking to the base clock, else is locking to a specific frequency",
+              "value": "-1"
+            },
+            "lock_clock": {
+              "description": "If the clocks should be locked",
+              "value": "0"
+            },
+            "device": {
+              "description": "The device number to run on",
+              "value": "0"
+            }
+          }
+        }
+      }
+    }
+  },
+  "stats_presets": {
+    "default": {
+      "description": "Default preset",
+      "stat_names": [
+        "Median",
+        "Mean",
+        "CoefficientOfVariation"
+      ],
+      "stat_options": {}
+    }
+  },
+  "recipes": {
+    "default": {
+      "description": "Default Recipe",
+      "benchmark": {
+        "impl": "Benchmark",
+        "preset": "default"
+      },
+      "stopping": {
+        "impl": "StoppingCriterion",
+        "preset": "default"
+      },
+      "stats": {
+        "preset": "default"
+      },
+      "sweep": {
+        "strategy": "FullGrid",
+        "axes": [
+          {
+            "interface": "GpuStrides",
+            "option": "kernel_type",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "stride",
+                "block"
+              ]
+            }
+          },
+          {
+            "interface": "GpuStrides",
+            "option": "precision",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "float",
+                "double"
+              ]
+            }
+          },
+          {
+            "interface": "GpuStrides",
+            "option": "arg",
+            "hint": {
+              "policy": "Enumerated",
+              "min": "",
+              "max": "",
+              "step": "1",
+              "enumerated": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26",
+                "27",
+                "28",
+                "29",
+                "30",
+                "31",
+                "32",
+                "33",
+                "34",
+                "35",
+                "36",
+                "37",
+                "38",
+                "39",
+                "40",
+                "41",
+                "42",
+                "43",
+                "44",
+                "45",
+                "46",
+                "47",
+                "48",
+                "49",
+                "50",
+                "51",
+                "52",
+                "53",
+                "54",
+                "55",
+                "56",
+                "57",
+                "58",
+                "59",
+                "60",
+                "61",
+                "62",
+                "63",
+                "64"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "campaigns": [
+    {
+      "name": "default",
+      "recipe": "default",
+      "workloads": [
+        {
+          "impl": "gpu-strides",
+          "preset": "default"
+        }
+      ],
+      "backends": [
+        {
+          "impl": "hip",
+          "preset": "default"
+        }
+      ],
+      "on_incompatible": "Skip"
+    }
+  ]
+}

@@ -1,0 +1,392 @@
+==============================================================================
+Campaign log — Log_Test_RTX2080ti_hip
+
+The campaign ran in a single pass on 2026-08-24 and completed 10/10 runs for
+all nine benchmarks. Runs were issued in batches of 5, so each benchmark
+occupied two SLURM jobs in sequence. The orchestrator log is reproduced below
+unchanged.
+
+  run_20260824_172224.log                    2026-08-24 17:22 — single pass, completed (10/10 on all benchmarks)
+==============================================================================
+
+
+==============================================================================
+### run_20260824_172224.log
+==============================================================================
+
+=== Campagne HIP-sur-NVIDIA @TDP dans /home/hmeli/gpu-baseliner/results/hip_nvidia_tdp_20260824_172224 17:22:24 ===
+    9 benchmarks x 10 runs, lots de 5
+  exec: /home/hmeli/gpu-baseliner/build/release-hip-nvidia/gpu-benches_exec
+  9 protocoles hip prêts dans /home/hmeli/gpu-baseliner/results/hip_nvidia_tdp_20260824_172224
+
+--- JOB gpu-memcpy (memcpy-protocol.json -> hip) : cible 10 runs, lots de 5 17:22:25 ---
+  [gpu-memcpy] 0/10 faits -> nouveau job srun (lot de 5) 17:22:25
+  [gpu-memcpy] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-memcpy] lock clocks TDP OK
+  [gpu-memcpy] run 1/10 17:22:25
+    OK
+  [gpu-memcpy] run 2/10 17:23:33
+    OK
+  [gpu-memcpy] run 3/10 17:24:41
+    OK
+  [gpu-memcpy] run 4/10 17:25:49
+    OK
+  [gpu-memcpy] run 5/10 17:26:57
+    OK
+  [gpu-memcpy] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-memcpy] lot terminé (le job s'est fermé) 17:28:05
+  [gpu-memcpy] 5/10 faits -> nouveau job srun (lot de 5) 17:28:05
+  [gpu-memcpy] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-memcpy] lock clocks TDP OK
+  [gpu-memcpy] run 1/10 déjà OK, skip
+  [gpu-memcpy] run 2/10 déjà OK, skip
+  [gpu-memcpy] run 3/10 déjà OK, skip
+  [gpu-memcpy] run 4/10 déjà OK, skip
+  [gpu-memcpy] run 5/10 déjà OK, skip
+  [gpu-memcpy] run 6/10 17:28:05
+    OK
+  [gpu-memcpy] run 7/10 17:29:13
+    OK
+  [gpu-memcpy] run 8/10 17:30:21
+    OK
+  [gpu-memcpy] run 9/10 17:31:29
+    OK
+  [gpu-memcpy] run 10/10 17:32:36
+    OK
+  [gpu-memcpy] lot terminé (le job s'est fermé) 17:33:43
+
+--- JOB gpu-latency (latency-protocol.json -> hip) : cible 10 runs, lots de 5 17:33:43 ---
+  [gpu-latency] 0/10 faits -> nouveau job srun (lot de 5) 17:33:43
+  [gpu-latency] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-latency] lock clocks TDP OK
+  [gpu-latency] run 1/10 17:33:44
+    OK
+  [gpu-latency] run 2/10 18:33:40
+    OK
+  [gpu-latency] run 3/10 19:33:36
+    OK
+  [gpu-latency] run 4/10 20:33:32
+    OK
+  [gpu-latency] run 5/10 21:33:30
+    OK
+  [gpu-latency] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-latency] lot terminé (le job s'est fermé) 22:33:27
+  [gpu-latency] 5/10 faits -> nouveau job srun (lot de 5) 22:33:27
+  [gpu-latency] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-latency] lock clocks TDP OK
+  [gpu-latency] run 1/10 déjà OK, skip
+  [gpu-latency] run 2/10 déjà OK, skip
+  [gpu-latency] run 3/10 déjà OK, skip
+  [gpu-latency] run 4/10 déjà OK, skip
+  [gpu-latency] run 5/10 déjà OK, skip
+  [gpu-latency] run 6/10 22:33:27
+    OK
+  [gpu-latency] run 7/10 23:33:24
+    OK
+  [gpu-latency] run 8/10 00:33:21
+    OK
+  [gpu-latency] run 9/10 01:33:20
+    OK
+  [gpu-latency] run 10/10 02:33:16
+    OK
+  [gpu-latency] lot terminé (le job s'est fermé) 03:33:15
+
+--- JOB gpu-strides (strides-protocol.json -> hip) : cible 10 runs, lots de 5 03:33:15 ---
+  [gpu-strides] 0/10 faits -> nouveau job srun (lot de 5) 03:33:15
+  [gpu-strides] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-strides] lock clocks TDP OK
+  [gpu-strides] run 1/10 03:33:16
+    OK
+  [gpu-strides] run 2/10 05:35:32
+    OK
+  [gpu-strides] run 3/10 07:37:48
+    OK
+  [gpu-strides] run 4/10 09:40:04
+    OK
+  [gpu-strides] run 5/10 11:42:20
+    OK
+  [gpu-strides] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-strides] lot terminé (le job s'est fermé) 13:44:36
+  [gpu-strides] 5/10 faits -> nouveau job srun (lot de 5) 13:44:36
+  [gpu-strides] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-strides] lock clocks TDP OK
+  [gpu-strides] run 1/10 déjà OK, skip
+  [gpu-strides] run 2/10 déjà OK, skip
+  [gpu-strides] run 3/10 déjà OK, skip
+  [gpu-strides] run 4/10 déjà OK, skip
+  [gpu-strides] run 5/10 déjà OK, skip
+  [gpu-strides] run 6/10 13:44:36
+    OK
+  [gpu-strides] run 7/10 15:46:52
+    OK
+  [gpu-strides] run 8/10 17:49:09
+    OK
+  [gpu-strides] run 9/10 19:51:25
+    OK
+  [gpu-strides] run 10/10 21:53:41
+    OK
+  [gpu-strides] lot terminé (le job s'est fermé) 23:55:57
+
+--- JOB gpu-roofline (roofline-protocol.json -> hip) : cible 10 runs, lots de 5 23:55:57 ---
+  [gpu-roofline] 0/10 faits -> nouveau job srun (lot de 5) 23:55:57
+  [gpu-roofline] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-roofline] lock clocks TDP OK
+  [gpu-roofline] run 1/10 23:55:57
+    OK
+  [gpu-roofline] run 2/10 23:57:13
+    OK
+  [gpu-roofline] run 3/10 23:58:30
+    OK
+  [gpu-roofline] run 4/10 23:59:47
+    OK
+  [gpu-roofline] run 5/10 00:01:04
+    OK
+  [gpu-roofline] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-roofline] lot terminé (le job s'est fermé) 00:02:21
+  [gpu-roofline] 5/10 faits -> nouveau job srun (lot de 5) 00:02:21
+  [gpu-roofline] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-roofline] lock clocks TDP OK
+  [gpu-roofline] run 1/10 déjà OK, skip
+  [gpu-roofline] run 2/10 déjà OK, skip
+  [gpu-roofline] run 3/10 déjà OK, skip
+  [gpu-roofline] run 4/10 déjà OK, skip
+  [gpu-roofline] run 5/10 déjà OK, skip
+  [gpu-roofline] run 6/10 00:02:21
+    OK
+  [gpu-roofline] run 7/10 00:03:39
+    OK
+  [gpu-roofline] run 8/10 00:04:56
+    OK
+  [gpu-roofline] run 9/10 00:06:13
+    OK
+  [gpu-roofline] run 10/10 00:07:30
+    OK
+  [gpu-roofline] lot terminé (le job s'est fermé) 00:08:47
+
+--- JOB gpu-incore (incore-protocol.json -> hip) : cible 10 runs, lots de 5 00:08:47 ---
+  [gpu-incore] 0/10 faits -> nouveau job srun (lot de 5) 00:08:47
+  [gpu-incore] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-incore] lock clocks TDP OK
+  [gpu-incore] run 1/10 00:08:47
+    OK
+  [gpu-incore] run 2/10 01:33:57
+    OK
+  [gpu-incore] run 3/10 02:59:05
+    OK
+  [gpu-incore] run 4/10 04:24:14
+    OK
+  [gpu-incore] run 5/10 05:49:23
+    OK
+  [gpu-incore] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-incore] lot terminé (le job s'est fermé) 07:14:31
+  [gpu-incore] 5/10 faits -> nouveau job srun (lot de 5) 07:14:31
+  [gpu-incore] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-incore] lock clocks TDP OK
+  [gpu-incore] run 1/10 déjà OK, skip
+  [gpu-incore] run 2/10 déjà OK, skip
+  [gpu-incore] run 3/10 déjà OK, skip
+  [gpu-incore] run 4/10 déjà OK, skip
+  [gpu-incore] run 5/10 déjà OK, skip
+  [gpu-incore] run 6/10 07:14:32
+    OK
+  [gpu-incore] run 7/10 08:39:41
+    OK
+  [gpu-incore] run 8/10 10:04:49
+    OK
+  [gpu-incore] run 9/10 11:29:58
+    OK
+  [gpu-incore] run 10/10 12:55:07
+    OK
+  [gpu-incore] lot terminé (le job s'est fermé) 14:20:15
+
+--- JOB gpu-l2-stream (l2stream-protocol.json -> hip) : cible 10 runs, lots de 5 14:20:15 ---
+  [gpu-l2-stream] 0/10 faits -> nouveau job srun (lot de 5) 14:20:15
+  [gpu-l2-stream] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-l2-stream] lock clocks TDP OK
+  [gpu-l2-stream] run 1/10 14:20:16
+    OK
+  [gpu-l2-stream] run 2/10 14:50:02
+    OK
+  [gpu-l2-stream] run 3/10 15:19:48
+    OK
+  [gpu-l2-stream] run 4/10 15:49:34
+    OK
+  [gpu-l2-stream] run 5/10 16:19:20
+    OK
+  [gpu-l2-stream] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-l2-stream] lot terminé (le job s'est fermé) 16:49:07
+  [gpu-l2-stream] 5/10 faits -> nouveau job srun (lot de 5) 16:49:07
+  [gpu-l2-stream] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-l2-stream] lock clocks TDP OK
+  [gpu-l2-stream] run 1/10 déjà OK, skip
+  [gpu-l2-stream] run 2/10 déjà OK, skip
+  [gpu-l2-stream] run 3/10 déjà OK, skip
+  [gpu-l2-stream] run 4/10 déjà OK, skip
+  [gpu-l2-stream] run 5/10 déjà OK, skip
+  [gpu-l2-stream] run 6/10 16:49:07
+    OK
+  [gpu-l2-stream] run 7/10 17:18:53
+    OK
+  [gpu-l2-stream] run 8/10 17:48:39
+    OK
+  [gpu-l2-stream] run 9/10 18:18:25
+    OK
+  [gpu-l2-stream] run 10/10 18:48:11
+    OK
+  [gpu-l2-stream] lot terminé (le job s'est fermé) 19:17:57
+
+--- JOB gpu-small-kernels (smallkernels-protocol.json -> hip) : cible 10 runs, lots de 5 19:17:57 ---
+  [gpu-small-kernels] 0/10 faits -> nouveau job srun (lot de 5) 19:17:57
+  [gpu-small-kernels] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-small-kernels] lock clocks TDP OK
+  [gpu-small-kernels] run 1/10 19:17:58
+    OK
+  [gpu-small-kernels] run 2/10 19:18:50
+    OK
+  [gpu-small-kernels] run 3/10 19:19:42
+    OK
+  [gpu-small-kernels] run 4/10 19:20:34
+    OK
+  [gpu-small-kernels] run 5/10 19:21:26
+    OK
+  [gpu-small-kernels] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-small-kernels] lot terminé (le job s'est fermé) 19:22:18
+  [gpu-small-kernels] 5/10 faits -> nouveau job srun (lot de 5) 19:22:18
+  [gpu-small-kernels] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-small-kernels] lock clocks TDP OK
+  [gpu-small-kernels] run 1/10 déjà OK, skip
+  [gpu-small-kernels] run 2/10 déjà OK, skip
+  [gpu-small-kernels] run 3/10 déjà OK, skip
+  [gpu-small-kernels] run 4/10 déjà OK, skip
+  [gpu-small-kernels] run 5/10 déjà OK, skip
+  [gpu-small-kernels] run 6/10 19:22:18
+    OK
+  [gpu-small-kernels] run 7/10 19:23:10
+    OK
+  [gpu-small-kernels] run 8/10 19:24:02
+    OK
+  [gpu-small-kernels] run 9/10 19:24:54
+    OK
+  [gpu-small-kernels] run 10/10 19:25:45
+    OK
+  [gpu-small-kernels] lot terminé (le job s'est fermé) 19:26:37
+
+--- JOB gpu-cache (cache-protocol.json -> hip) : cible 10 runs, lots de 5 19:26:37 ---
+  [gpu-cache] 0/10 faits -> nouveau job srun (lot de 5) 19:26:37
+  [gpu-cache] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-cache] lock clocks TDP OK
+  [gpu-cache] run 1/10 19:26:38
+    OK
+  [gpu-cache] run 2/10 19:38:49
+    OK
+  [gpu-cache] run 3/10 19:51:08
+    OK
+  [gpu-cache] run 4/10 20:03:28
+    OK
+  [gpu-cache] run 5/10 20:15:56
+    OK
+  [gpu-cache] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-cache] lot terminé (le job s'est fermé) 20:28:34
+  [gpu-cache] 5/10 faits -> nouveau job srun (lot de 5) 20:28:34
+  [gpu-cache] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-cache] lock clocks TDP OK
+  [gpu-cache] run 1/10 déjà OK, skip
+  [gpu-cache] run 2/10 déjà OK, skip
+  [gpu-cache] run 3/10 déjà OK, skip
+  [gpu-cache] run 4/10 déjà OK, skip
+  [gpu-cache] run 5/10 déjà OK, skip
+  [gpu-cache] run 6/10 20:28:35
+    OK
+  [gpu-cache] run 7/10 20:41:06
+    OK
+  [gpu-cache] run 8/10 20:53:29
+    OK
+  [gpu-cache] run 9/10 21:05:50
+    OK
+  [gpu-cache] run 10/10 21:18:10
+    OK
+  [gpu-cache] lot terminé (le job s'est fermé) 21:30:30
+
+--- JOB gpu-umstream (umstream-protocol.json -> hip) : cible 10 runs, lots de 5 21:30:30 ---
+  [gpu-umstream] 0/10 faits -> nouveau job srun (lot de 5) 21:30:30
+  [gpu-umstream] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-umstream] lock clocks TDP OK
+  [gpu-umstream] run 1/10 21:30:30
+    OK
+  [gpu-umstream] run 2/10 21:32:38
+    OK
+  [gpu-umstream] run 3/10 21:34:45
+    OK
+  [gpu-umstream] run 4/10 21:36:51
+    OK
+  [gpu-umstream] run 5/10 21:38:58
+    OK
+  [gpu-umstream] lot de 5 runs atteint -> sortie (reste au prochain job)
+  [gpu-umstream] lot terminé (le job s'est fermé) 21:41:05
+  [gpu-umstream] 5/10 faits -> nouveau job srun (lot de 5) 21:41:06
+  [gpu-umstream] nœud=cachaca carte=NVIDIA GeForce RTX 2080 Ti CUDA_VISIBLE_DEVICES=0
+GPU clocks set to "(gpuClkMin tdp, gpuClkMax tdp)" for GPU 00000000:5E:00.0
+All done.
+  [gpu-umstream] lock clocks TDP OK
+  [gpu-umstream] run 1/10 déjà OK, skip
+  [gpu-umstream] run 2/10 déjà OK, skip
+  [gpu-umstream] run 3/10 déjà OK, skip
+  [gpu-umstream] run 4/10 déjà OK, skip
+  [gpu-umstream] run 5/10 déjà OK, skip
+  [gpu-umstream] run 6/10 21:41:06
+    OK
+  [gpu-umstream] run 7/10 21:43:12
+    OK
+  [gpu-umstream] run 8/10 21:45:20
+    OK
+  [gpu-umstream] run 9/10 21:47:25
+    OK
+  [gpu-umstream] run 10/10 21:49:33
+    OK
+  [gpu-umstream] lot terminé (le job s'est fermé) 21:51:40
+
+=== récap 21:51:40 ===
+  gpu-memcpy           10/10 OK
+  gpu-latency          10/10 OK
+  gpu-strides          10/10 OK
+  gpu-roofline         10/10 OK
+  gpu-incore           10/10 OK
+  gpu-l2-stream        10/10 OK
+  gpu-small-kernels    10/10 OK
+  gpu-cache            10/10 OK
+  gpu-umstream         10/10 OK
+Résultats : /home/hmeli/gpu-baseliner/results/hip_nvidia_tdp_20260824_172224
