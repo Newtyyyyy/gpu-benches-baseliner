@@ -13,7 +13,7 @@ document only reports what was observed.
 ```
 RESULTS.md          this file
 logs/               raw campaign output, one directory per campaign
-figures/            the plots referenced below, as SVG
+figures/            the plots referenced below, as PNG
 ```
 
 ---
@@ -95,7 +95,7 @@ time-dependent effect, so the two conditions have to be separate campaigns.
 
 ---
 
-# Part 2 — Cross-architecture comparison
+# Part 2 — Native CUDA on the RTX 2080 Ti
 
 Three configurations, the same source workloads:
 
@@ -108,6 +108,14 @@ Three configurations, the same source workloads:
 The first two run on the **same card**, so any gap between them comes from the translation and
 from nvcc compiling HIP, never from a hardware difference. The third changes the hardware, so
 it is read against AMD's published figures rather than against the first two.
+
+Each configuration gets its own part: **Part 2** below is the CUDA reference, **Part 3** puts
+the two backends side by side on the same card, and **Part 4** is the MI210. Every figure comes
+from a campaign of **10 runs**; `logs/` holds the raw output of all three.
+
+Three benchmarks are shown as a dedicated layout rather than a curve, following what the
+upstream repository publishes for them: an ILP x TLP table for `gpu-incore`, a 16-column
+stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels`.
 
 ---
 
@@ -153,7 +161,116 @@ _(to fill: rcp_throughput vs theoretical 32/N; FP32/FP64 ratio)_
 
 ---
 
-# Part 3 — Reproducing this
+# Part 3 — CUDA versus HIP on the same NVIDIA card
+
+Both campaigns ran on an RTX 2080 Ti of the same node, over **identical sweep points**, so the
+comparison is point by point and the only variable is the backend.
+
+Each figure carries the **mean of the 10 runs** of each backend, the shaded band being their
+min–max spread, and a lower panel giving the HIP/CUDA ratio. That lower panel is where the
+gap is actually readable: on most benchmarks the two means sit on top of each other.
+
+**Read the envelopes before the gap.** Where the two min–max bands overlap, the difference
+between the means is inside the run-to-run noise and means nothing.
+
+**One caveat on the hardware.** The two campaigns used different PCI slots of the same node
+(`3B:00.0` for CUDA, `5E:00.0` for HIP), recorded in each `metadata.json`. Same GPU model,
+same node, but not guaranteed to be the same physical die.
+
+---
+
+## 3.1 gpu-cache
+
+![gpu-cache, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_cache.png)
+
+## 3.2 gpu-incore
+
+![gpu-incore, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_incore.png)
+
+## 3.3 gpu-l2-stream
+
+![gpu-l2-stream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_l2_stream.png)
+
+## 3.4 gpu-latency
+
+![gpu-latency, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_latency.png)
+
+## 3.5 gpu-memcpy
+
+![gpu-memcpy, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_memcpy.png)
+
+## 3.6 gpu-roofline
+
+![gpu-roofline, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_roofline.png)
+
+## 3.7 gpu-small-kernels
+
+![gpu-small-kernels, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_small_kernels.png)
+
+## 3.8 gpu-strides
+
+![gpu-strides, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_strides.png)
+
+## 3.9 gpu-umstream
+
+![gpu-umstream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_umstream.png)
+
+---
+
+# Part 4 — HIP on the AMD MI210
+
+The target architecture, 10 runs, backend `hip`.
+
+**This part is read on its own.** Three benchmarks sweep a different range here than on the
+2080 Ti — `gpu-cache` covers 40 points against 26, `gpu-memcpy` 24 against 21, `gpu-umstream`
+26 against 19 — and the hardware differs anyway. The curves of Parts 2 and 3 do not
+superimpose on these.
+
+The power policy also differs, which matters when reading anything clock-related: the MI210
+ran under a **230 W cap with free clocks** (`amd-smi`), while both 2080 Ti campaigns had their
+**clocks pinned to TDP** (`nvidia-smi`) and no power cap.
+
+---
+
+## 4.1 gpu-cache
+
+![gpu-cache, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_cache.png)
+
+## 4.2 gpu-incore
+
+![gpu-incore, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_incore.png)
+
+## 4.3 gpu-l2-stream
+
+![gpu-l2-stream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_l2_stream.png)
+
+## 4.4 gpu-latency
+
+![gpu-latency, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_latency.png)
+
+## 4.5 gpu-memcpy
+
+![gpu-memcpy, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_memcpy.png)
+
+## 4.6 gpu-roofline
+
+![gpu-roofline, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_roofline.png)
+
+## 4.7 gpu-small-kernels
+
+![gpu-small-kernels, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_small_kernels.png)
+
+## 4.8 gpu-strides
+
+![gpu-strides, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_strides.png)
+
+## 4.9 gpu-umstream
+
+![gpu-umstream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_umstream.png)
+
+---
+
+# Part 5 — Reproducing this
 
 Each campaign directory under `logs/` carries a `metadata.json` recording the machine, the GPU,
 the driver and toolkit versions, the preset used and the commit the binary was built from, so a
