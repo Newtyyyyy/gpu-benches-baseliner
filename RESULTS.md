@@ -22,7 +22,7 @@ figures/            the plots referenced below, as PNG
 
 Each experiment here compares the **same workload on the same GPU**, changing exactly one
 option, to justify the defaults and to show what silently breaks a measurement when a knob is
-wrong. Two options are studied for now; the rest are listed for reference.
+wrong. Two are covered so far: `flush` and `warm_cool`.
 
 ## The measurement loop
 
@@ -42,31 +42,6 @@ fetch_results / validate
 
 The two positions matter: **`flush` is inside the batch**, paid once per timed run, while
 **`warm_cool` is outside it**, paid once per batch and never re-checked while the batch runs.
-
-## The options, by family
-
-Defaults are those declared in `Benchmark.hpp`; the last column is what the campaigns in
-`logs/` used. Where the two differ, the protocol overrides the default deliberately.
-
-| Family | Options | Default | In `logs/` |
-|---|---|---|---|
-| **Thermal control** | `warm_cool`, `min_gpu_temp`, `max_gpu_temp`, `warm_cool_timeout` | `0`, 45 °C, 60 °C, 3 s | `1`, 55 °C, 70 °C, 60 s |
-| **Cache state** | `flush` | `1` | `1` |
-| **Batching** | `batch_size`, `dynamic_batch`, `minimal_batch_duration`, `max_nb_repetition` | 25, `0`, 10 ms, 100 | 10, `0`, 10 ms, 100 |
-| **Launch isolation** | `block`, `block_duration`, `block_queue_size` | `1`, 1000 ms, 64 | unchanged |
-| **Other** | `warmup`, `validate_workload` | `1`, `0` | unchanged |
-
-**What `warm_cool_timeout` does.** It is not a "wait at most N seconds then measure anyway".
-The loop checks the clock on each pass and, if the window is still not reached, **throws**:
-`Device did not warm up or cool down in the 60s allocated.` The run fails rather than producing
-data taken outside the window. That is why the campaigns raised it from 3 s to 60 s — three
-seconds is not enough to cool a hot card, and the campaign would simply die.
-
-**One documentation bug.** In `Benchmark.hpp`, `max_gpu_temp` is described as *"the minimum
-accepted temperature before cooling down the GPU"*. It is the maximum; the string was copied
-from `min_gpu_temp`.
-
----
 
 ## 1.1 `flush` — L2 flush before every timed run
 
@@ -92,6 +67,12 @@ established, not assumed: the manifest gives 722 s constant across `warmcool/san
 
 ![warm_cool: temperature over the campaign](figures/part1_parameters/warmcool-temperature.png)
 
+**What the timeout does.** `warm_cool_timeout` is not a "wait at most N seconds then measure
+anyway". The loop checks the clock on each pass and, if the window is still not reached,
+**throws**: `Device did not warm up or cool down in the 60s allocated.` The run fails rather
+than producing data taken outside the window. The campaigns raised it from its 3 s default to
+60 s for that reason — three seconds is not enough to cool a hot card.
+
 **The regulation only acts between batches.** The temperature draws a sawtooth: the card is
 brought back to 63–65 °C before each batch, then climbs freely to 73 °C while it runs. Only
 **46 % of the points sit inside the requested window**, and the excursions above `max_gpu_temp`
@@ -111,6 +92,10 @@ improves from **0.048 %** to **0.038 %**.
 **Verdict** Below half a percent, in the cache-resident region only. Small enough not to threaten
 the comparisons in Parts 2 to 4, large enough to keep the option on when two configurations are
 compared at a fraction of a percent — at the cost of a longer campaign.
+
+**One documentation bug found on the way.** In `Benchmark.hpp`, `max_gpu_temp` is described as
+*"the minimum accepted temperature before cooling down the GPU"*. It is the maximum; the string
+was copied from `min_gpu_temp`.
 
 **Limitation.** `warm_cool = 0` reports **no temperature at all**: `register_stat<DeviceTemperature>()`
 is guarded behind `get_warm_cool()`. The thermal drift of a `warm_cool = 0` campaign can only be
