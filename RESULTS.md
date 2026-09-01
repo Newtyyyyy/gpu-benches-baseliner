@@ -24,47 +24,89 @@ Every plot in this part compares the **same workload on the same GPU**, changing
 option. The point is to justify the defaults, and to make visible what silently breaks a
 measurement when a knob is wrong.
 
-Two options are covered here, the two that were actually varied during this work: the L2 flush
-and the thermal control. Both belong to the `Benchmark` section of the protocol. The measurement
-loop applies them in this order:
+## The measurement loop
+
+All of these options belong to the `Benchmark` section of the protocol. This is the loop they
+act on, transcribed from `baseliner/core/Benchmark.hpp`:
 
 ```
-setup_device
-  └─ warmup            one untimed run
-  repeat until max_nb_repetition:
-     ├─ warm_cool      hold the GPU inside a temperature window
-     ├─ block          freeze the stream, queue the whole batch
-     └─ for each of batch_size runs:
-          ├─ reset_device
-          ├─ flush     empty L2 — before every repetition, not every batch
-          └─ timed run
-     └─ dynamic_batch  resize batch_size from the batch duration
+setup_host                                          → HostSetupTime
+setup_device                                        → DeviceSetupTime
+warmup                one untimed run               → WarmupTime
+repeat until the stopping criterion is satisfied:   ← one iteration = one batch
+   ├─ warm_cool       bring the GPU inside the temperature window, then stop checking
+   ├─ block           freeze the stream so the whole batch is queued before it runs
+   ├─ init_batch
+   ├─ for each of batch_size runs:
+   │     ├─ unblock       every block_queue_size runs
+   │     ├─ reset_device
+   │     ├─ flush         empty L2 — before every run, not once per batch
+   │     └─ timed run     → ExecutionTime
+   └─ dynamic_batch   resize batch_size from the duration of the batch that just ran
+fetch_results                                       → FetchResultsTime
+validate_workload
 ```
+
+Two things this ordering settles, both of which matter for reading the sections below:
+
+- **`flush` runs inside the batch**, before each timed run, so it is paid `batch_size` times
+  per iteration.
+- **`warm_cool` runs outside it**, once per batch. Its loop exits as soon as the temperature is
+  inside the window; nothing re-reads the sensor while the batch executes.
+
+## The options, and what the campaigns actually used
+
+Defaults are those declared in `Benchmark.hpp`; the last column is the value the campaigns in
+`logs/` ran with. The gap between the two columns is not an error — the protocols override the
+defaults deliberately.
+
+| Option | Default | Effect | Used in `logs/` |
+|---|---|---|---|
+| `flush` | `1` | Empties L2 before every timed run | `1` |
+| `warm_cool` | `0` | Holds the GPU in a temperature window before each batch | `1` |
+| `min_gpu_temp` | `45.0` | Below it, a warming kernel runs | `55.0` |
+| `max_gpu_temp` | `60.0` | Above it, the GPU is actively cooled | `70.0` |
+| `warm_cool_timeout` | `3` | Seconds before the window is given up on, and the run throws | `60` |
+| `warmup` | `1` | One untimed run before the loop | `1` |
+| `batch_size` | `25` | Timed runs per iteration | `10` |
+| `block` | `1` | Blocking kernel: the batch is queued before any of it executes | `1` |
+| `block_duration` | `1000.0` | How long (ms) the blocking kernel holds the stream | `1000.0` |
+| `block_queue_size` | `64` | Runs between two releases of the blocking kernel | `64` |
+| `dynamic_batch` | `0` | Doubles or halves `batch_size` to reach `minimal_batch_duration` | `0` |
+| `minimal_batch_duration` | `10.0` | Target batch duration (ms) when `dynamic_batch` is on | `10.0` |
+| `validate_workload` | `0` | Checks the workload output after the loop | `0` |
+| `max_nb_repetition` | `100` | Iterations of the loop (`StoppingCriterion` section) | `100` |
+
+**One documentation bug, worth a one-line fix.** In `Benchmark.hpp`, `max_gpu_temp` is described
+as *"the minimum accepted temperature before cooling down the GPU"*. It is the **maximum**; the
+string was copied from `min_gpu_temp`.
 
 ---
 
-## 1.1 `flush` — L2 flush before every repetition
+## 1.1 `flush` — L2 flush before every timed run
 
-**Default** `1`. Empties the L2 cache before each timed run, so every repetition starts from a
-cold cache. Note it happens before *every repetition*, not between batches.
+**Default** `1`. Calls `L2Flusher::flush()` between `reset_device` and the timed run, inside the
+batch loop.
 
-**Why it matters** Without it, data left in L2 by the previous repetition is still resident when
-the next one starts. The kernel then reads from cache what it was supposed to read from memory,
-and the reported bandwidth is not the bandwidth of the level being probed.
+**Why it matters** Without it, data left in L2 by the previous run is still resident when the
+next one starts. The kernel then reads from cache what it was supposed to read from memory, and
+the reported bandwidth is not the bandwidth of the level being probed.
 
 **Expected** No effect once the working set is far larger than L2 — the data could not have
-stayed resident anyway. A large effect in the L1/L2 region.
+stayed resident anyway. An effect in the L1/L2 region.
 
-**Experiment** `gpu-cache`, full `working_set_elements` sweep, with `Benchmark.flush` as a
-second sweep axis over {0, 1}, so both curves come from a single campaign under identical
-thermal conditions.
+**Experiment** `gpu-cache`, full `working_set_elements` sweep, 10 runs per condition,
+`flush` ∈ {0, 1} with everything else fixed.
 
-<!-- figure: figures/flush-gpu-cache.svg -->
-> _(to fill: bandwidth vs working set, one curve per flush value)_
+**Observed** *Nothing yet: the data of this experiment was lost.* The campaign of
+2026-08-31 ran both experiments, but the two wrote their results under the same file names
+(`avec-runNN.json`, `sans-runNN.json`); `warm_cool` ran second and overwrote `flush`. The
+`manifest.csv` describes 40 runs where 20 files remain. Which set survived is not a guess: the
+manifest gives 722 s, constant across the ten runs of `warmcool/sans`, against 738–771 s for
+`flush/sans`, and the files on disk have a standard deviation of 0.1 s.
 
-**Observed** _(to fill)_
-
-**Verdict** _(to fill)_
+**Verdict** To re-run, prefixing the outputs by experiment (`flush-avec-runNN.json`) so the two
+cannot collide.
 
 ---
 
@@ -78,20 +120,47 @@ kernel runs until the GPU reaches `min_gpu_temp`, or the GPU is cooled until it 
 on a hot, possibly throttled one. That drift is indistinguishable from a real difference between
 the benchmarks unless the temperature is held.
 
-**Expected** The effect should appear as a trend across the runs of a campaign, not inside a
-single run. With `warm_cool=0`, the metric drifts with run index; with `warm_cool=1`, it should
-stay flat.
+**Experiment** `gpu-cache` on the RTX 2080 Ti, backend `cuda`, campaign
+`results_flush_warmcool_20260831_163028`: 26 working-set sizes × 10 runs per condition,
+`warm_cool` ∈ {0, 1}, window `55–70 °C`, timeout 60 s, everything else identical.
 
-**Experiment** The same campaign twice, 10 runs each, `warm_cool=0` then `warm_cool=1`, plotting
-the metric against run index. Unlike `flush`, this cannot be a sweep axis: it is a
-time-dependent effect, so the two conditions have to be separate campaigns.
+**Observed**
 
-<!-- figure: figures/warm-cool-drift.svg -->
-> _(to fill: metric vs run index, one curve per warm_cool value)_
+*The regulation works, but only between batches.* With `warm_cool = 1` the temperature draws a
+sawtooth: the card is brought back down to 63–65 °C before each batch, then climbs freely to
+73 °C while the batch runs. Only **46 % of the points sit inside the requested 55–70 °C
+window**, and the excursions above `max_gpu_temp` are not a malfunction — the loop in
+`Benchmark.hpp` breaks as soon as the window is reached and never reads the sensor again until
+the next batch.
 
-**Observed** _(to fill)_
+*The effect on the measurement is real but very small.* Across the 26 sizes the median
+difference is **−0.02 %**. It is not uniform, though: below ~64 kB, where the working set is
+cache-resident, `warm_cool = 0` reads **0.2 to 0.4 % lower**, and on **12 of the 26 sizes** that
+gap is larger than the combined inter-run spread of the two conditions. Past that point, once
+the working set spills to DRAM, the difference falls back into the noise. The direction is
+consistent with the mechanism: a hotter card clocks slightly lower, and the cache-resident
+region is where the measurement depends most on the core clock rather than on memory.
 
-**Verdict** _(to fill)_
+*Reproducibility improves marginally.* Median inter-run CoV is **0.038 %** with the option on
+against **0.048 %** with it off — both far below the level at which any conclusion in this
+document would change.
+
+**Verdict** On this workload and this card, `warm_cool` changes the measured bandwidth by less
+than half a percent, in the cache-resident region only. That is small enough not to threaten the
+cross-architecture comparisons in Parts 2 to 4, and large enough to be worth keeping enabled
+when two configurations are compared at a fraction of a percent. Its cost is real: the campaign
+takes longer, since each batch waits for the window.
+
+**One limitation of this experiment.** `warm_cool = 0` reports **no temperature at all**. The
+sensor is registered only when the option is on — `setup_metrics()` guards
+`register_stat<DeviceTemperature>()` behind `get_warm_cool()`. So the thermal drift of a
+`warm_cool = 0` campaign cannot be observed directly, only inferred from its effect on the
+metric. Reading the sensor independently of `warm_cool` would close that gap, and is the single
+change that would make this section conclusive rather than indicative.
+
+![warm_cool: temperature over the campaign](figures/part1_parameters/warmcool-temperature.png)
+
+![warm_cool on versus off, with the difference](figures/part1_parameters/warmcool-bandwidth.png)
 
 ---
 
