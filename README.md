@@ -20,7 +20,7 @@ Every benchmark exists in two flavours:
 |---|---|---|---|
 | CMake | 3.28.3 (≥ 3.15 required) | Build system, presets | `cmake --version` |
 | `clang++` | 17 | Host compiler hardcoded in the presets, with `lld` as linker | `clang++ --version` |
-| GCC toolchain | 11 | Not a compiler here: clang++ takes its C++ standard library (libstdc++) from it. Forced by `--gcc-install-dir` in the presets | `clang++ -v 2>&1 \| grep 'Selected GCC'` |
+| GCC toolchain | 11 | Not a compiler here: clang++ takes its C++ standard library (libstdc++) from it. Forced by `--gcc-install-dir` in the presets | `clang++ -v` |
 | CUDA Toolkit | 12.4 | Any CUDA build; also CUPTI for `gpu-strides` | `nvcc --version` |
 | ROCm | 7.0.1 on AMD, 6.4.4 for HIP-on-NVIDIA headers | Any HIP build needs its headers, even when nvcc does the compiling. `hipify-perl` is only needed for step 6 | `ls $HIP_PATH/include/hip/hip_runtime.h` |
 
