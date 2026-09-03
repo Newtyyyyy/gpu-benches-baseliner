@@ -75,18 +75,6 @@ Full sweep, driven by a protocol file:
 ./build/release-cuda/gpu-benches_exec run --protocol-files default-protocol.json --output-file result.json
 ```
 
-Both print `Report saved`. Add `--device N` to pick a GPU.
-
-`--tiny` builds its protocol in memory and picks up whichever backends the binary carries, so
-the exact same command works on `build/release-hip-nvidia/gpu-benches_exec`. It is the quickest
-way to tell a broken build from a broken protocol. `default-protocol.json`, on the other hand,
-hardcodes `"impl": "cuda"`: to run it on a HIP build, switch its campaign backend to `hip` first.
-
-To start a protocol of your own from a file the binary is guaranteed to accept:
-
-```bash
-./build/release-cuda/gpu-benches_exec gen --default-pf my-protocol.json
-```
 
 ## 5. Read the results
 
