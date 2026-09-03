@@ -30,7 +30,7 @@ The baseliner itself is **not** a prerequisite: CMake fetches it automatically
 ## 2. Get the code
 
 ```bash
-git clone -b helio https://github.com/comeyrd/gpu-benches-baseliner.git
+git clone --depth 1 --single-branch -b helio https://github.com/Newtyyyyy/gpu-benches-baseliner.git
 cd gpu-benches-baseliner
 ```
 
