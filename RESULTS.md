@@ -114,11 +114,6 @@ Each figure carries the **mean of the 10 runs** of each backend, the shaded band
 min–max spread, and a lower panel giving the HIP/CUDA ratio. That lower panel is where the
 gap is actually readable: on most benchmarks the two means sit on top of each other.
 
-**Read the envelopes before the gap.** Where the two min–max bands overlap, the difference
-between the means is inside the run-to-run noise and means nothing.
-
-**The short story: the two backends measure the same thing** - the curves lie on top of each other on almost every benchmark. The note under each figure says where they match and where they do not.
-
 ---
 
 ## 2.1 gpu-cache
