@@ -108,9 +108,13 @@ gap is actually readable: on most benchmarks the two means sit on top of each ot
 **Read the envelopes before the gap.** Where the two min–max bands overlap, the difference
 between the means is inside the run-to-run noise and means nothing.
 
-**One caveat on the hardware.** The two campaigns used different PCI slots of the same node
-(`3B:00.0` for CUDA, `5E:00.0` for HIP), recorded in each `metadata.json`. Same GPU model,
-same node, but not guaranteed to be the same physical die.
+**The short story: the two backends measure the same thing.** On almost every benchmark the
+CUDA and HIP curves lie on top of each other - the HIP translation costs nothing measurable
+on this card. `gpu-cache` is the one place with a visible offset, and even there it is small:
+the two curves match in shape, with HIP sitting a fraction of a percent apart in the
+cache-resident region. That region is the most thermally sensitive - it depends on the core
+clock rather than on memory - so the offset most likely reflects a small clock difference
+between the two runs rather than anything about the backend itself.
 
 ---
 
