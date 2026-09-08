@@ -339,7 +339,7 @@ Every figure comes from one of three campaigns kept whole under `logs/`:
 | `Log_Test_RTX2080ti_hip` | `hip` | RTX 2080 Ti | Part 2 |
 | `Log_Test_MI210` | `hip` | AMD Instinct MI210 | Part 3 |
 
-Each holds 191 files: `metadata.json`, then per benchmark a `.proto.json` (the protocol), ten
+Each holds 191 files: `metadata.json`, then per benchmark a `.protocol.json` (the protocol), ten
 zero-padded `.run<NN>.json` and their `.json.log`, plus one `run.log`.
 
 Worth knowing before trusting or rerunning:
@@ -350,7 +350,7 @@ Worth knowing before trusting or rerunning:
 - **Throttling differs between cards.** MI210: 230 W cap, free clocks. Both 2080 Ti campaigns:
   clocks pinned to TDP, no cap. Read this before comparing anything clock-related.
 - **`Benchmark` options live only in the protocol.** A result carries `id`, `results` and
-  `hardware` only, so `flush` / `warm_cool` are recoverable from `.proto.json` / `metadata.json`
+  `hardware` only, so `flush` / `warm_cool` are recoverable from `.protocol.json` / `metadata.json`
   alone - unless promoted to a sweep axis, where they land in `sweep_point`.
 - **The figures are not regenerable from a clone yet:** the notebook that produces them is not
   in this repository.
