@@ -287,45 +287,40 @@ established, not assumed: the manifest gives 722 s constant across `warmcool/san
 ## 4.2 `warm_cool` - hold the GPU inside a temperature window
 
 **Experiment** `gpu-cache` on the RTX 2080 Ti, backend `cuda`, campaign
-`results_flush_warmcool_20260831_163028`: 26 working-set sizes × 10 runs per condition,
-`warm_cool` ∈ {0, 1}, window 55–70 °C, everything else identical.
+`result_FlushL2_WarmCool_20260901_141122`: the option run at three target windows (53-57, 63-67,
+70-74 degC) against a no-regulation baseline, 10 runs each, clocks left free (locking them would
+hide the thermal effect), with a per-second `nvidia-smi` trace.
 
-![warm_cool: temperature over the campaign](figures/part1_parameters/warmcool-temperature.png)
+**It works - the window is held.** Without regulation the card climbs to ~84 degC and stays
+there; with it, the card is kept around each target window for the whole run.
 
-**What the timeout does.** `warm_cool_timeout` is not a "wait at most N seconds then measure
-anyway". The loop checks the clock on each pass and, if the window is still not reached,
-**throws**: `Device did not warm up or cool down in the 60s allocated.` The run fails rather
-than producing data taken outside the window. The campaigns raised it from its 3 s default to
-60 s for that reason - three seconds is not enough to cool a hot card.
+![warm_cool: temperature evolution over a run](figures/part4_parameters/warmcool-temperature-evolution.png)
 
-**The regulation only acts between batches.** The temperature draws a sawtooth: the card is
-brought back to 63–65 °C before each batch, then climbs freely to 73 °C while it runs. Only
-**46 % of the points sit inside the requested window**, and the excursions above `max_gpu_temp`
-are not a malfunction - the loop exits as soon as the window is reached and never reads the
-sensor again until the next batch.
+**How: by pausing between batches.** Before each batch the GPU is left idle to fall back into the
+window - visible as utilization dropping to zero. The colder the window, the more of the run is
+spent paused: 0 % without regulation, 39 % at 72 degC, up to **78 %** at 55 degC.
 
-![warm_cool on versus off, with the difference](figures/part1_parameters/warmcool-bandwidth.png)
+![warm_cool: measuring versus micro-pausing](figures/part4_parameters/warmcool-pauses.png)
 
-**The effect on the measurement is real but small.** Median difference across the 26 sizes:
-**−0.02 %**. It is not uniform - below ~64 kB, where the working set is cache-resident,
-`warm_cool = 0` reads **0.2 to 0.4 % lower**, and on **12 of the 26 sizes** that gap exceeds the
-combined inter-run spread of the two conditions. Past that point the difference falls back into
-the noise. The direction fits the mechanism: a hotter card clocks slightly lower, and the
-cache-resident region is where the measurement depends most on the core clock. Inter-run CoV
-improves from **0.048 %** to **0.038 %**.
+**The cost is time.** Those pauses multiply the wall-clock time of a run: about 2.3x at 72 degC
+and 6.2x at 55 degC against the no-regulation baseline.
 
-**Verdict** Below half a percent, in the cache-resident region only. Small enough not to threaten
-the comparisons in Parts 1 to 3, large enough to keep the option on when two configurations are
-compared at a fraction of a percent - at the cost of a longer campaign.
+![warm_cool: what the temperature window costs](figures/part4_parameters/warmcool-cost.png)
 
-**One documentation bug found on the way.** In `Benchmark.hpp`, `max_gpu_temp` is described as
-*"the minimum accepted temperature before cooling down the GPU"*. It is the maximum; the string
+**What you buy for it - and what you don't.** Not per-point precision: the idle-then-restart
+between batches actually widens the within-run spread a little. The reproducibility gain is small
+too - on a same-window on/off pair (the 31 Aug campaign) the inter-run CoV goes from 0.048 % to
+0.038 %. The real value is elsewhere: over a long campaign `warm_cool` stops the first benchmark
+from running cold and the last one hot, a drift that would otherwise be indistinguishable from a
+genuine difference between benchmarks. **You trade a large amount of wall-clock time for that
+drift control, not for tighter numbers on a single benchmark.**
+
+**Two caveats.** `warm_cool = 0` records no temperature - the sensor stat is gated behind the
+option - so the drift it prevents is only visible through the external `nvidia-smi` trace. And
+`warm_cool_timeout` is not "measure anyway after N seconds": if the window is not reached in time
+the run **throws** and the benchmark is dropped, so raise it (a protocol field, 300 s here)
+rather than rely on it. `Benchmark.hpp` also mislabels `max_gpu_temp` as a minimum - the string
 was copied from `min_gpu_temp`.
-
-**Limitation.** `warm_cool = 0` reports **no temperature at all**: `register_stat<DeviceTemperature>()`
-is guarded behind `get_warm_cool()`. The thermal drift of a `warm_cool = 0` campaign can only be
-inferred from its effect on the metric, never observed. Reading the sensor independently of the
-option is the single change that would make this section conclusive rather than indicative.
 
 ---
 
