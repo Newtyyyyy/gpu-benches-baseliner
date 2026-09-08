@@ -287,8 +287,8 @@ established, not assumed: the manifest gives 722 s constant across `warmcool/san
 ## 4.2 `warm_cool` - hold the GPU inside a temperature window
 
 **Experiment** `gpu-cache` on the RTX 2080 Ti, backend `cuda`, campaign
-`result_FlushL2_WarmCool_20260901_141122`: the option run at three target windows (53-60, 63-70,
-70-77 degC) against a no-regulation baseline, 10 runs each, clocks left free (locking them would
+`result_FlushL2_WarmCool_20260901_141122`: the option run at three target windows (53-57, 63-67,
+70-74 degC) against a no-regulation baseline, 10 runs each, clocks left free (locking them would
 hide the thermal effect), with a per-second `nvidia-smi` trace.
 
 **It works - the window is held.** Without regulation the card climbs to ~84 degC and stays
