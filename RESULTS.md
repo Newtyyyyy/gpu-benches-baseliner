@@ -27,6 +27,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** the bandwidth of the on-chip caches (L1, then L2).
 - **Good for** how fast the caches feed the cores, and reading each cache's size off the curve - bandwidth drops at the working set where the data stops fitting.
 - **Method** one thread block per SM re-reads the same buffer in a loop; the buffer size is swept, so the served level shifts L1 → L2 → DRAM as it grows.
+- **On the 2080 Ti** L2 is 5.5 MB: the curve should hold high while the working set fits in cache, then fall toward the ~616 GB/s DRAM level once it spills out.
 
 ![gpu-cache, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_cache.png)
 
@@ -35,6 +36,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** the latency and throughput of arithmetic instructions (FMA, DIV, SQRT).
 - **Good for** the raw cost of each operation, and how much parallelism it takes to hide that latency.
 - **Method** runs chains of one operation while sweeping ILP (1–8 independent chains) against TLP (warps per SM); reports cycles per operation.
+- **On the 2080 Ti** consumer Turing runs FP64 at 1/32 of FP32, so `double` should sit roughly 32x above `float`, and the ILP1/TLP1 corner reads the ~4-cycle FMA latency (measured 4.13).
 
 ![gpu-incore, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_incore.png)
 
@@ -43,6 +45,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** the bandwidth of the shared L2 cache, and of DRAM beyond it.
 - **Good for** the sustained L2 vs main-memory bandwidth, and the footprint where the L2 stops helping.
 - **Method** the four STREAM kernels (read, write, scale, triad) over a buffer whose size is swept across the L2 capacity.
+- **On the 2080 Ti** L2 is 5.5 MB and DRAM peaks near 616 GB/s: the high plateau is the L2, the low plateau should approach 616 GB/s.
 
 ![gpu-l2-stream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_l2_stream.png)
 
@@ -51,6 +54,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** memory access latency - the time for a single dependent load.
 - **Good for** how many cycles a load costs at each level (L1 / L2 / DRAM), which sets how much work must be in flight to hide it.
 - **Method** pointer chasing: one warp walks a buffer in random order, each load depending on the previous, so nothing can mask the round trip.
+- **On the 2080 Ti** the steps should line up with the L1, the 5.5 MB L2, and DRAM - the deeper the level, the higher the latency.
 
 ![gpu-latency, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_latency.png)
 
@@ -59,6 +63,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** host ↔ device transfer bandwidth, over the PCIe link.
 - **Good for** the cost of moving data on and off the GPU, and the transfer size at which PCIe saturates.
 - **Method** copies buffers of increasing size between CPU and GPU and times them.
+- **On the 2080 Ti** the bus is PCIe 3.0 x16, so the plateau should approach its ~15.75 GB/s ceiling.
 
 ![gpu-memcpy, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_memcpy.png)
 
@@ -67,6 +72,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** compute throughput (GFLOP/s) against arithmetic intensity (FLOP per byte moved).
 - **Good for** telling whether a kernel is limited by memory or by compute - the roofline model; the elbow is the crossover.
 - **Method** sweeps the arithmetic intensity and plots the throughput actually reached.
+- **On the 2080 Ti** the flat compute roof is ~13.45 TFLOP/s (FP32) and the slanted memory roof is set by ~616 GB/s; the elbow sits at their ratio.
 
 ![gpu-roofline, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_roofline.png)
 
@@ -75,6 +81,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** the fixed cost of launching a kernel, against its bandwidth.
 - **Good for** the smallest data volume worth a kernel launch: below it you pay mostly for the launch, not for the work.
 - **Method** enqueues thousands of tiny `scale` kernels of varying size and fits `T = a + V/b` - `a` is the launch overhead, `b` the asymptotic bandwidth.
+- **On the 2080 Ti** the DRAM peak is ~616 GB/s, so the fitted bandwidth `b` should approach it - it reaches ~548 GB/s, 89 %.
 
 ![gpu-small-kernels, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_small_kernels.png)
 
@@ -83,6 +90,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** L1 bandwidth as a function of the access stride.
 - **Good for** what non-contiguous access costs: strided reads collapse the bandwidth through cache-bank conflicts, and the table shows which strides hurt.
 - **Method** a single block reads with strides 1…N; the result is tabulated as bytes per cycle for each stride.
+- **On the 2080 Ti** a warp is 32 threads: stride 1 saturates the L1, and strides that fall on the same cache bank collapse the bandwidth.
 
 ![gpu-strides, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_strides.png)
 
@@ -91,6 +99,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 - **Measures** unified (managed) memory bandwidth, with a prefetch to the GPU.
 - **Good for** the cost of unified memory against explicit copies, and its behaviour when the dataset exceeds the card's memory.
 - **Method** STREAM over a unified-memory array prefetched to the device, sweeping the transfer size past the card's 11 GB.
+- **On the 2080 Ti** there are 11 GB of GDDR6: while the array fits, the prefetched bandwidth approaches DRAM; past 11 GB it pages over PCIe 3.0 and collapses.
 
 ![gpu-umstream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_umstream.png)
 
@@ -108,13 +117,7 @@ gap is actually readable: on most benchmarks the two means sit on top of each ot
 **Read the envelopes before the gap.** Where the two min–max bands overlap, the difference
 between the means is inside the run-to-run noise and means nothing.
 
-**The short story: the two backends measure the same thing.** On almost every benchmark the
-CUDA and HIP curves lie on top of each other - the HIP translation costs nothing measurable
-on this card. `gpu-cache` is the one place with a visible offset, and even there it is small:
-the two curves match in shape, with HIP sitting a fraction of a percent apart in the
-cache-resident region. That region is the most thermally sensitive - it depends on the core
-clock rather than on memory - so the offset most likely reflects a small clock difference
-between the two runs rather than anything about the backend itself.
+**The short story: the two backends measure the same thing** - the curves lie on top of each other on almost every benchmark. The note under each figure says where they match and where they do not.
 
 ---
 
@@ -122,37 +125,55 @@ between the two runs rather than anything about the backend itself.
 
 ![gpu-cache, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_cache.png)
 
+*Same shape. The only gap is in the cache-resident region (working set below the L2 size), where HIP sits a fraction of a percent apart. That region is served from the L1 and depends on the core clock, not on memory - so the offset most likely reflects a small thermal/clock difference between the two runs, not the backend.*
+
 ## 2.2 gpu-incore
 
 ![gpu-incore, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_incore.png)
+
+*Identical: the HIP/CUDA ratio is essentially zero across the whole ILP x TLP table.*
 
 ## 2.3 gpu-l2-stream
 
 ![gpu-l2-stream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_l2_stream.png)
 
+*`read`, `scale` and `triad` match. `write` is the exception - HIP runs about 4-5 % slower in the DRAM regime, and its L2 -> DRAM transition falls slightly earlier.*
+
 ## 2.4 gpu-latency
 
 ![gpu-latency, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_latency.png)
+
+*Identical - the two latency curves overlap at every cache level.*
 
 ## 2.5 gpu-memcpy
 
 ![gpu-memcpy, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_memcpy.png)
 
+*Identical within the run-to-run noise (~0.1 % median).*
+
 ## 2.6 gpu-roofline
 
 ![gpu-roofline, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_roofline.png)
+
+*The closest thing to a real gap: HIP sits about 1.7 % below CUDA across the sweep, on both the memory and the compute roof.*
 
 ## 2.7 gpu-small-kernels
 
 ![gpu-small-kernels, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_small_kernels.png)
 
+*Same asymptotic bandwidth `b`. The one difference is the launch overhead `a`: HIP launches about 12 % faster, which only shows at the smallest data volumes.*
+
 ## 2.8 gpu-strides
 
 ![gpu-strides, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_strides.png)
 
+*Identical - the deviation stays within +/-0.1 % at every stride.*
+
 ## 2.9 gpu-umstream
 
 ![gpu-umstream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_umstream.png)
+
+*Match within about 0.2 %.*
 
 ---
 
@@ -175,37 +196,55 @@ ran under a **230 W cap with free clocks** (`amd-smi`), while both 2080 Ti campa
 
 ![gpu-cache, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_cache.png)
 
+*MI210: L1 is 16 kB/CU and L2 is 8 MB; the plateau should fall toward the ~1638 GB/s HBM2e level once the working set leaves the caches.*
+
 ## 3.2 gpu-incore
 
 ![gpu-incore, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_incore.png)
+
+*MI210: a wavefront is 64 threads (against 32 for an NVIDIA warp), which shifts where TLP saturates.*
 
 ## 3.3 gpu-l2-stream
 
 ![gpu-l2-stream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_l2_stream.png)
 
+*MI210: L2 is 8 MB and HBM2e peaks near 1638 GB/s; the low plateau should approach that figure.*
+
 ## 3.4 gpu-latency
 
 ![gpu-latency, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_latency.png)
+
+*MI210: the steps should line up with the 16 kB/CU L1, the 8 MB L2, and HBM.*
 
 ## 3.5 gpu-memcpy
 
 ![gpu-memcpy, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_memcpy.png)
 
+*MI210: the bus is PCIe 4.0, so the plateau should approach its ~31.5 GB/s ceiling.*
+
 ## 3.6 gpu-roofline
 
 ![gpu-roofline, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_roofline.png)
+
+*MI210: the compute roof is ~22.6 TFLOP/s (FP32) and the memory roof is set by ~1638 GB/s HBM2e.*
 
 ## 3.7 gpu-small-kernels
 
 ![gpu-small-kernels, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_small_kernels.png)
 
+*MI210: a wavefront is 64 threads, so a block of 32 fills only half of it - that is why b at block_size 32 is roughly half the saturated value.*
+
 ## 3.8 gpu-strides
 
 ![gpu-strides, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_strides.png)
 
+*MI210: a wavefront is 64 threads; contiguous access saturates the L1, strided access collapses it.*
+
 ## 3.9 gpu-umstream
 
 ![gpu-umstream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_umstream.png)
+
+*MI210: there are 64 GB of HBM2e and a PCIe 4.0 bus; while resident, the prefetched bandwidth approaches HBM, past 64 GB it pages over PCIe.*
 
 ---
 
