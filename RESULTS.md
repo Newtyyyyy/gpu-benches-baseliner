@@ -307,20 +307,9 @@ and 6.2x at 55 degC against the no-regulation baseline.
 
 ![warm_cool: what the temperature window costs](figures/part4_parameters/warmcool-cost.png)
 
-**What you buy for it - and what you don't.** Not per-point precision: the idle-then-restart
-between batches actually widens the within-run spread a little. The reproducibility gain is small
-too - on a same-window on/off pair (the 31 Aug campaign) the inter-run CoV goes from 0.048 % to
-0.038 %. The real value is elsewhere: over a long campaign `warm_cool` stops the first benchmark
-from running cold and the last one hot, a drift that would otherwise be indistinguishable from a
-genuine difference between benchmarks. **You trade a large amount of wall-clock time for that
-drift control, not for tighter numbers on a single benchmark.**
-
-**Two caveats.** `warm_cool = 0` records no temperature - the sensor stat is gated behind the
-option - so the drift it prevents is only visible through the external `nvidia-smi` trace. And
-`warm_cool_timeout` is not "measure anyway after N seconds": if the window is not reached in time
-the run **throws** and the benchmark is dropped, so raise it (a protocol field, 300 s here)
-rather than rely on it. `Benchmark.hpp` also mislabels `max_gpu_temp` as a minimum - the string
-was copied from `min_gpu_temp`.
+**In short.** The option pins the GPU to a chosen temperature window, which can help
+reproducibility over a long campaign; but it has a negative side, the idle pause it inserts
+before each batch, which costs wall-clock time and slightly widens the within-run spread.
 
 ---
 
