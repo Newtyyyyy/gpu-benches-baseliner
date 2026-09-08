@@ -1,4 +1,211 @@
-# Part 1 - Impact of the benchmark parameters
+# Part 1 - Native CUDA on the RTX 2080 Ti
+
+Three configurations, the same source workloads:
+
+| Label | Build | Hardware | What it isolates |
+|---|---|---|---|
+| `cuda` | `release-cuda` | RTX 2080 Ti | Reference |
+| `hipifiable@nvidia` | `release-hip-nvidia` | RTX 2080 Ti | Cost of the hipify translation, same hardware |
+| `hipifiable@amd` | `release-hip-only` | MI210 | Behaviour on the target architecture |
+
+The first two run on the **same card**, so any gap between them comes from the translation and
+from nvcc compiling HIP, never from a hardware difference. The third changes the hardware, so
+it is read against AMD's published figures rather than against the first two.
+
+Each configuration gets its own part: **Part 1** below is the CUDA reference, **Part 2** puts
+the two backends side by side on the same card, and **Part 3** is the MI210. Every figure comes
+from a campaign of **10 runs**; `logs/` holds the raw output of all three.
+
+Three benchmarks are shown as a dedicated layout rather than a curve, following what the
+upstream repository publishes for them: an ILP x TLP table for `gpu-incore`, a 16-column
+stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels`.
+
+---
+
+## 1.1 gpu-cache
+
+- **Measures** the bandwidth of the on-chip caches (L1, then L2).
+- **Good for** how fast the caches feed the cores, and reading each cache's size off the curve - bandwidth drops at the working set where the data stops fitting.
+- **Method** one thread block per SM re-reads the same buffer in a loop; the buffer size is swept, so the served level shifts L1 → L2 → DRAM as it grows.
+
+![gpu-cache, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_cache.png)
+
+## 1.2 gpu-incore
+
+- **Measures** the latency and throughput of arithmetic instructions (FMA, DIV, SQRT).
+- **Good for** the raw cost of each operation, and how much parallelism it takes to hide that latency.
+- **Method** runs chains of one operation while sweeping ILP (1–8 independent chains) against TLP (warps per SM); reports cycles per operation.
+
+![gpu-incore, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_incore.png)
+
+## 1.3 gpu-l2-stream
+
+- **Measures** the bandwidth of the shared L2 cache, and of DRAM beyond it.
+- **Good for** the sustained L2 vs main-memory bandwidth, and the footprint where the L2 stops helping.
+- **Method** the four STREAM kernels (read, write, scale, triad) over a buffer whose size is swept across the L2 capacity.
+
+![gpu-l2-stream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_l2_stream.png)
+
+## 1.4 gpu-latency
+
+- **Measures** memory access latency - the time for a single dependent load.
+- **Good for** how many cycles a load costs at each level (L1 / L2 / DRAM), which sets how much work must be in flight to hide it.
+- **Method** pointer chasing: one warp walks a buffer in random order, each load depending on the previous, so nothing can mask the round trip.
+
+![gpu-latency, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_latency.png)
+
+## 1.5 gpu-memcpy
+
+- **Measures** host ↔ device transfer bandwidth, over the PCIe link.
+- **Good for** the cost of moving data on and off the GPU, and the transfer size at which PCIe saturates.
+- **Method** copies buffers of increasing size between CPU and GPU and times them.
+
+![gpu-memcpy, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_memcpy.png)
+
+## 1.6 gpu-roofline
+
+- **Measures** compute throughput (GFLOP/s) against arithmetic intensity (FLOP per byte moved).
+- **Good for** telling whether a kernel is limited by memory or by compute - the roofline model; the elbow is the crossover.
+- **Method** sweeps the arithmetic intensity and plots the throughput actually reached.
+
+![gpu-roofline, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_roofline.png)
+
+## 1.7 gpu-small-kernels
+
+- **Measures** the fixed cost of launching a kernel, against its bandwidth.
+- **Good for** the smallest data volume worth a kernel launch: below it you pay mostly for the launch, not for the work.
+- **Method** enqueues thousands of tiny `scale` kernels of varying size and fits `T = a + V/b` - `a` is the launch overhead, `b` the asymptotic bandwidth.
+
+![gpu-small-kernels, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_small_kernels.png)
+
+## 1.8 gpu-strides
+
+- **Measures** L1 bandwidth as a function of the access stride.
+- **Good for** what non-contiguous access costs: strided reads collapse the bandwidth through cache-bank conflicts, and the table shows which strides hurt.
+- **Method** a single block reads with strides 1…N; the result is tabulated as bytes per cycle for each stride.
+
+![gpu-strides, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_strides.png)
+
+## 1.9 gpu-umstream
+
+- **Measures** unified (managed) memory bandwidth, with a prefetch to the GPU.
+- **Good for** the cost of unified memory against explicit copies, and its behaviour when the dataset exceeds the card's memory.
+- **Method** STREAM over a unified-memory array prefetched to the device, sweeping the transfer size past the card's 11 GB.
+
+![gpu-umstream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_umstream.png)
+
+---
+
+# Part 2 - CUDA versus HIP on the same NVIDIA card
+
+Both campaigns ran on an RTX 2080 Ti of the same node, over **identical sweep points**, so the
+comparison is point by point and the only variable is the backend.
+
+Each figure carries the **mean of the 10 runs** of each backend, the shaded band being their
+min–max spread, and a lower panel giving the HIP/CUDA ratio. That lower panel is where the
+gap is actually readable: on most benchmarks the two means sit on top of each other.
+
+**Read the envelopes before the gap.** Where the two min–max bands overlap, the difference
+between the means is inside the run-to-run noise and means nothing.
+
+**One caveat on the hardware.** The two campaigns used different PCI slots of the same node
+(`3B:00.0` for CUDA, `5E:00.0` for HIP), recorded in each `metadata.json`. Same GPU model,
+same node, but not guaranteed to be the same physical die.
+
+---
+
+## 2.1 gpu-cache
+
+![gpu-cache, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_cache.png)
+
+## 2.2 gpu-incore
+
+![gpu-incore, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_incore.png)
+
+## 2.3 gpu-l2-stream
+
+![gpu-l2-stream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_l2_stream.png)
+
+## 2.4 gpu-latency
+
+![gpu-latency, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_latency.png)
+
+## 2.5 gpu-memcpy
+
+![gpu-memcpy, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_memcpy.png)
+
+## 2.6 gpu-roofline
+
+![gpu-roofline, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_roofline.png)
+
+## 2.7 gpu-small-kernels
+
+![gpu-small-kernels, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_small_kernels.png)
+
+## 2.8 gpu-strides
+
+![gpu-strides, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_strides.png)
+
+## 2.9 gpu-umstream
+
+![gpu-umstream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_umstream.png)
+
+---
+
+# Part 3 - HIP on the AMD MI210
+
+The target architecture, 10 runs, backend `hip`.
+
+**This part is read on its own.** Three benchmarks sweep a different range here than on the
+2080 Ti - `gpu-cache` covers 40 points against 26, `gpu-memcpy` 24 against 21, `gpu-umstream`
+26 against 19 - and the hardware differs anyway. The curves of Parts 1 and 2 do not
+superimpose on these.
+
+The power policy also differs, which matters when reading anything clock-related: the MI210
+ran under a **230 W cap with free clocks** (`amd-smi`), while both 2080 Ti campaigns had their
+**clocks pinned to TDP** (`nvidia-smi`) and no power cap.
+
+---
+
+## 3.1 gpu-cache
+
+![gpu-cache, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_cache.png)
+
+## 3.2 gpu-incore
+
+![gpu-incore, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_incore.png)
+
+## 3.3 gpu-l2-stream
+
+![gpu-l2-stream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_l2_stream.png)
+
+## 3.4 gpu-latency
+
+![gpu-latency, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_latency.png)
+
+## 3.5 gpu-memcpy
+
+![gpu-memcpy, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_memcpy.png)
+
+## 3.6 gpu-roofline
+
+![gpu-roofline, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_roofline.png)
+
+## 3.7 gpu-small-kernels
+
+![gpu-small-kernels, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_small_kernels.png)
+
+## 3.8 gpu-strides
+
+![gpu-strides, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_strides.png)
+
+## 3.9 gpu-umstream
+
+![gpu-umstream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_umstream.png)
+
+---
+
+# Part 4 - Impact of the benchmark parameters
 
 Each experiment here compares the **same workload on the same GPU**, changing exactly one
 option, to justify the defaults and to show what silently breaks a measurement when a knob is
@@ -23,7 +230,7 @@ fetch_results / validate
 The two positions matter: **`flush` is inside the batch**, paid once per timed run, while
 **`warm_cool` is outside it**, paid once per batch and never re-checked while the batch runs.
 
-## 1.1 `flush` - L2 flush before every timed run
+## 4.1 `flush` - L2 flush before every timed run
 
 **Expected** No effect once the working set is far larger than L2, since the data could not have
 stayed resident anyway. An effect in the L1/L2 region, where a stale cache would make the
@@ -39,7 +246,7 @@ established, not assumed: the manifest gives 722 s constant across `warmcool/san
 
 ---
 
-## 1.2 `warm_cool` - hold the GPU inside a temperature window
+## 4.2 `warm_cool` - hold the GPU inside a temperature window
 
 **Experiment** `gpu-cache` on the RTX 2080 Ti, backend `cuda`, campaign
 `results_flush_warmcool_20260831_163028`: 26 working-set sizes × 10 runs per condition,
@@ -70,7 +277,7 @@ cache-resident region is where the measurement depends most on the core clock. I
 improves from **0.048 %** to **0.038 %**.
 
 **Verdict** Below half a percent, in the cache-resident region only. Small enough not to threaten
-the comparisons in Parts 2 to 4, large enough to keep the option on when two configurations are
+the comparisons in Parts 1 to 3, large enough to keep the option on when two configurations are
 compared at a fraction of a percent - at the cost of a longer campaign.
 
 **One documentation bug found on the way.** In `Benchmark.hpp`, `max_gpu_temp` is described as
@@ -84,222 +291,15 @@ option is the single change that would make this section conclusive rather than 
 
 ---
 
-# Part 2 - Native CUDA on the RTX 2080 Ti
-
-Three configurations, the same source workloads:
-
-| Label | Build | Hardware | What it isolates |
-|---|---|---|---|
-| `cuda` | `release-cuda` | RTX 2080 Ti | Reference |
-| `hipifiable@nvidia` | `release-hip-nvidia` | RTX 2080 Ti | Cost of the hipify translation, same hardware |
-| `hipifiable@amd` | `release-hip-only` | MI210 | Behaviour on the target architecture |
-
-The first two run on the **same card**, so any gap between them comes from the translation and
-from nvcc compiling HIP, never from a hardware difference. The third changes the hardware, so
-it is read against AMD's published figures rather than against the first two.
-
-Each configuration gets its own part: **Part 2** below is the CUDA reference, **Part 3** puts
-the two backends side by side on the same card, and **Part 4** is the MI210. Every figure comes
-from a campaign of **10 runs**; `logs/` holds the raw output of all three.
-
-Three benchmarks are shown as a dedicated layout rather than a curve, following what the
-upstream repository publishes for them: an ILP x TLP table for `gpu-incore`, a 16-column
-stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels`.
-
----
-
-## 2.1 gpu-cache
-
-- **Measures** the bandwidth of the on-chip caches (L1, then L2).
-- **Good for** how fast the caches feed the cores, and reading each cache's size off the curve - bandwidth drops at the working set where the data stops fitting.
-- **Method** one thread block per SM re-reads the same buffer in a loop; the buffer size is swept, so the served level shifts L1 → L2 → DRAM as it grows.
-
-![gpu-cache, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_cache.png)
-
-## 2.2 gpu-incore
-
-- **Measures** the latency and throughput of arithmetic instructions (FMA, DIV, SQRT).
-- **Good for** the raw cost of each operation, and how much parallelism it takes to hide that latency.
-- **Method** runs chains of one operation while sweeping ILP (1–8 independent chains) against TLP (warps per SM); reports cycles per operation.
-
-![gpu-incore, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_incore.png)
-
-## 2.3 gpu-l2-stream
-
-- **Measures** the bandwidth of the shared L2 cache, and of DRAM beyond it.
-- **Good for** the sustained L2 vs main-memory bandwidth, and the footprint where the L2 stops helping.
-- **Method** the four STREAM kernels (read, write, scale, triad) over a buffer whose size is swept across the L2 capacity.
-
-![gpu-l2-stream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_l2_stream.png)
-
-## 2.4 gpu-latency
-
-- **Measures** memory access latency - the time for a single dependent load.
-- **Good for** how many cycles a load costs at each level (L1 / L2 / DRAM), which sets how much work must be in flight to hide it.
-- **Method** pointer chasing: one warp walks a buffer in random order, each load depending on the previous, so nothing can mask the round trip.
-
-![gpu-latency, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_latency.png)
-
-## 2.5 gpu-memcpy
-
-- **Measures** host ↔ device transfer bandwidth, over the PCIe link.
-- **Good for** the cost of moving data on and off the GPU, and the transfer size at which PCIe saturates.
-- **Method** copies buffers of increasing size between CPU and GPU and times them.
-
-![gpu-memcpy, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_memcpy.png)
-
-## 2.6 gpu-roofline
-
-- **Measures** compute throughput (GFLOP/s) against arithmetic intensity (FLOP per byte moved).
-- **Good for** telling whether a kernel is limited by memory or by compute - the roofline model; the elbow is the crossover.
-- **Method** sweeps the arithmetic intensity and plots the throughput actually reached.
-
-![gpu-roofline, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_roofline.png)
-
-## 2.7 gpu-small-kernels
-
-- **Measures** the fixed cost of launching a kernel, against its bandwidth.
-- **Good for** the smallest data volume worth a kernel launch: below it you pay mostly for the launch, not for the work.
-- **Method** enqueues thousands of tiny `scale` kernels of varying size and fits `T = a + V/b` - `a` is the launch overhead, `b` the asymptotic bandwidth.
-
-![gpu-small-kernels, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_small_kernels.png)
-
-## 2.8 gpu-strides
-
-- **Measures** L1 bandwidth as a function of the access stride.
-- **Good for** what non-contiguous access costs: strided reads collapse the bandwidth through cache-bank conflicts, and the table shows which strides hurt.
-- **Method** a single block reads with strides 1…N; the result is tabulated as bytes per cycle for each stride.
-
-![gpu-strides, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_strides.png)
-
-## 2.9 gpu-umstream
-
-- **Measures** unified (managed) memory bandwidth, with a prefetch to the GPU.
-- **Good for** the cost of unified memory against explicit copies, and its behaviour when the dataset exceeds the card's memory.
-- **Method** STREAM over a unified-memory array prefetched to the device, sweeping the transfer size past the card's 11 GB.
-
-![gpu-umstream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_umstream.png)
-
----
-
-# Part 3 - CUDA versus HIP on the same NVIDIA card
-
-Both campaigns ran on an RTX 2080 Ti of the same node, over **identical sweep points**, so the
-comparison is point by point and the only variable is the backend.
-
-Each figure carries the **mean of the 10 runs** of each backend, the shaded band being their
-min–max spread, and a lower panel giving the HIP/CUDA ratio. That lower panel is where the
-gap is actually readable: on most benchmarks the two means sit on top of each other.
-
-**Read the envelopes before the gap.** Where the two min–max bands overlap, the difference
-between the means is inside the run-to-run noise and means nothing.
-
-**One caveat on the hardware.** The two campaigns used different PCI slots of the same node
-(`3B:00.0` for CUDA, `5E:00.0` for HIP), recorded in each `metadata.json`. Same GPU model,
-same node, but not guaranteed to be the same physical die.
-
----
-
-## 3.1 gpu-cache
-
-![gpu-cache, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_cache.png)
-
-## 3.2 gpu-incore
-
-![gpu-incore, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_incore.png)
-
-## 3.3 gpu-l2-stream
-
-![gpu-l2-stream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_l2_stream.png)
-
-## 3.4 gpu-latency
-
-![gpu-latency, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_latency.png)
-
-## 3.5 gpu-memcpy
-
-![gpu-memcpy, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_memcpy.png)
-
-## 3.6 gpu-roofline
-
-![gpu-roofline, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_roofline.png)
-
-## 3.7 gpu-small-kernels
-
-![gpu-small-kernels, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_small_kernels.png)
-
-## 3.8 gpu-strides
-
-![gpu-strides, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_strides.png)
-
-## 3.9 gpu-umstream
-
-![gpu-umstream, CUDA vs HIP on RTX 2080 Ti](figures/part2_cuda_vs_hip_2080ti/p2_cuda_vs_hip_gpu_umstream.png)
-
----
-
-# Part 4 - HIP on the AMD MI210
-
-The target architecture, 10 runs, backend `hip`.
-
-**This part is read on its own.** Three benchmarks sweep a different range here than on the
-2080 Ti - `gpu-cache` covers 40 points against 26, `gpu-memcpy` 24 against 21, `gpu-umstream`
-26 against 19 - and the hardware differs anyway. The curves of Parts 2 and 3 do not
-superimpose on these.
-
-The power policy also differs, which matters when reading anything clock-related: the MI210
-ran under a **230 W cap with free clocks** (`amd-smi`), while both 2080 Ti campaigns had their
-**clocks pinned to TDP** (`nvidia-smi`) and no power cap.
-
----
-
-## 4.1 gpu-cache
-
-![gpu-cache, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_cache.png)
-
-## 4.2 gpu-incore
-
-![gpu-incore, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_incore.png)
-
-## 4.3 gpu-l2-stream
-
-![gpu-l2-stream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_l2_stream.png)
-
-## 4.4 gpu-latency
-
-![gpu-latency, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_latency.png)
-
-## 4.5 gpu-memcpy
-
-![gpu-memcpy, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_memcpy.png)
-
-## 4.6 gpu-roofline
-
-![gpu-roofline, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_roofline.png)
-
-## 4.7 gpu-small-kernels
-
-![gpu-small-kernels, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_small_kernels.png)
-
-## 4.8 gpu-strides
-
-![gpu-strides, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_strides.png)
-
-## 4.9 gpu-umstream
-
-![gpu-umstream, HIP on MI210](figures/part3_hip_mi210/p3_mi210_gpu_umstream.png)
-
----
-
 # Part 5 - Reproducing this
 
 Every figure in this document comes from one of three campaigns, each kept whole under `logs/`:
 
 | Campaign | Backend | Hardware | Used by |
 |---|---|---|---|
-| `Log_Test_RTX2080ti_cuda` | `cuda` | RTX 2080 Ti | Parts 2 and 3 |
-| `Log_Test_RTX2080ti_hip` | `hip` | RTX 2080 Ti | Part 3 |
-| `Log_Test_MI210` | `hip` | AMD Instinct MI210 | Part 4 |
+| `Log_Test_RTX2080ti_cuda` | `cuda` | RTX 2080 Ti | Parts 1 and 2 |
+| `Log_Test_RTX2080ti_hip` | `hip` | RTX 2080 Ti | Part 2 |
+| `Log_Test_MI210` | `hip` | AMD Instinct MI210 | Part 3 |
 
 Each directory holds 191 files:
 
