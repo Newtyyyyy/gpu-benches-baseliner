@@ -1,24 +1,4 @@
-# Results
-
-Measurements collected with this repository, kept on the `helio_log` branch alongside the raw
-runs that produced them. Two things are shown here:
-
-1. **What each benchmark knob actually changes** — measured, not assumed.
-2. **How the same benchmark behaves across architectures** — native CUDA, hipified HIP on the
-   same NVIDIA card, and HIP on a real AMD card.
-
-The methodology of each benchmark lives in its own `gpu-benches/<name>/GPU-<name>.md`. This
-document only reports what was observed.
-
-```
-RESULTS.md          this file
-logs/               raw campaign output, one directory per campaign
-figures/            the plots referenced below, as PNG
-```
-
----
-
-# Part 1 — Impact of the benchmark parameters
+# Part 1 - Impact of the benchmark parameters
 
 Each experiment here compares the **same workload on the same GPU**, changing exactly one
 option, to justify the defaults and to show what silently breaks a measurement when a knob is
@@ -35,7 +15,7 @@ repeat until the stopping criterion is satisfied:   ← one iteration = one batc
    ├─ block           freeze the stream so the whole batch is queued before it runs
    └─ for each of batch_size runs:
          ├─ reset_device
-         ├─ flush     empty L2 — before every run, not once per batch
+         ├─ flush     empty L2 - before every run, not once per batch
          └─ timed run
 fetch_results / validate
 ```
@@ -43,13 +23,13 @@ fetch_results / validate
 The two positions matter: **`flush` is inside the batch**, paid once per timed run, while
 **`warm_cool` is outside it**, paid once per batch and never re-checked while the batch runs.
 
-## 1.1 `flush` — L2 flush before every timed run
+## 1.1 `flush` - L2 flush before every timed run
 
 **Expected** No effect once the working set is far larger than L2, since the data could not have
 stayed resident anyway. An effect in the L1/L2 region, where a stale cache would make the
 benchmark report cache bandwidth instead of memory bandwidth.
 
-**Status** *No result yet — the data was lost.* The campaign of 2026-08-31 ran both experiments,
+**Status** *No result yet - the data was lost.* The campaign of 2026-08-31 ran both experiments,
 but they wrote under the same file names (`avec-runNN.json`, `sans-runNN.json`) and `warm_cool`
 ran second. The `manifest.csv` describes 40 runs where 20 files remain. Which set survived is
 established, not assumed: the manifest gives 722 s constant across `warmcool/sans` against
@@ -59,7 +39,7 @@ established, not assumed: the manifest gives 722 s constant across `warmcool/san
 
 ---
 
-## 1.2 `warm_cool` — hold the GPU inside a temperature window
+## 1.2 `warm_cool` - hold the GPU inside a temperature window
 
 **Experiment** `gpu-cache` on the RTX 2080 Ti, backend `cuda`, campaign
 `results_flush_warmcool_20260831_163028`: 26 working-set sizes × 10 runs per condition,
@@ -71,18 +51,18 @@ established, not assumed: the manifest gives 722 s constant across `warmcool/san
 anyway". The loop checks the clock on each pass and, if the window is still not reached,
 **throws**: `Device did not warm up or cool down in the 60s allocated.` The run fails rather
 than producing data taken outside the window. The campaigns raised it from its 3 s default to
-60 s for that reason — three seconds is not enough to cool a hot card.
+60 s for that reason - three seconds is not enough to cool a hot card.
 
 **The regulation only acts between batches.** The temperature draws a sawtooth: the card is
 brought back to 63–65 °C before each batch, then climbs freely to 73 °C while it runs. Only
 **46 % of the points sit inside the requested window**, and the excursions above `max_gpu_temp`
-are not a malfunction — the loop exits as soon as the window is reached and never reads the
+are not a malfunction - the loop exits as soon as the window is reached and never reads the
 sensor again until the next batch.
 
 ![warm_cool on versus off, with the difference](figures/part1_parameters/warmcool-bandwidth.png)
 
 **The effect on the measurement is real but small.** Median difference across the 26 sizes:
-**−0.02 %**. It is not uniform — below ~64 kB, where the working set is cache-resident,
+**−0.02 %**. It is not uniform - below ~64 kB, where the working set is cache-resident,
 `warm_cool = 0` reads **0.2 to 0.4 % lower**, and on **12 of the 26 sizes** that gap exceeds the
 combined inter-run spread of the two conditions. Past that point the difference falls back into
 the noise. The direction fits the mechanism: a hotter card clocks slightly lower, and the
@@ -91,7 +71,7 @@ improves from **0.048 %** to **0.038 %**.
 
 **Verdict** Below half a percent, in the cache-resident region only. Small enough not to threaten
 the comparisons in Parts 2 to 4, large enough to keep the option on when two configurations are
-compared at a fraction of a percent — at the cost of a longer campaign.
+compared at a fraction of a percent - at the cost of a longer campaign.
 
 **One documentation bug found on the way.** In `Benchmark.hpp`, `max_gpu_temp` is described as
 *"the minimum accepted temperature before cooling down the GPU"*. It is the maximum; the string
@@ -104,7 +84,7 @@ option is the single change that would make this section conclusive rather than 
 
 ---
 
-# Part 2 — Native CUDA on the RTX 2080 Ti
+# Part 2 - Native CUDA on the RTX 2080 Ti
 
 Three configurations, the same source workloads:
 
@@ -131,7 +111,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 ## 2.1 gpu-cache
 
 - **Measures** the bandwidth of the on-chip caches (L1, then L2).
-- **Good for** how fast the caches feed the cores, and reading each cache's size off the curve — bandwidth drops at the working set where the data stops fitting.
+- **Good for** how fast the caches feed the cores, and reading each cache's size off the curve - bandwidth drops at the working set where the data stops fitting.
 - **Method** one thread block per SM re-reads the same buffer in a loop; the buffer size is swept, so the served level shifts L1 → L2 → DRAM as it grows.
 
 ![gpu-cache, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_cache.png)
@@ -154,7 +134,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 
 ## 2.4 gpu-latency
 
-- **Measures** memory access latency — the time for a single dependent load.
+- **Measures** memory access latency - the time for a single dependent load.
 - **Good for** how many cycles a load costs at each level (L1 / L2 / DRAM), which sets how much work must be in flight to hide it.
 - **Method** pointer chasing: one warp walks a buffer in random order, each load depending on the previous, so nothing can mask the round trip.
 
@@ -171,7 +151,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 ## 2.6 gpu-roofline
 
 - **Measures** compute throughput (GFLOP/s) against arithmetic intensity (FLOP per byte moved).
-- **Good for** telling whether a kernel is limited by memory or by compute — the roofline model; the elbow is the crossover.
+- **Good for** telling whether a kernel is limited by memory or by compute - the roofline model; the elbow is the crossover.
 - **Method** sweeps the arithmetic intensity and plots the throughput actually reached.
 
 ![gpu-roofline, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_roofline.png)
@@ -180,7 +160,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 
 - **Measures** the fixed cost of launching a kernel, against its bandwidth.
 - **Good for** the smallest data volume worth a kernel launch: below it you pay mostly for the launch, not for the work.
-- **Method** enqueues thousands of tiny `scale` kernels of varying size and fits `T = a + V/b` — `a` is the launch overhead, `b` the asymptotic bandwidth.
+- **Method** enqueues thousands of tiny `scale` kernels of varying size and fits `T = a + V/b` - `a` is the launch overhead, `b` the asymptotic bandwidth.
 
 ![gpu-small-kernels, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_small_kernels.png)
 
@@ -202,7 +182,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 
 ---
 
-# Part 3 — CUDA versus HIP on the same NVIDIA card
+# Part 3 - CUDA versus HIP on the same NVIDIA card
 
 Both campaigns ran on an RTX 2080 Ti of the same node, over **identical sweep points**, so the
 comparison is point by point and the only variable is the backend.
@@ -258,13 +238,13 @@ same node, but not guaranteed to be the same physical die.
 
 ---
 
-# Part 4 — HIP on the AMD MI210
+# Part 4 - HIP on the AMD MI210
 
 The target architecture, 10 runs, backend `hip`.
 
 **This part is read on its own.** Three benchmarks sweep a different range here than on the
-2080 Ti — `gpu-cache` covers 40 points against 26, `gpu-memcpy` 24 against 21, `gpu-umstream`
-26 against 19 — and the hardware differs anyway. The curves of Parts 2 and 3 do not
+2080 Ti - `gpu-cache` covers 40 points against 26, `gpu-memcpy` 24 against 21, `gpu-umstream`
+26 against 19 - and the hardware differs anyway. The curves of Parts 2 and 3 do not
 superimpose on these.
 
 The power policy also differs, which matters when reading anything clock-related: the MI210
@@ -311,7 +291,7 @@ ran under a **230 W cap with free clocks** (`amd-smi`), while both 2080 Ti campa
 
 ---
 
-# Part 5 — Reproducing this
+# Part 5 - Reproducing this
 
 Every figure in this document comes from one of three campaigns, each kept whole under `logs/`:
 
