@@ -130,41 +130,73 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 
 ## 2.1 gpu-cache
 
-_(to fill: bandwidth per memory level, three curves; L1/L2 thresholds vs specs)_
+- **Measures** the bandwidth of the on-chip caches (L1, then L2).
+- **Good for** how fast the caches feed the cores, and reading each cache's size off the curve — bandwidth drops at the working set where the data stops fitting.
+- **Method** one thread block per SM re-reads the same buffer in a loop; the buffer size is swept, so the served level shifts L1 → L2 → DRAM as it grows.
 
 ![gpu-cache, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_cache.png)
 
 ## 2.2 gpu-incore
 
-_(to fill: rcp_throughput vs theoretical 32/N; FP32/FP64 ratio)_
+- **Measures** the latency and throughput of arithmetic instructions (FMA, DIV, SQRT).
+- **Good for** the raw cost of each operation, and how much parallelism it takes to hide that latency.
+- **Method** runs chains of one operation while sweeping ILP (1–8 independent chains) against TLP (warps per SM); reports cycles per operation.
 
 ![gpu-incore, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_incore.png)
 
 ## 2.3 gpu-l2-stream
 
+- **Measures** the bandwidth of the shared L2 cache, and of DRAM beyond it.
+- **Good for** the sustained L2 vs main-memory bandwidth, and the footprint where the L2 stops helping.
+- **Method** the four STREAM kernels (read, write, scale, triad) over a buffer whose size is swept across the L2 capacity.
+
 ![gpu-l2-stream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_l2_stream.png)
 
 ## 2.4 gpu-latency
+
+- **Measures** memory access latency — the time for a single dependent load.
+- **Good for** how many cycles a load costs at each level (L1 / L2 / DRAM), which sets how much work must be in flight to hide it.
+- **Method** pointer chasing: one warp walks a buffer in random order, each load depending on the previous, so nothing can mask the round trip.
 
 ![gpu-latency, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_latency.png)
 
 ## 2.5 gpu-memcpy
 
+- **Measures** host ↔ device transfer bandwidth, over the PCIe link.
+- **Good for** the cost of moving data on and off the GPU, and the transfer size at which PCIe saturates.
+- **Method** copies buffers of increasing size between CPU and GPU and times them.
+
 ![gpu-memcpy, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_memcpy.png)
 
 ## 2.6 gpu-roofline
+
+- **Measures** compute throughput (GFLOP/s) against arithmetic intensity (FLOP per byte moved).
+- **Good for** telling whether a kernel is limited by memory or by compute — the roofline model; the elbow is the crossover.
+- **Method** sweeps the arithmetic intensity and plots the throughput actually reached.
 
 ![gpu-roofline, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_roofline.png)
 
 ## 2.7 gpu-small-kernels
 
+- **Measures** the fixed cost of launching a kernel, against its bandwidth.
+- **Good for** the smallest data volume worth a kernel launch: below it you pay mostly for the launch, not for the work.
+- **Method** enqueues thousands of tiny `scale` kernels of varying size and fits `T = a + V/b` — `a` is the launch overhead, `b` the asymptotic bandwidth.
+
 ![gpu-small-kernels, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_small_kernels.png)
 
 ## 2.8 gpu-strides
 
+- **Measures** L1 bandwidth as a function of the access stride.
+- **Good for** what non-contiguous access costs: strided reads collapse the bandwidth through cache-bank conflicts, and the table shows which strides hurt.
+- **Method** a single block reads with strides 1…N; the result is tabulated as bytes per cycle for each stride.
+
 ![gpu-strides, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_strides.png)
 
 ## 2.9 gpu-umstream
+
+- **Measures** unified (managed) memory bandwidth, with a prefetch to the GPU.
+- **Good for** the cost of unified memory against explicit copies, and its behaviour when the dataset exceeds the card's memory.
+- **Method** STREAM over a unified-memory array prefetched to the device, sweeping the transfer size past the card's 11 GB.
 
 ![gpu-umstream, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_umstream.png)
 
