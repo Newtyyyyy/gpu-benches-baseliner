@@ -50,8 +50,7 @@ include(${baseliner_SOURCE_DIR}/cmake/utils.cmake)
 # --- Build options ---------------------------------------------------------
 
 option(COMBINED_BUILD "Build everything into one executable" ON)
-option(BASELINER_BUILD_HIPIFIABLE "Build the mechanically-hipified (hipify-perl) variant instead of the hand-tuned hip/ one" OFF)
-option(BASELINER_FAST_MATH "Enable fast-math for the CUDA and hipifiable benchmark kernels (never the hand-tuned hip/ reference)" ON)
+option(BASELINER_FAST_MATH "Enable fast-math for the CUDA and HIP benchmark kernels" ON)
 
 # --- Version interface -----------------------------------------------------
 
@@ -70,7 +69,7 @@ add_subdirectory(gpu-benches)
 # --- Fast-math -------------------------------------------------------------
 
 if(BASELINER_FAST_MATH)
-    # Fast-math for the cuda/ and hipifiable/ objects only, never the hand-tuned hip/ ones
+    # Fast-math for the cuda/ and hipifiable/ objects only
     if(CMAKE_HIP_COMPILER MATCHES "nvcc")
         set(_hipifiable_fast_math --use_fast_math)
     else()
