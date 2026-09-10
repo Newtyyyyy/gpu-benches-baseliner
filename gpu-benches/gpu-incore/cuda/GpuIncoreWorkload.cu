@@ -39,7 +39,7 @@ __global__ void incore_DIV_separated(T p, T* A, int iters) {
         for (int m = 0; m < M; m++) {
             T t = p + threadIdx.x + iter + m;
             for (int n = 0; n < N; n++) t = (T)0.1 / (t + (T)0.2);
-            A[threadIdx.x + iter] = t;
+            if (t > (T)22313.0) A[0] = t;
         }
     }
 }
@@ -51,7 +51,7 @@ __global__ void incore_SQRT_separated(T p, T* A, int iters) {
         for (int m = 0; m < M; m++) {
             T t = p + threadIdx.x + iter + m;
             for (int n = 0; n < N; n++) t = sqrt(t + (T)0.2);
-            A[threadIdx.x + iter] = t;
+            if (t > (T)22313.0) A[0] = t;
         }
     }
 }

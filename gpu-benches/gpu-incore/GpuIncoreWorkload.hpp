@@ -79,10 +79,12 @@ protected:
     }
 
     void inner_update_metrics(std::shared_ptr<Baseliner::Stats::StatsEngine> engine) override {
-        size_t N_type = (m_kernel_type == "div" || m_kernel_type == "sqrt")
-                            ? static_cast<size_t>(N_OTHER)
-                            : static_cast<size_t>(N_FMA);
-        engine->update_values<InCoreOps>(N_type * static_cast<size_t>(ITERS) * m_warp_count);
+        const bool   special = (m_kernel_type == "div" || m_kernel_type == "sqrt");
+        const size_t N_type  = special ? static_cast<size_t>(N_OTHER)
+                                       : static_cast<size_t>(N_FMA);
+        const size_t chains  = special ? static_cast<size_t>(m_ilp) : static_cast<size_t>(1);
+        engine->update_values<InCoreOps>(N_type * chains * static_cast<size_t>(ITERS)
+                                         * static_cast<size_t>(m_warp_count));
     }
 
 protected:
