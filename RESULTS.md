@@ -336,7 +336,8 @@ Worth knowing before trusting or rerunning:
 - **`Benchmark` options live only in the protocol.** A result carries `id`, `results` and
   `hardware` only, so `flush` / `warm_cool` are recoverable from `.protocol.json` / `metadata.json`
   alone - unless promoted to a sweep axis, where they land in `sweep_point`.
-- **The figures are not regenerable from a clone yet:** the notebook that produces them is not
-  in this repository.
+- **The figures are regenerable from a clone:** run [`plot_results.ipynb`](plot_results.ipynb)
+  top to bottom. It reads `logs/`, detects each campaign's backend and card from its
+  `metadata.json`, and writes every figure under `figures/`.
 
 Build and run instructions are in the [README](README.md).
