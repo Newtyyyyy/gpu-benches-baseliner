@@ -1,4 +1,4 @@
-# gpu-latency — Research & Analysis
+# gpu-latency - Research & Analysis
 
 ## Goal
 
@@ -33,7 +33,7 @@ The buffer is initialized as a random permutation of indices (a linked list in m
 | Metric | Unit | Description |
 |---|---|---|
 | `median` | ms | Median total time for `iterations` accesses |
-| `iterations` | — | Number of chained accesses (set via JSON) |
+| `iterations` | - | Number of chained accesses (set via JSON) |
 | `latency_ns` | ns | **Main metric**: latency per access |
 
 `latency_ns` is computed in `LatencyNsStat` from the median and the iteration count.

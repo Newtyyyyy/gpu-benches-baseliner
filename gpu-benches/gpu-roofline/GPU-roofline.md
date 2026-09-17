@@ -1,4 +1,4 @@
-# gpu-roofline — Research & Analysis
+# gpu-roofline - Research & Analysis
 
 ## Goal
 
@@ -25,7 +25,7 @@ number_of_flops = (2 + 2 × n) × data_len
 arithmetic intensity = flops / bytes = (2 + 2n) / 8   FLOP/byte
 ```
 
-At `n = 0` the intensity is 0.25 FLOP/byte — firmly memory-bound. At `n = 1012` it reaches ~253 FLOP/byte, deep into the compute-bound regime.
+At `n = 0` the intensity is 0.25 FLOP/byte - firmly memory-bound. At `n = 1012` it reaches ~253 FLOP/byte, deep into the compute-bound regime.
 
 ### Occupancy-driven sizing
 
@@ -48,7 +48,7 @@ Upstream swept `n` at compile time with `-DPARN=N` and rebuilt the binary per po
 
 | Parameter | Values | Description |
 |---|---|---|
-| `n` | 55 values: 0, 1, 2, 4, 6, … 934, 1012 | Inner FMA iterations per 2 loads |
+| `n` | 55 values: 0, 1, 2, 4, 6, ... 934, 1012 | Inner FMA iterations per 2 loads |
 
 Spacing is dense at the low end, where the knee usually sits, and geometric afterwards.
 
@@ -85,4 +85,4 @@ Both are reported at every point. Plotting `arithmetic_bandwidth` against intens
 - Buffer size varies across the sweep because it follows occupancy. Two points with different `n` do not touch the same amount of memory, which is intended but worth remembering when comparing raw times rather than bandwidths.
 - The kernel is `float`-only. There is no precision sweep, unlike `gpu-incore`.
 - `M = 4000` and `BLOCKSIZE = 256` are compile-time constants; changing them means editing the header.
-- The inner loop reuses `a` and `b` across iterations, so the FMA chain is dependency-bound. The compute plateau reflects that dependency chain, not the peak FMA throughput a fully independent stream would reach — compare with `gpu-incore` `fma-separated` for the latter.
+- The inner loop reuses `a` and `b` across iterations, so the FMA chain is dependency-bound. The compute plateau reflects that dependency chain, not the peak FMA throughput a fully independent stream would reach - compare with `gpu-incore` `fma-separated` for the latter.

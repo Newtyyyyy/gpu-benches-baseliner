@@ -1,4 +1,4 @@
-# gpu-small-kernels — Research & Analysis
+# gpu-small-kernels - Research & Analysis
 
 ## Goal
 
@@ -8,7 +8,7 @@ Characterize how **kernel launch overhead dominates at small problem sizes**. A 
 
 ## Measurement principle
 
-The kernel is deliberately minimal — one load, one multiply, one store, one bounds check:
+The kernel is deliberately minimal - one load, one multiply, one store, one bounds check:
 
 ```cpp
 __global__ void small_scale(double* A, const double* B, int size) {
@@ -25,7 +25,7 @@ number_of_bytes = size × 2 × sizeof(double)
 bandwidth (GB/s) = number_of_bytes / time_s / 1e9
 ```
 
-At small sizes the measured time is essentially launch latency, so the computed bandwidth collapses toward zero — that collapse *is* the measurement. As `size` grows, bandwidth climbs and eventually flattens at the DRAM peak.
+At small sizes the measured time is essentially launch latency, so the computed bandwidth collapses toward zero - that collapse *is* the measurement. As `size` grows, bandwidth climbs and eventually flattens at the DRAM peak.
 
 ---
 
@@ -49,7 +49,7 @@ The `size` series is geometric with a ratio near 1.06, dense enough to resolve t
 | `CoV` | % | Coefficient of variation (stability) |
 | `memory_bandwidth` | GB/s | Effective bandwidth (2 × size × 8 bytes / time) |
 
-The interesting reading is `median` at the small end — it plateaus at the launch overhead floor, typically a few microseconds — and `memory_bandwidth` at the large end.
+The interesting reading is `median` at the small end - it plateaus at the launch overhead floor, typically a few microseconds - and `memory_bandwidth` at the large end.
 
 ---
 
@@ -60,7 +60,7 @@ The interesting reading is `median` at the small end — it plateaus at the laun
 | `size` | `sweep > enumerated` | Range of data set sizes |
 | `block_size` | `sweep > enumerated` | Block sizes to test |
 | `batch_size` | `Benchmark` | Repetitions per batch. Keep it high: individual runs are very short |
-| `warmup` | `Benchmark` | Essential — the first launch of a kernel is slower than the rest |
+| `warmup` | `Benchmark` | Essential - the first launch of a kernel is slower than the rest |
 | `lock_clock` | `cuda > Backend` | Recommended `1` |
 
 ---

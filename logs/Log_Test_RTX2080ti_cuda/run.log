@@ -1,12 +1,12 @@
 ==============================================================================
-Campaign log — Log_Test_RTX2080ti_cuda
+Campaign log - Log_Test_RTX2080ti_cuda
 
 The campaign ran in a single pass on 2026-08-24 and completed 10/10 runs for
 all nine benchmarks. Runs were issued in batches of 5, so each benchmark
 occupied two SLURM jobs in sequence. The orchestrator log is reproduced below
 unchanged.
 
-  run_20260824_172055.log                    2026-08-24 17:20 — single pass, completed (10/10 on all benchmarks)
+  run_20260824_172055.log                    2026-08-24 17:20 - single pass, completed (10/10 on all benchmarks)
 ==============================================================================
 
 

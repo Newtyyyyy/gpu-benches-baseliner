@@ -24,7 +24,7 @@ public:
             value = (m > 0.0f) ? (std::abs(sorted_vec[1].count() - sorted_vec[0].count()) / m * 100.0f) : 0.0f;
             return;
         }
-        // trimmed mean: exclude min and max — same as um-stream's value()
+        // trimmed mean: exclude min and max - same as um-stream's value()
         float sum = 0.0f;
         for (size_t i = 1; i < n - 1; ++i)
             sum += sorted_vec[i].count();

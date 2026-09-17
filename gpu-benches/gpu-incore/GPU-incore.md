@@ -1,4 +1,4 @@
-# gpu-incore — Research & Analysis
+# gpu-incore - Research & Analysis
 
 ## Goal
 
@@ -51,7 +51,7 @@ The full sweep amounts to **4 × 4 × 2 × 6 = 192 measurement points**.
 | `median` | ms | Median execution time |
 | `ops_per_run` | ops | Total number of operations computed (`N_type × ITERS × warp_count`) |
 | `clock_frequency` | GHz | GPU clock measured during the run |
-| `rcp_throughput` | cycles/op | Reciprocal throughput — **main metric** |
+| `rcp_throughput` | cycles/op | Reciprocal throughput - **main metric** |
 
 ---
 
@@ -70,5 +70,5 @@ The full sweep amounts to **4 × 4 × 2 × 6 = 192 measurement points**.
 ## Caveats
 
 - `lock_clock` is **critical** here: the GPU clock is used directly in the `rcp_throughput` computation. A varying clock skews the metric.
-- `number_of_floating_point_operations()` returns `nullopt` on purpose — the benchmark does not count FLOP/s but cycles/op.
+- `number_of_floating_point_operations()` returns `nullopt` on purpose - the benchmark does not count FLOP/s but cycles/op.
 - DIV and SQRT use `N_OTHER = 128` (vs `N_FMA = 1024`) because they are intrinsically slower: this keeps execution times comparable.

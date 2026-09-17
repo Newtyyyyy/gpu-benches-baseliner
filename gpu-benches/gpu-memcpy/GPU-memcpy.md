@@ -1,4 +1,4 @@
-# gpu-memcpy — Research & Analysis
+# gpu-memcpy - Research & Analysis
 
 ## Goal
 
@@ -32,7 +32,7 @@ The cartesian product of both sweeps is run, i.e. **20 measurement points** (10 
 | Mode | Mechanism | Performance impact |
 |---|---|---|
 | **Pageable** (`pin_memory=false`) | The CUDA driver internally allocates a temporary pinned staging area and double-copies | Reduced bandwidth (~50% of the theoretical PCIe value) |
-| **Pinned** (`pin_memory=true`) | Memory locked in physical RAM, direct DMA to the GPU | Peak PCIe bandwidth (≈ 16–32 GB/s depending on generation) |
+| **Pinned** (`pin_memory=true`) | Memory locked in physical RAM, direct DMA to the GPU | Peak PCIe bandwidth (≈ 16-32 GB/s depending on generation) |
 
 ---
 

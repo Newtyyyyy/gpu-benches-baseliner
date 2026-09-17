@@ -1,4 +1,4 @@
-# gpu-umstream — Research & Analysis
+# gpu-umstream - Research & Analysis
 
 ## Goal
 
@@ -81,4 +81,4 @@ The cartesian product gives **20 points** (10 sizes × 2 prefetch modes).
 ## Caveats
 
 - `reset_device` is a no-op (`{}`): UM arrays are not reinitialized between runs. The `warmup` guarantees the pages are already in their final state before measuring.
-- `m_block_count` is not part of the sweep — it is computed implicitly from `item_count` and `block_size`.
+- `m_block_count` is not part of the sweep - it is computed implicitly from `item_count` and `block_size`.

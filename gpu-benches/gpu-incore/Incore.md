@@ -13,8 +13,8 @@ Four arithmetic operation types, two swept parameters:
 
 | Kernel | Operation | Behavior |
 |--------|-----------|----------|
-| `fma-mixed` | `t[m] = t[m] * 0.9 + 0.5` | M accumulators interleaved in an inner loop — measures throughput |
-| `fma-separated` | M independent chains of N sequential FMAs | Chains executed sequentially — measures latency |
+| `fma-mixed` | `t[m] = t[m] * 0.9 + 0.5` | M accumulators interleaved in an inner loop - measures throughput |
+| `fma-separated` | M independent chains of N sequential FMAs | Chains executed sequentially - measures latency |
 | `div` | `t = 0.1 / (t + 0.2)` | Float: SFUs. Double: a sequence of DFMAs (Newton-Raphson) |
 | `sqrt` | `t = sqrt(t + 0.2)` | Same as div |
 
@@ -47,7 +47,7 @@ The clock is measured dynamically (actual clock under load, not the nominal one)
 N_type * ITERS * warp_count
 ```
 
-**No ×32 factor** — ops counts **warp instructions**, not thread operations.
+**No ×32 factor** - ops counts **warp instructions**, not thread operations.
 Each warp instruction processes 32 threads simultaneously.
 
 ### Deriving the theoretical value
@@ -67,7 +67,7 @@ RCP = total_cycles / counted_ops
 The **32** comes from the warp size (NVIDIA hardware constant).  
 The **N** comes from the TU102 whitepaper (number of units per SM on the RTX 2080 Ti).
 
-**Note:** "1 thread per cycle" refers to throughput, not latency. A CUDA core FMA produces 2 FLOPS per cycle (fused multiply + add) but processes 1 thread — which is why peak FLOP/s = N × **2** × freq, while the benchmark counts 1 FMA = 1 op.
+**Note:** "1 thread per cycle" refers to throughput, not latency. A CUDA core FMA produces 2 FLOPS per cycle (fused multiply + add) but processes 1 thread - which is why peak FLOP/s = N × **2** × freq, while the benchmark counts 1 FMA = 1 op.
 
 ---
 
@@ -89,7 +89,7 @@ ILP and TLP both contribute to hiding latency:
 
 ---
 
-## Theoretical values — RTX 2080 Ti (SM75 / TU102)
+## Theoretical values - RTX 2080 Ti (SM75 / TU102)
 
 Sources: TU102 whitepaper (unit counts), CUDA Programming Guide (throughput tables), the `32/N` formula.
 
@@ -99,20 +99,20 @@ Sources: TU102 whitepaper (unit counts), CUDA Programming Guide (throughput tabl
 | FP64 cores | 2 | **16.0 cycles/op** |
 | SFUs | 16 | **2.000 cycles/op** |
 
-**FP32/FP64 ratio:** 64/2 = **1:32** — confirmed by the product specs (13.45 TFLOPS FP32 / 420 GFLOPS FP64).
+**FP32/FP64 ratio:** 64/2 = **1:32** - confirmed by the product specs (13.45 TFLOPS FP32 / 420 GFLOPS FP64).
 
 ---
 
 ## Measured vs theoretical results
 
-### Float — throughput (TLP saturated)
+### Float - throughput (TLP saturated)
 
 | Kernel | Theoretical | Measured | Ratio |
 |--------|-------------|----------|-------|
 | fma (FP32 cores) | 0.500 | 0.502 | **99.6%** |
 | div / sqrt (SFUs) | 2.000 | 2.016 | **99.2%** |
 
-### Double — throughput (TLP saturated)
+### Double - throughput (TLP saturated)
 
 | Kernel | Theoretical | Measured | Ratio |
 |--------|-------------|----------|-------|

@@ -1,12 +1,12 @@
 ==============================================================================
-Campaign log — Log_Test_MI210
+Campaign log - Log_Test_MI210
 
 The campaign was started on 2026-08-13 and finished after three resume attempts.
 The original per-attempt logs are concatenated below in chronological order.
 
-  run_resume_20260814_145953.log             2026-08-14 14:59 — resume attempt, all workloads failed (0/10)
-  run_resume_20260817_135904.log             2026-08-17 13:59 — aborted, SLURM node unavailable
-  run_resume_20260817_164524.log             2026-08-17 16:45 — resume attempt, completed (10/10)
+  run_resume_20260814_145953.log             2026-08-14 14:59 - resume attempt, all workloads failed (0/10)
+  run_resume_20260817_135904.log             2026-08-17 13:59 - aborted, SLURM node unavailable
+  run_resume_20260817_164524.log             2026-08-17 16:45 - resume attempt, completed (10/10)
 ==============================================================================
 
 

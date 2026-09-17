@@ -1,4 +1,4 @@
-# gpu-cache — Research & Analysis
+# gpu-cache - Research & Analysis
 
 ## Goal
 

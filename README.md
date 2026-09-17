@@ -7,8 +7,8 @@ result format.
 
 Every benchmark exists in two flavours:
 
-- `cuda/` — the CUDA source, the reference implementation
-- `hipifiable/` — its mechanical HIP translation, produced by `hipify-perl` (see [Hipify_script.sh](Hipify_script.sh))
+- `cuda/` - the CUDA source, the reference implementation
+- `hipifiable/` - its mechanical HIP translation, produced by `hipify-perl` (see [Hipify_script.sh](Hipify_script.sh))
 
 ---
 
@@ -45,7 +45,7 @@ Build directories follow `build/<preset-name>/`, and the target is always `gpu-b
 | `release-hip-only` | `cmake --preset release-hip-only` | ROCm only, no CUDA, real AMD GPU | `hipifiable/` |
 | `release-hip-nvidia` | `export HIP_PATH=<your ROCm install>` then `cmake --preset release-hip-nvidia` | ROCm headers + CUDA Toolkit, NVIDIA GPU | `hipifiable/` |
 
-`HIP_PATH` must point at a ROCm installation — it does not have to be a system-wide one,
+`HIP_PATH` must point at a ROCm installation - it does not have to be a system-wide one,
 a ROCm unpacked in your home works, since only the headers are used.
 
 Then, for any of them:
@@ -62,7 +62,7 @@ temperature / power stats through NVML, since AMD-SMI is unavailable there.
 
 ## 4. First run
 
-Smoke test — no protocol file involved. One measurement point per workload, on every backend
+Smoke test - no protocol file involved. One measurement point per workload, on every backend
 compiled into the binary:
 
 ```bash
@@ -95,7 +95,7 @@ the ones it reports.
 
 1. Write `gpu-[name]/Gpu[name]Workload.hpp` and `gpu-[name]/cuda/Gpu[name]Workload.cu`
 2. Add `gpu-[name]/cuda/CMakeLists.txt` (copy one from an existing benchmark)
-3. Run `./Hipify_script.sh` from the repo root — it regenerates every `hipifiable/*.hip`
+3. Run `./Hipify_script.sh` from the repo root - it regenerates every `hipifiable/*.hip`
 4. Add `gpu-[name]/hipifiable/CMakeLists.txt` (again, copy an existing one)
 5. Add `gpu-[name]/CMakeLists.txt`, and register it in `gpu-benches/CMakeLists.txt`
 

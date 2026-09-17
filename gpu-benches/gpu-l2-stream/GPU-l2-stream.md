@@ -1,4 +1,4 @@
-# gpu-l2-stream — Research & Analysis
+# gpu-l2-stream - Research & Analysis
 
 ## Goal
 
@@ -30,7 +30,7 @@ number_of_bytes = streams × ITERATION_COUNT × sizeof(double)
 bandwidth (GB/s) = number_of_bytes / time_s / 1e9
 ```
 
-Note that the byte count uses `ITERATION_COUNT`, not `length`: it counts the traffic the kernel *requests*, not the distinct memory it touches. That is the point — comparing requested traffic against elapsed time is what exposes the caching effect.
+Note that the byte count uses `ITERATION_COUNT`, not `length`: it counts the traffic the kernel *requests*, not the distinct memory it touches. That is the point - comparing requested traffic against elapsed time is what exposes the caching effect.
 
 ---
 

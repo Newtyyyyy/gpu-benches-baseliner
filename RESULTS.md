@@ -35,7 +35,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 
 - **Measures** the latency and throughput of arithmetic instructions (FMA, DIV, SQRT).
 - **Good for** the raw cost of each operation, and how much parallelism it takes to hide that latency.
-- **Method** runs chains of one operation while sweeping ILP (1–8 independent chains) against TLP (warps per SM); reports cycles per operation.
+- **Method** runs chains of one operation while sweeping ILP (1-8 independent chains) against TLP (warps per SM); reports cycles per operation.
 - **On the 2080 Ti** consumer Turing runs FP64 at 1/32 of FP32, so `double` should sit roughly 32x above `float`, and the ILP1/TLP1 corner reads the ~4-cycle FMA latency (measured 4.13).
 
 ![gpu-incore, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_incore.png)
@@ -89,7 +89,7 @@ stride table for `gpu-strides`, and the `T = a + V/b` fit for `gpu-small-kernels
 
 - **Measures** L1 bandwidth as a function of the access stride.
 - **Good for** what non-contiguous access costs: strided reads collapse the bandwidth through cache-bank conflicts, and the table shows which strides hurt.
-- **Method** a single block reads with strides 1…N; the result is tabulated as bytes per cycle for each stride.
+- **Method** a single block reads with strides 1...N; the result is tabulated as bytes per cycle for each stride.
 - **On the 2080 Ti** a warp is 32 threads: stride 1 saturates the L1, and strides that fall on the same cache bank collapse the bandwidth.
 
 ![gpu-strides, CUDA on RTX 2080 Ti](figures/part1_cuda_2080ti/p1_cuda2080_gpu_strides.png)
@@ -111,7 +111,7 @@ Both campaigns ran on an RTX 2080 Ti of the same node, over **identical sweep po
 comparison is point by point and the only variable is the backend.
 
 Each figure carries the **mean of the 10 runs** of each backend, the shaded band being their
-min–max spread, and a lower panel giving the HIP/CUDA ratio. That lower panel is where the
+min-max spread, and a lower panel giving the HIP/CUDA ratio. That lower panel is where the
 gap is actually readable: on most benchmarks the two means sit on top of each other.
 
 ---
@@ -278,7 +278,7 @@ benchmark report cache bandwidth instead of memory bandwidth.
 but they wrote under the same file names (`avec-runNN.json`, `sans-runNN.json`) and `warm_cool`
 ran second. The `manifest.csv` describes 40 runs where 20 files remain. Which set survived is
 established, not assumed: the manifest gives 722 s constant across `warmcool/sans` against
-738–771 s for `flush/sans`, and the files on disk have a standard deviation of 0.1 s.
+738-771 s for `flush/sans`, and the files on disk have a standard deviation of 0.1 s.
 
 **To do** Re-run with the outputs prefixed by experiment (`flush-avec-runNN.json`).
 

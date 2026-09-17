@@ -1,4 +1,4 @@
-# gpu-strides — Research & Analysis
+# gpu-strides - Research & Analysis
 
 ## Goal
 
@@ -71,9 +71,9 @@ The full sweep is **2 × 2 × 65 = 260 points**.
 | `median` | ms | Median kernel execution time |
 | `mean` | ms | Mean |
 | `CoV` | % | Coefficient of variation (stability) |
-| `l1_lsu_wavefronts_per_warp` | — | LSU pipe wavefronts, per warp instruction |
-| `l1_ld_wavefronts_per_warp` | — | Global-load output wavefronts, per warp instruction |
-| `l2_sectors_per_warp` | — | L2 sectors touched, per warp instruction |
+| `l1_lsu_wavefronts_per_warp` | - | LSU pipe wavefronts, per warp instruction |
+| `l1_ld_wavefronts_per_warp` | - | Global-load output wavefronts, per warp instruction |
+| `l2_sectors_per_warp` | - | L2 sectors touched, per warp instruction |
 
 The three counters have `ONCE` granularity: they are measured during setup, not per repetition, so they carry no statistical spread.
 
@@ -93,9 +93,9 @@ The three counters have `ONCE` granularity: they are measured during setup, not 
 
 ## Caveats
 
-- **The counters are CUDA-only.** They require `STRIDES_ENABLE_CUPTI`, which is defined solely for the native CUDA build. The hipified variant compiles without the CUPTI engine and reports **0** for all three — that is expected, not a failure. There is no ROCm equivalent wired up; a hand-tuned `hip/` port could add rocprofiler.
-- The combined executable links CUPTI at the top level, not in the benchmark's own target: object libraries do not propagate their usage requirements through `$<TARGET_OBJECTS:…>`. If you build with `COMBINED_BUILD=OFF`, the per-benchmark target carries them itself.
+- **The counters are CUDA-only.** They require `STRIDES_ENABLE_CUPTI`, which is defined solely for the native CUDA build. The hipified variant compiles without the CUPTI engine and reports **0** for all three - that is expected, not a failure. There is no ROCm equivalent wired up; a hand-tuned `hip/` port could add rocprofiler.
+- The combined executable links CUPTI at the top level, not in the benchmark's own target: object libraries do not propagate their usage requirements through `$<TARGET_OBJECTS:...>`. If you build with `COMBINED_BUILD=OFF`, the per-benchmark target carries them itself.
 - For `kernel_type=block`, `arg` values that are not divisors of 1024 are silently rounded down. Expect plateaus of identical results rather than 65 distinct points.
-- `arg=0` with `stride` means every lane reads the same address — a broadcast, which is the cheapest possible pattern and a useful baseline. With `block`, `arg=0` is treated as 1.
+- `arg=0` with `stride` means every lane reads the same address - a broadcast, which is the cheapest possible pattern and a useful baseline. With `block`, `arg=0` is treated as 1.
 - The CUPTI engine uses `SCOPE_EXIT` RAII macros that trip `-Wunused-value`; the build relaxes that one warning for this object only, since the project compiles with `-Werror`.
 - Counter collection re-runs the kernel three times during setup. That extra work is not part of the timing measurement, but it does make setup noticeably slower for this benchmark.
